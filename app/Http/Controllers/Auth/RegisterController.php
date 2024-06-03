@@ -52,6 +52,11 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'number' => ['required', 'digits:11', 'regex:/^0/', 'unique:users', ],
+        ],[
+            'number.digits' => 'Phone number must be 11 digits',
+            'number.unique' => 'Phone number already exists',
+            'number.regex' => 'Phone number must start with 0',
         ]);
     }
 
@@ -65,6 +70,7 @@ class RegisterController extends Controller
     {
         return User::create([
             'name' => $data['name'],
+            'number' => $data['number'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);

@@ -5,7 +5,16 @@
             <div class="deznav-scroll">
 				<ul class="metismenu" id="menu">
                     <li><a href="{{route('home')}}" class="ai-icon" aria-expanded="false"> <i class="flaticon-381-networking"></i><span class="nav-text">Dashboard</span></a> </li>
+                    <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
+                            <i class="fa fa-prescription"></i>
+                            <span class="nav-text">Prescriptions</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="">Create Prescription</a></li>
+                            <li><a href="chart-morris.html">All Prescriptions</a></li>
 
+                        </ul>
+                    </li>
 
 
 
