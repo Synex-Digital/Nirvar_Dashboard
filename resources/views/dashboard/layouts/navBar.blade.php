@@ -580,6 +580,7 @@
 
 											@if (empty($doctor->docHasSpec) )
                                             <li>
+                                                <a href="{{ route('doctorProfile.error' ) }}">
 												<div class="timeline-panel">
                                                     <div class="media me-2 media-danger">
                                                         <i class="fa fa-exclamation"></i>
@@ -589,11 +590,13 @@
 														<small class="d-block">{{ $doctor->created_at->diffForHumans() }}</small>
 													</div>
 												</div>
+                                                </a>
 											</li>
                                             @endif
                                             @if  ($doctor->degrees == null || !$doctor->docHasSpec()->exists()	 )
 
                                                 <li>
+                                                    <a href="{{ route('doctorProfile.error' ) }}">
                                                     <div class="timeline-panel">
                                                         <div class="media me-2 media-danger">
                                                             <i class="fa fa-exclamation"></i>
@@ -603,6 +606,22 @@
                                                             <small class="d-block">{{ $doctor->created_at->diffForHumans() }}</small>
                                                         </div>
                                                     </div>
+                                                    </a>
+                                                </li>
+                                            @endif
+                                            @if  ($count == 0)
+                                                <li>
+                                                    <a href="{{ route('doctorProfile.error' ) }}">
+                                                    <div class="timeline-panel">
+                                                        <div class="media me-2 media-success">
+                                                            <i class="fa fa-check"></i>
+                                                        </div>
+                                                        <div class="media-body">
+                                                            <h6 class="mb-1"> No New Notifications </h6>
+
+                                                        </div>
+                                                    </div>
+                                                    </a>
                                                 </li>
                                             @endif
 
@@ -614,8 +633,8 @@
 
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="javascript:void(0)" role="button" data-bs-toggle="dropdown">
-
-                                    <img src="https://ui-avatars.com/api/?name={{Auth::user()->name}}&background=random" width="20" alt="">
+                                    <i class="fas fa-user-md" style="font-size: 25px;"></i>
+                                    {{-- <img src="https://ui-avatars.com/api/?name={{Auth::user()->name}}&background=random" width="20" alt=""> --}}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end">
                                     <a href="{{route('doctor.profile')}}" class="dropdown-item ai-icon">

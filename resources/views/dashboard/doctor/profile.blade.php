@@ -49,12 +49,12 @@
         <div class="card h-auto">
             <div class="card-body">
                 <div class="profile-tab">
-                    <div class="custom-tab-1">
+                    <div class="custom-tab-1" id="custom">
                         <ul class="nav nav-tabs">
 
                             <li class="nav-item"><a href="#about-me" data-bs-toggle="tab" id="aboutMe" class="nav-link active show">About Me</a>
                             </li>
-                            <li class="nav-item"><a href="#profile-settings" data-bs-toggle="tab" id="setting" class="nav-link">Setting</a>
+                            <li class="nav-item"><a href="#profile-settings" data-bs-toggle="tab" id="setting" class="nav-link">Settings</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -98,6 +98,14 @@
                                         <div class="col-9"><span>{{ $doctor->user->email }}</span>
                                         </div>
                                     </div>
+                                    <div class="row mb-2">
+                                        <div class="col-3">
+                                            <h5 class="f-w-500">Phone <span class="pull-right">:</span>
+                                            </h5>
+                                        </div>
+                                        <div class="col-9"><span>{{ $doctor->user->number }}</span>
+                                        </div>
+                                    </div>
                                     {{-- <div class="row mb-2">
                                         <div class="col-3">
                                             <h5 class="f-w-500">Availability <span class="pull-right">:</span></h5>
@@ -134,27 +142,34 @@
                                 <div class="pt-3">
                                     <div class="settings-form">
                                         <h4 class="text-primary">Account Setting</h4>
-                                        <form>
+                                        <form action="{{ route('doctor.update', $doctor->id) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="mb-3">
+                                                <label>Name</label>
+                                                <input type="text" name="name" placeholder="" class="form-control" value="{{ $doctor->user->name }}" required>
+                                            </div>
                                             <div class="row">
-                                                <div class="form-group col-md-6">
-                                                    <label>Name</label>
-                                                    <input type="text" name="name" placeholder="Name" class="form-control" value="{{ $doctor->user->name }}" required>
-                                                </div>
+
                                                 <div class="form-group col-md-6">
                                                     <label>Email</label>
-                                                    <input type="email" name="email" placeholder="Email" class="form-control" value="{{ $doctor->user->email }}" required>
+                                                    <input type="email" name="email" placeholder="" class="form-control" value="{{ $doctor->user->email }}" required>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label>Phone</label>
+                                                    <input type="number" name="number"  class="form-control" value="{{ $doctor->user->number }}" required>
                                                 </div>
                                             </div>
 
                                             <div class="row">
                                                 <div class="form-group col-md-8 {{ $doctor->degrees ? '' : 'input-danger' }}">
                                                     <label>Degrees</label>
-                                                    <input type="text" class="form-control" placeholder="Degrees" value="{{ $doctor->degrees }}" {{ $doctor->degrees? 'required' : '' }}>
+                                                    <input type="text" name="degrees" class="form-control" placeholder="" value="{{ $doctor->degrees }}" {{ $doctor->degrees? 'required' : '' }}>
                                                 </div>
                                                 <div class="form-group col-md-4 ">
                                                     <label>Speciality</label>
-                                                    <select class="form-control default-select {{ $doctor->docHasSpec ? '' : 'border border-danger' }} "  >
-                                                        <option selected="">Choose...</option>
+                                                    <select name="specialist_id" class="form-control default-select {{ $doctor->docHasSpec ? '' : 'border border-danger' }} "  >
+                                                        <option value="" >Choose...</option>
                                                         @forelse ($specialities as $speciality)
                                                             <option
                                                             {{ $doctor->docHasSpec()->exists() ? ($doctor->docHasSpec->specialist_id == $speciality->id ? 'selected' : '') : '' }}
@@ -167,30 +182,33 @@
                                                 </div>
 
                                             </div>
+                                            <div class="mb-3">
+                                                <label>Description</label>
+                                                <textarea name="description" class="form-control" placeholder="" rows="5">{{ $doctor->description }}</textarea>
+                                            </div>
                                             <div class="row">
                                                  <div class="form-group col-md-4">
                                                     <label>Old Password</label>
-                                                    <input type="text" name="oldPassword" placeholder="Old Password" class="form-control">
+                                                    <input type="text" name="oldPassword" placeholder="" class="form-control">
                                                 </div>
                                                 <div class="form-group col-md-4">
                                                     <label>Password</label>
-                                                    <input type="password" name="password" placeholder="Password" class="form-control">
+                                                    <input type="password" name="password" placeholder="" class="form-control" autocomplete="">
                                                 </div>
                                                 <div class="form-group col-md-4">
                                                     <label> Confirm Password</label>
-                                                    <input type="password" name=" confirm_password" placeholder=" Confirm Password" class="form-control">
+                                                    <input type="password" name="password_confirmation" placeholder="" class="form-control" autocomplete="">
                                                 </div>
                                             </div>
 
 
-                                            <div class="form-group">
+                                            {{-- <div class="form-group">
                                                 <div class="form-check custom-checkbox">
                                                     <input type="checkbox" class="form-check-input" id="gridCheck">
                                                     <label class="form-check-label" for="gridCheck"> Check me out</label>
                                                 </div>
-                                            </div>
-                                            <button class="btn btn-primary" type="submit">Sign
-                                                in</button>
+                                            </div> --}}
+                                            <button class="btn btn-primary float-end" type="submit">Update</button>
                                         </form>
                                     </div>
                                 </div>
@@ -217,7 +235,7 @@
     });
 </script>
 
-@if ($error == 'true')
+@if ($settingError == 'true' || session('settingError') == 'true')
 <script>
     $(document).ready(function() {
         $('#about-me').removeClass('active show');
@@ -225,8 +243,23 @@
         $('#aboutMe').removeClass('active show');
         $('#setting').addClass('active show');
 
+        $('html, body').animate({
+            scrollTop: $("#profile-settings").offset().top
+        }, 'fast');
 
-    })
+    });
+</script>
+
+
+@endif
+@if (session('activeProfile') == 'true')
+<script>
+      $(document).ready(function() {
+        $('html, body').animate({
+            scrollTop: $("#about-me").offset().top
+        }, 'fast');
+
+    });
 </script>
 @endif
 @endsection
