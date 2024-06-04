@@ -13,6 +13,7 @@
 
 	<title>Nirvar @yield('title')</title>
     @include('dashboard.layouts.headerLink')
+    @yield('style')
 </head>
 <body>
 
@@ -55,5 +56,6 @@
     @include('dashboard.layouts.footer')
 
     @include('dashboard.layouts.scriptLink')
+    @yield('script')
 </body>
 </html>

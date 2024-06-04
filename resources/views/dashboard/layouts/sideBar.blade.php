@@ -10,7 +10,7 @@
                             <span class="nav-text">Prescriptions</span>
                         </a>
                         <ul aria-expanded="false">
-                            <li><a href="">Create Prescription</a></li>
+                            <li><a href="sadfsad">Create Prescription</a></li>
                             <li><a href="chart-morris.html">All Prescriptions</a></li>
 
                         </ul>

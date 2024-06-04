@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Doctor;
+use App\Models\Specialist;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DoctorController extends Controller
 {
@@ -11,7 +14,7 @@ class DoctorController extends Controller
      */
     public function index()
     {
-        
+
     }
 
     /**
@@ -65,7 +68,13 @@ class DoctorController extends Controller
 
     public function doctorProfile()
     {
-        return view('dashboard.doctor.profile');
+        $doctor = Auth::user()->doctor;
+        $specialities = Specialist::all();
+       
+        return view('dashboard.doctor.profile',[
+            'doctor' => $doctor,
+            'specialities' => $specialities
+        ]);
     }
 
 
