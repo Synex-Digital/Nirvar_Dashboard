@@ -52,9 +52,9 @@
                     <div class="custom-tab-1">
                         <ul class="nav nav-tabs">
 
-                            <li class="nav-item"><a href="#about-me" data-bs-toggle="tab" class="nav-link active show">About Me</a>
+                            <li class="nav-item"><a href="#about-me" data-bs-toggle="tab" id="aboutMe" class="nav-link active show">About Me</a>
                             </li>
-                            <li class="nav-item"><a href="#profile-settings" data-bs-toggle="tab" class="nav-link">Setting</a>
+                            <li class="nav-item"><a href="#profile-settings" data-bs-toggle="tab" id="setting" class="nav-link">Setting</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -216,4 +216,17 @@
         thumbnail:true,
     });
 </script>
+
+@if ($error == 'true')
+<script>
+    $(document).ready(function() {
+        $('#about-me').removeClass('active show');
+        $('#profile-settings').addClass('active show');
+        $('#aboutMe').removeClass('active show');
+        $('#setting').addClass('active show');
+
+
+    })
+</script>
+@endif
 @endsection

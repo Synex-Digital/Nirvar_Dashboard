@@ -17,6 +17,7 @@ Route::get('/', function () {return redirect(route('home')); });
 Route::get('/dashboard', [HomeController::class, 'index'])->name('home');
 //doctor
 Route::get('/doctor/profile', [DoctorController::class, 'doctorProfile'])->name('doctor.profile');
+Route::get('/doctor/profile/error', [DoctorController::class, 'doctorProfile_error'])->name('doctorProfile.error');
 
 
 Route::resources([

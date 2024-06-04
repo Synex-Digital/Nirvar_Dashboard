@@ -561,18 +561,20 @@
                                 <div class="dropdown-menu dropdown-menu-end">
                                     <div id="DZ_W_Notification1" class="widget-media dz-scroll p-3 height380">
 										<ul class="timeline">
-											<li>asdfasd</li>
+
                                             @if ($doctor->degrees == null)
-                                                <li>
+											<li>
+													<a href="{{ route('doctorProfile.error' ) }}">
                                                     <div class="timeline-panel">
                                                         <div class="media me-2 media-danger">
                                                             <i class="fa fa-exclamation"></i>
                                                         </div>
                                                         <div class="media-body">
-                                                            <h6 class="mb-1">Fill Up Your Degrees  </h6>
+                                                            <h6 class="mb-1">Fill Up Your Degrees </h6>
                                                             <small class="d-block">{{ $doctor->created_at->diffForHumans() }}</small>
                                                         </div>
                                                     </div>
+												</a>
                                                 </li>
                                             @endif
 

@@ -70,10 +70,20 @@ class DoctorController extends Controller
     {
         $doctor = Auth::user()->doctor;
         $specialities = Specialist::all();
-       
         return view('dashboard.doctor.profile',[
             'doctor' => $doctor,
-            'specialities' => $specialities
+            'specialities' => $specialities,
+            'error' => 'false',
+        ]);
+    }
+    public function doctorProfile_error()
+    {
+        $doctor = Auth::user()->doctor;
+        $specialities = Specialist::all();
+        return view('dashboard.doctor.profile',[
+            'doctor' => $doctor,
+            'specialities' => $specialities,
+            'error' => 'true',
         ]);
     }
 
