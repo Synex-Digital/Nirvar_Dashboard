@@ -1,20 +1,39 @@
-     <!--**********************************
+
+ @php
+    $user = Auth::user();
+    $doctor = $user->doctor;
+    if ($doctor->degrees != null && $doctor->docHasSpec()->exists()) {
+        $disablePrescriptions = false;
+    }else{
+        $disablePrescriptions = true;
+    }
+
+ @endphp
+
+    <!--**********************************
             Sidebar start
         ***********************************-->
         <div class="deznav">
             <div class="deznav-scroll">
 				<ul class="metismenu" id="menu">
                     <li><a href="{{route('home')}}" class="ai-icon" aria-expanded="false"> <i class="flaticon-381-networking"></i><span class="nav-text">Dashboard</span></a> </li>
-                    <li><a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
+
+                    <li class="{{ $disablePrescriptions ? 'disabled' : '' }}">
+                        <a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
                             <i class="fa fa-prescription"></i>
                             <span class="nav-text">Prescriptions</span>
                         </a>
                         <ul aria-expanded="false">
-                            <li><a href="sadfsad">Create Prescription</a></li>
-                            <li><a href="chart-morris.html">All Prescriptions</a></li>
-
+                            @if ($disablePrescriptions)
+                                <li><a href="javascript:void(0)" class="disabled-link">Create Prescription</a></li>
+                                <li><a href="javascript:void(0)" class="disabled-link">All Prescriptions</a></li>
+                            @else
+                                <li><a href="{{route('prescription.create')}}">Create Prescription</a></li>
+                                <li><a href="chart-morris.html">All Prescriptions</a></li>
+                            @endif
                         </ul>
                     </li>
+
 
 
 

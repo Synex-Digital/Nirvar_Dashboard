@@ -1,6 +1,6 @@
 @php
-    $user = Auth::user()->id;
-    $doctor = App\Models\Doctor::where('user_id', $user)->get()->first();
+    $user = Auth::user();
+    $doctor = $user->doctor;
     $count = 0;
     $doctor->degrees == null ? $count ++ : '';
     // // $doctor->description == null ? $count++ : '';

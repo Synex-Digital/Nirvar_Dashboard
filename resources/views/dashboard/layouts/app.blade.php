@@ -14,6 +14,22 @@
 	<title>Nirvar @yield('title')</title>
     @include('dashboard.layouts.headerLink')
     @yield('style')
+    <style>
+        .disabled {
+            pointer-events: none; /* Disable all pointer events */
+            opacity: 0.5; /* Make it look disabled */
+        }
+
+        .disabled a, .disabled-link {
+            color: #aaa !important; /* Grey out the text */
+            pointer-events: none; /* Disable clicks */
+            text-decoration: none;
+        }
+
+        .disabled a i {
+            color: #aaa !important; /* Grey out the icon */
+        }
+    </style>
 </head>
 <body>
 
