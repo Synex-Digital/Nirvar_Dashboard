@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('blood_group')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->string('weight_height')->nullable();
+            $table->string('gender')->nullable();
             $table->longText('address')->nullable();
             $table->timestamps();
 

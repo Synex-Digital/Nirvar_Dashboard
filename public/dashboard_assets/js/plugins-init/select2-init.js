@@ -48,54 +48,54 @@
 
 
     //ajax remote data
-    $(".js-data-example-ajax").select2({
-        width: "100%",
-        ajax: {
-            url: "{{ route('selectUser') }}",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term, // search term
-                    page: params.page
-                };
-            },
-            processResults: function (data, params) {
-                params.page = params.page || 1;
+    // $(".js-data-example-ajax").select2({
+    //     width: "100%",
+    //     ajax: {
+    //         url: "{{ route('selectUser') }}",
+    //         dataType: 'json',
+    //         delay: 250,
+    //         data: function (params) {
+    //             return {
+    //                 q: params.term, // search term
+    //                 page: params.page
+    //             };
+    //         },
+    //         processResults: function (data, params) {
+    //             params.page = params.page || 1;
 
-                return {
-                    results: data.items,
-                    pagination: {
-                        more: (params.page * 30) < data.total_count
-                    }
-                };
-            },
-            cache: true
-        },
-        placeholder: 'Search for a phone number',
-        escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-        minimumInputLength: 1,
-        templateResult: formatRepo,
-        templateSelection: formatRepoSelection
-    });
+    //             return {
+    //                 results: data.items,
+    //                 pagination: {
+    //                     more: (params.page * 30) < data.total_count
+    //                 }
+    //             };
+    //         },
+    //         cache: true
+    //     },
+    //     placeholder: 'Search for a phone number',
+    //     escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+    //     minimumInputLength: 1,
+    //     templateResult: formatRepo,
+    //     templateSelection: formatRepoSelection
+    // });
 
-    function formatRepo(repo) {
-        if (repo.loading) {
-            return repo.text;
-        }
+    // function formatRepo(repo) {
+    //     if (repo.loading) {
+    //         return repo.text;
+    //     }
 
-        var markup = "<div class='select2-result-repository clearfix'>" +
-            "<div class='select2-result-repository__meta'>" +
-            "<div class='select2-result-repository__title'>" + repo.text + "</div>";
+    //     var markup = "<div class='select2-result-repository clearfix'>" +
+    //         "<div class='select2-result-repository__meta'>" +
+    //         "<div class='select2-result-repository__title'>" + repo.text + "</div>";
 
-        markup += "</div></div>";
+    //     markup += "</div></div>";
 
-        return markup;
-    }
+    //     return markup;
+    // }
 
-    function formatRepoSelection(repo) {
-        return repo.text || repo.phone_number;
-    }
+    // function formatRepoSelection(repo) {
+    //     return repo.text || repo.phone_number;
+    // }
 
 
 

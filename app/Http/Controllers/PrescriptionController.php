@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Prescription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PrescriptionController extends Controller
 {
@@ -21,7 +22,12 @@ class PrescriptionController extends Controller
      */
     public function create()
     {
-        return view('dashboard.doctor.prescription.create');
+        $user = Auth::user();
+        $doctor = $user->doctor;
+        return view('dashboard.doctor.prescription.create',[
+            'doctor' => $doctor,
+
+        ]);
     }
 
     /**
@@ -29,7 +35,7 @@ class PrescriptionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        dd($request->all());
     }
 
     /**

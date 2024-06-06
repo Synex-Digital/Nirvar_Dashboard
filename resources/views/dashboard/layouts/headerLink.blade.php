@@ -1,5 +1,5 @@
 <!-- Favicon icon -->
-{{-- <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png"> --}}
+<link rel="icon" type="image/png" sizes="16x16" href="{{asset('dashboard_assets/images/logoN.png')}}">
 {{-- <link href="vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet"> --}}
 {{-- <link rel="stylesheet" href="vendor/chartist/css/chartist.min.css"> --}}
 {{-- <link href="vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet"> --}}

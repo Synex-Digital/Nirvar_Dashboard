@@ -208,7 +208,7 @@
                                                     <label class="form-check-label" for="gridCheck"> Check me out</label>
                                                 </div>
                                             </div> --}}
-                                            <button class="btn btn-primary float-end" type="submit">Update</button>
+                                            <button class="btn btn-primary float-end btn-sm" type="submit">Update</button>
                                         </form>
                                     </div>
                                 </div>
