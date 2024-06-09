@@ -66,83 +66,81 @@
         </div>
         <div class="row border-top border-bottom   mt-3 mb-3  ">
            <div class="col-lg-3">
-                <p class="mb-0">Patient Number </p>
-            {{-- <select class="js-data-example-ajax w-100 " name="phone_number">
-
-            </select> --}}
+                <p class="mb-0">Patient Number <span class="text-danger">*</span> </p>
+         
             <select name="phone_number" id="phone_number" style="width: 100%">
                 <option value="">Select a phone number</option>
             </select>
 
            </div>
            <div class="col-lg-3">
-                <p class="mb-0">Patient Name </p>
-                <input type="text" class="form-control form-control-sm" name="name" id="name"  placeholder="Name">
+                <p class="mb-0">Patient Name <span class="text-danger">*</span> </p>
+                <input type="text" class="form-control form-control-sm" name="name" id="name"  placeholder="Name" value="{{ old('name') }}">
            </div>
 
            <div class="col-lg-2">
-                <p class="mb-0">Gender </p>
-                <select name="gender" id="" class="form-control form-control-sm">
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other"> Others</option>
+                <p class="mb-0">Gender <span class="text-danger">*</span></p>
+                <select name="gender" id="" class="form-control form-control-sm" >
+                    <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                    <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Others</option>
                 </select>
            </div>
            <div class="col-lg-2">
-                <p class="mb-0"> Age</p>
-                <input type="number" min="0" class="form-control form-control-sm" name="age" id="age" >
+                <p class="mb-0"> Age <span class="text-danger">*</span></p>
+                <input type="number" min="0" class="form-control form-control-sm" name="age" id="age" value="{{ old('age') }}" >
             </div>
            <div class="col-lg-2">
                 <p class="mb-0">Weight</p>
 
-                <input type="number" min="0" class="form-control form-control-sm" name="weight" id="weight" placeholder="kg">
+                <input type="number" min="0" class="form-control form-control-sm" name="weight" id="weight" placeholder="kg" value="{{ old('weight') }}">
             </div>
             <div class="col-lg-2 ">
                 <p class="mb-0">Blood Group</p>
                 <select name="blood_group" id="" class="  form-control form-control-sm">
-                    <option value="">None</option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
+                    <option value="" {{ old('blood_group') == '' ? 'selected' : '' }}>None</option>
+                    <option value="A+" {{ old('blood_group') == 'A+' ? 'selected' : '' }}>A+</option>
+                    <option value="A-" {{ old('blood_group') == 'A-' ? 'selected' : '' }}>A-</option>
+                    <option value="B+" {{ old('blood_group') == 'B+' ? 'selected' : '' }}>B+</option>
+                    <option value="B-" {{ old('blood_group') == 'B-' ? 'selected' : '' }}>B-</option>
+                    <option value="AB+" {{ old('blood_group') == 'AB+' ? 'selected' : '' }}>AB+</option>
+                    <option value="AB-" {{ old('blood_group') == 'AB-' ? 'selected' : '' }}>AB-</option>
+                    <option value="O+" {{ old('blood_group') == 'O+' ? 'selected' : '' }}>O+</option>
+                    <option value="O-" {{ old('blood_group') == 'O-' ? 'selected' : '' }}>O-</option>
 
                 </select>
             </div>
            <div class="col-lg-2 mb-3">
                 <p class="mb-0">Height</p>
                 <div class="row">
-                    <div class="col-lg-6 pe-0">
+                    <div class="col-lg-6  mb-2">
                         <select name="heightFt" id=" heightFt" class="form-control form-control-sm" >
-                            <option value="">None</option>
-                            <option value="2 FT"> 2 FT </option>
-                            <option value="3 FT"> 3 FT</option>
-                            <option value="4 FT">4 FT </option>
-                            <option value="5 FT">5 FT</option>
-                            <option value="6 FT">6 FT</option>
-                            <option value="7 FT">7 FT</option>
-                            <option value="8 FT">8 FT</option>
+                            <option value="" {{ old('heightFt') == '' ? 'selected' : '' }}>None</option>
+                            <option value="2 FT" {{ old('heightFt') == '2 FT' ? 'selected' : '' }}>2 FT</option>
+                            <option value="3 FT" {{ old('heightFt') == '3 FT' ? 'selected' : '' }}>3 FT</option>
+                            <option value="4 FT" {{ old('heightFt') == '4 FT' ? 'selected' : '' }}>4 FT</option>
+                            <option value="5 FT" {{ old('heightFt') == '5 FT' ? 'selected' : '' }}>5 FT</option>
+                            <option value="6 FT" {{ old('heightFt') == '6 FT' ? 'selected' : '' }}>6 FT</option>
+                            <option value="7 FT" {{ old('heightFt') == '7 FT' ? 'selected' : '' }}>7 FT</option>
+                            <option value="8 FT" {{ old('heightFt') == '8 FT' ? 'selected' : '' }}>8 FT</option>
                         </select>
 
                     </div>
-                    <div class="col-lg-6 ps-1">
+                    <div class="col-lg-6 ">
                         <select name="heightIn" id =" heightIn" class="form-control form-control-sm" >
-                            <option value="">None</option>
-                            <option value="0 IN">0 IN</option>
-                            <option value="1 IN">1 IN</option>
-                            <option value="2 IN">2 IN</option>
-                            <option value="3 IN">3 IN</option>
-                            <option value="4 IN">4 IN</option>
-                            <option value="5 IN">5 IN</option>
-                            <option value="6 IN">6 IN</option>
-                            <option value="7 IN">7 IN</option>
-                            <option value="8 IN">8 IN</option>
-                            <option value="9 IN">9 IN</option>
-                            <option value="10 IN">10 IN</option>
-                            <option value="11 IN">11 IN</option>
+                            <option value="" {{ old('heightIn') == '' ? 'selected' : '' }}>None</option>
+                            <option value="0 IN" {{ old('heightIn') == '0 IN' ? 'selected' : '' }}>0 IN</option>
+                            <option value="1 IN" {{ old('heightIn') == '1 IN' ? 'selected' : '' }}>1 IN</option>
+                            <option value="2 IN" {{ old('heightIn') == '2 IN' ? 'selected' : '' }}>2 IN</option>
+                            <option value="3 IN" {{ old('heightIn') == '3 IN' ? 'selected' : '' }}>3 IN</option>
+                            <option value="4 IN" {{ old('heightIn') == '4 IN' ? 'selected' : '' }}>4 IN</option>
+                            <option value="5 IN" {{ old('heightIn') == '5 IN' ? 'selected' : '' }}>5 IN</option>
+                            <option value="6 IN" {{ old('heightIn') == '6 IN' ? 'selected' : '' }}>6 IN</option>
+                            <option value="7 IN" {{ old('heightIn') == '7 IN' ? 'selected' : '' }}>7 IN</option>
+                            <option value="8 IN" {{ old('heightIn') == '8 IN' ? 'selected' : '' }}>8 IN</option>
+                            <option value="9 IN" {{ old('heightIn') == '9 IN' ? 'selected' : '' }}>9 IN</option>
+                            <option value="10 IN" {{ old('heightIn') == '10 IN' ? 'selected' : '' }}>10 IN</option>
+                            <option value="11 IN" {{ old('heightIn') == '11 IN' ? 'selected' : '' }}>11 IN</option>
 
 
                         </select>
@@ -154,7 +152,7 @@
         </div>
         <div class=" mt-3">
             <div class="form-group row">
-                <h5 class="col-lg-2 col-sm-12 col-md-12 mt-2">Cheif Complaint:</h5>
+                <h5 class="col-lg-2 col-sm-12 col-md-12 mt-2">Cheif Complaint: <span class="text-danger">*</span></h5>
                 <div class="col-lg-10 col-md-12 col-sm-12">
                    <input type="text" class="form-control form-control-sm" name="complaint" id="complaint" placeholder="Cold, Fever, Flu">
                 </div>
@@ -170,7 +168,7 @@
                     <button type="button" class="btn btn-primary btn-xs float-end" id="plus">Add More</button>
                 </div>
                 <div class="col-lg-6">
-                    <h5>Medicine:</h5>
+                    <h5>Medicine: <span class="text-danger">*</span></h5>
 
                         <div class="row mt-2 mb-1  g-3 medi" style="">
                             <div class="col-4 my-1 ">
@@ -222,62 +220,13 @@
     </form>
     </div>
 </div>
-    {{-- <div class="row">
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">Patient Info</h4>
-                </div>
-                <div class="card-body">
-                    <form action="">
-                        <div class="mb-3">
-                            <label class="form-label">Search Patient Number</label>
-                            <select class="js-data-example-ajax w-100 dynamic-option-creation">
 
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="" class="form-label">Name</label>
-                            <input type="text" class="form-control form-control-sm" name="name" id="name" >
-                        </div>
-                        <div class="mb-3">
-                            <label for="" class="form-label">Email</label>
-                            <input type="email" class="form-control form-control-sm" name="email" id="email" >
-                        </div>
-                        <div class="mb-3">
-                            <label for="" class="form-label">Age</label>
-                            <input type="number" class="form-control form-control-sm" name="age" id="age" >
-                        </div>
-                        <div class="mb-3">
-                            <label for="" class="form-label">Gender</label>
-                            <input type="text" class="form-control form-control-sm" name="gender" id="gender" >
-                        </div>
-                        <div class="mb-3">
-                            <label for="" class="form-label">Blood Group</label>
-                            <input type="text" class="form-control form-control-sm" name="blood_group" id="blood_group" >
-                        </div>
-                        <div class="mb-3">
-                            <label for="" class="form-label">Weight</label>
-                            <input type="number" class="form-control form-control-sm" name="weight" id="weight" >
-                        </div>
-                        <div class="mb-3">
-                            <label for="" class="form-label">Height</label>
-                            <input type="text" class="form-control form-control-sm" name="height" id=" height" >
-                        </div>
-
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div> --}}
 @endsection
 @section('script')
 
 <script src="{{asset('dashboard_assets/vendor/select2/js/select2.full.min.js')}}"></script>
 <script src="{{asset('dashboard_assets/js/plugins-init/select2-init.js')}}"></script>
-{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Include Select2 JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script> --}}
+
 <script type="text/javascript">
     $(document).ready(function() {
         $('#phone_number').select2({
@@ -373,24 +322,7 @@
                 })
             }
         });
-
-
-
-
-    });
-
-
-
-</script>
-
-
-
-
-
-
-<script>
-    $(document).ready(function() {
-
+        // Add more
         $('#plusAdvice').click(function () {
         let inputNew = $('.advice:last').clone(true);
         inputNew.find('input').val(''); // Clear the value of the cloned input fields
@@ -401,12 +333,7 @@
             inputNew.find('input').val(''); // Clear the value of the cloned input fields
             $(inputNew).insertAfter('.invest:last');
         });
-
-        // $('#plusMedi').click(function () {
-        //     let inputNew = $('.medi:last').clone(true);
-        //     inputNew.find('input').val(''); // Clear the value of the cloned input fields
-        //     $(inputNew).insertAfter('.medi:last');
-        // });
+        //add
         $('#plusMedi').click(function () {
             let inputNew = $('.medi:last').clone(true);
             inputNew.find('input').val(''); // Clear the value of the cloned input fields
@@ -437,18 +364,10 @@
                 $('#removeMedi').hide(); // Hide the "Remove Medicine" button if there's only one "medi" div left
             }
         });
+        //
 
-
-
-
-
-
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        // Function to check if the screen width is greater than 768px (desktop size)
-        function isDesktopView() {
+          // Function to check if the screen width is greater than 768px (desktop size)
+          function isDesktopView() {
             return window.innerWidth > 768;
         }
 
@@ -457,7 +376,32 @@
             // Simulate a click on the hamburger menu
             $('#hamburger').click();
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     });
+
+
+
 </script>
+
+
+
+
+
+
+
+
 @endsection
 

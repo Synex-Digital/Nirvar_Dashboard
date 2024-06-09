@@ -69,7 +69,7 @@ class PrescriptionController extends Controller
         }
 
         $prescription = new Prescription();
-        $user = User::where('number', $request->phone_number)->get()->first();
+        $user = User::where('role', 'patient')->where('number', $request->phone_number)->get()->first();
         if($user){
             //prescription
             $prescription->patient_id = $user->patient->id;
@@ -103,7 +103,15 @@ class PrescriptionController extends Controller
                 $medicine->save();
 
             }
-            return back();
+            $doctors = Auth::user()->doctor;
+            $patients = $user->patient;
+            $prescriptions = Prescription::find($prescription->id);
+
+            return view('dashboard.doctor.prescription.preview',[
+                'doctors' => $doctors,
+                'patients' => $patients,
+                'prescriptions' => $prescriptions,
+            ]);
 
         }else{
 
@@ -122,10 +130,14 @@ class PrescriptionController extends Controller
             $currentDate = date('Y-m-d');
             $birthDate = date('Y-m-d', strtotime($currentDate . ' - ' . $request->age . ' years'));
             $patient->date_of_birth = $birthDate;
-            $w = $request->weight? $request->weight.',' :null;
+            //weight and height
+            $weight_height = null;
+            $w = $request->weight? $request->weight :null;
             $h = ($request->heightFt ? $request->heightFt . '.' : '') . ($request->heightIn ? $request->heightIn : '');
-            $weight_height = $w. ($h?$h : null);
+            if($request->heightFt){ if($request->heightIn){   $h = $request->heightFt . '.' . $request->heightIn;  }else{$h = $request->heightFt; }}elseif($request->heightIn){ $h = $request->heightIn; }
+            if($w){ if($h){   $weight_height = $w.','.$h;  }else{$weight_height = $w; } }elseif($h){ $weight_height = $h; }
             $patient->weight_height = $weight_height;
+
             $patient->blood_group = $request->blood_group;
             $patient->save();
             // prescription
