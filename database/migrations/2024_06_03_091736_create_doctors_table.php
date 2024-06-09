@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->longText('degrees')->nullable();
             $table->longText('description')->nullable();
+            $table->string('registration')->nullable();
             $table->timestamps();
 
             $table-> foreign('user_id')->references('id')->on('users')->onDelete('set null');

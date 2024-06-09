@@ -151,13 +151,17 @@
                                             </div>
                                             <div class="row">
 
-                                                <div class="form-group col-md-6">
+                                                <div class="form-group col-md-4">
                                                     <label>Email</label>
                                                     <input type="email" name="email" placeholder="" class="form-control" value="{{ $doctor->user->email }}" required>
                                                 </div>
-                                                <div class="form-group col-md-6">
+                                                <div class="form-group col-md-4">
                                                     <label>Phone</label>
                                                     <input type="number" name="number"  class="form-control" value="{{ $doctor->user->number }}" required>
+                                                </div>
+                                                <div class="form-group col-md-4 {{ $doctor->registration ? '' : 'input-danger' }}"  >
+                                                    <label>Doctor Registration</label>
+                                                    <input type="text" name="doctor_reg"  class="form-control" value="{{ $doctor->registration }}" required placeholder=" Doctor Registration ID">
                                                 </div>
                                             </div>
 

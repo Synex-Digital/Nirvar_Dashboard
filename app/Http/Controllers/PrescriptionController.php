@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Drugs;
 use App\Models\User;
 use App\Models\Prescription;
 use Illuminate\Http\Request;
@@ -24,8 +25,11 @@ class PrescriptionController extends Controller
     {
         $user = Auth::user();
         $doctor = $user->doctor;
+        $drug = Drugs::pluck('name', 'id');
+
         return view('dashboard.doctor.prescription.create',[
             'doctor' => $doctor,
+            'drug' => $drug
 
         ]);
     }
@@ -36,6 +40,14 @@ class PrescriptionController extends Controller
     public function store(Request $request)
     {
         dd($request->all());
+        if (strpos($request->phone_number, '0') === 0 && strlen($request->phone_number) == 11) {
+
+
+        }else{
+            flash()->options(['position' => 'bottom-right'])->error('Invalid Phone Number');
+            return redirect()->back();
+        }
+
     }
 
     /**
@@ -95,6 +107,17 @@ class PrescriptionController extends Controller
         return response()->json([
             'items' => $results,
             'total_count' => $total_count
+        ]);
+    }
+
+
+    public function getPatient($id){
+        $user = User::find($id);
+        $patient = $user->patient;
+
+        return response()->json([
+            'user' => $user,
+            'patient' => $patient
         ]);
     }
 }

@@ -17,6 +17,9 @@
             float: none !important;
         }
     }
+    .select2-selection__rendered{
+        min-height: 0 !important;
+    }
 </style>
 @endsection
 
@@ -42,7 +45,7 @@
                 <h5>Doctor: <span class="text-muted fw-light fst-italic"> {{ $doctor->user->name }}</span></h5>
                 <h5>Degrees: <span class="text-muted fw-light fst-italic">  {{ $doctor->degrees }}</span></h5>
                 <h5>Specialization:<span class="text-muted fw-light fst-italic">  {{ $doctor->docHasSpec->speciality->name }}</span></h5>
-                <input type="text" name="doctor_reg" id="doctor_reg" placeholder=" Doctor Registration ID/Number" class="form-control .form-control-sm">
+                <h5>Doctor Registration No: <span class="text-muted fw-light fst-italic"> {{ $doctor->registration }}</span></h5>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 ">
                 <div class="float-end flt">
@@ -52,16 +55,23 @@
                 </div>
             </div>
         </div>
-        <div class="row border-top border-bottom   mt-3  ">
+        <div class="row border-top border-bottom   mt-3 mb-3  ">
            <div class="col-lg-3">
                 <p class="mb-0">Patient Number </p>
-            <select class="js-data-example-ajax w-100 dynamic-option-creation">
+            <select class="js-data-example-ajax w-100 " name="phone_number">
 
             </select>
-           </div>
+            {{-- <select name="phone_number" id="phone_number">
+                <option value="">Select a phone number</option>
+            </select>
+
+            <div id="phone_input_section" style="display: none;">
+                <input type="text" name="phone_input" id="phone_input">
+                <div id="search_results"></div>
+            </div> --}}
            <div class="col-lg-3">
                 <p class="mb-0">Patient Name </p>
-                <input type="text" class="form-control form-control-sm" name="name" id="name" >
+                <input type="text" class="form-control form-control-sm" name="name" id="name"  placeholder="Name">
            </div>
 
            <div class="col-lg-2">
@@ -78,11 +88,45 @@
             </div>
            <div class="col-lg-2">
                 <p class="mb-0">Weight</p>
-                <input type="number" min="0" class="form-control form-control-sm" name="weight" id="weight" >
+
+                <input type="text" min="" class="form-control form-control-sm" name="weight" id="weight" placeholder="kg">
             </div>
            <div class="col-lg-2 mb-3">
                 <p class="mb-0">Height</p>
-                <input type="text" min="0" class="form-control form-control-sm" name="height" id=" height" placeholder="5' 7&quot;">
+                <div class="row">
+                    <div class="col-lg-6 pe-0">
+                        <select name="heightFt" id=" heightFt" class="form-control form-control-sm" >
+                            <option value="2 FT"> 2 FT </option>
+                            <option value="3 FT"> 3 FT</option>
+                            <option value="4 FT">4 FT </option>
+                            <option value="5 FT">5 FT</option>
+                            <option value="6 FT">6 FT</option>
+                            <option value="7 FT">7 FT</option>
+                            <option value="8 FT">8 FT</option>
+                        </select>
+
+                    </div>
+                    <div class="col-lg-6 ps-1">
+                        <select name="heightIn" id =" heightIn" class="form-control form-control-sm" >
+
+                            <option value="0 IN">0 IN</option>
+                            <option value="1 IN">1 IN</option>
+                            <option value="2 IN">2 IN</option>
+                            <option value="3 IN">3 IN</option>
+                            <option value="4 IN">4 IN</option>
+                            <option value="5 IN">5 IN</option>
+                            <option value="6 IN">6 IN</option>
+                            <option value="7 IN">7 IN</option>
+                            <option value="8 IN">8 IN</option>
+                            <option value="9 IN">9 IN</option>
+                            <option value="10 IN">10 IN</option>
+                            <option value="11 IN">11 IN</option>
+
+
+                        </select>
+
+                    </div>
+                </div>
             </div>
         </div>
         <div class=" mt-3">
@@ -112,13 +156,16 @@
                             <div class="col-4  my-1 ">
                                 <select name="drug[]" id="" class="form-control form-control-sm">
                                     <option value="">Select Drug</option>
+                                    @foreach ($drug as $id => $name)
+                                        <option value="{{ $id }}">{{ $name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-4 my-1 ">
                                 <input type="text" name="strength[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Strength">
                             </div>
                             <div class="col-4 my-1 ">
-                                <input type="text" name="dose[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Dose">
+                                <input type="text" name="dose[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Dose(1+0+1)">
                             </div>
                             <div class="col-4 my-1 ">
                                 <input type="text" name="duration[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Duration">
@@ -132,7 +179,7 @@
                     <div class=" mt-5">
                     <div class="row mt-2   g-3 advice">
                             <div class="col-12 my-1 ">
-                                <input type="text" name="advice[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Adivce">
+                                <input type="text" name="advice[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Advice">
                             </div>
 
                         </div>
@@ -203,7 +250,9 @@
 {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Include Select2 JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script> --}}
+
 <script>
+
     $(".js-data-example-ajax").select2({
         tags: true,
         width: "100%",
@@ -219,7 +268,7 @@
             },
             processResults: function (data, params) {
                 params.page = params.page || 1;
-
+                console.log(data);
                 return {
                     results: data.items,
                     pagination: {
@@ -231,7 +280,7 @@
         },
         placeholder: 'Find or Create',
         escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-        minimumInputLength: 10,
+        minimumInputLength: 8,
         templateResult: formatRepo,
         templateSelection: formatRepoSelection
     });
@@ -243,7 +292,7 @@
 
         var markup = "<div class='select2-result-repository clearfix'>" +
             "<div class='select2-result-repository__meta'>" +
-            "<div class='select2-result-repository__title' id='select_result' value='" + repo.id + "'>" + repo.text + "</div>";
+            "<div class='select2-result-repository__title' id='select_result' value='" + repo.text + "' >" + repo.text + "</div>";
 
         markup += "</div></div>";
 
@@ -251,35 +300,101 @@
     }
 
     function formatRepoSelection(repo) {
-        return repo.text || repo.phone_number;
+        return repo.text;
     }
-</script>
-{{-- <script>
+
     $(".js-data-example-ajax").on('select2:select', function (e) {
             var data = e.params.data;
-
+            if(data.text.startsWith('01') && data.text.length == 11){
+                console.log('hoise');
+            }
+            else{
+                console.log('hoynia');
+            }
             // Show the selected value in an alert
-
             if(data.id.toString().startsWith("0")){
-                // alert('Selected Value: ' + data.id);
-                // $.ajax({
-                //     type:"GET",
-                //     url:"/get-designations/"+departmentId,
-                //     success:function(res){
-                //         if(res){
-                //             $("#designation").empty();
-                //             $.each(res,function(key,value){
-                //                 $("#designation").append('<option value="'+value.id+'">'+value.designation+'</option>');
-                //             });
-                //         }else{
-                //             $("#designation").empty();
-                //         }
-                //     }
-                // });
+                 alert('No Data Found. Please Fillup Patient Details');
             }else{
-                // $("#designation").empty();
+                  $.ajax({
+                    type:"GET",
+                    url:"/get/patient/"+data.id,
+                    success:function(res){
+                        if(res){
+                            let user = res.user;
+                            let patient = res.patient;
+
+                            $('#name').val(user.name);
+                            $('#gender').val(patient.gender);
+                            $('select[name="gender"]').val(patient.gender.toLowerCase());
+
+                           // Parse the birth date and created_at date
+                            let birthDate = new Date(patient.date_of_birth.replace(' ', 'T'));
+                            let createdAtDate = new Date(patient.created_at.replace(' ', 'T'));
+                            if (isNaN(birthDate) || isNaN(createdAtDate)) {
+                                alert('Invalid date format');
+                                return;
+                            }
+                            // Calculate age from birth date and created_at date
+                            let age = createdAtDate.getFullYear() - birthDate.getFullYear();
+                            let monthDiff = createdAtDate.getMonth() - birthDate.getMonth();
+                            if (monthDiff < 0 || (monthDiff === 0 && createdAtDate.getDate() < birthDate.getDate())) {age--; }
+                            $('#age').val(age);
+
+                            let weightHeight = patient.weight_height.split(',');
+                            let weight = weightHeight[0].trim();
+                            let height = weightHeight[1].trim().split('.');
+                            $('#weight').val(weight);
+                            $('select[name="heightFt"]').val(height[0]);
+                            $('select[name="heightIn"]').val(height[1]);
+
+                        }else{
+                            alert('not found');
+                        }
+                    }
+                });
             }
         });
+</script>
+
+
+
+
+{{-- <script>
+    $(document).ready(function() {
+        $('#phone_number').on('click', function() {
+            $('#phone_input_section').show(); // Show the input section when the select is clicked
+        });
+
+        $('#phone_input').on('input', function() {
+            var inputNumber = $(this).val(); // Get the input number
+
+            // Make AJAX request to fetch users
+            $.ajax({
+                url: "{{ route('selectUser') }}",
+                method: 'GET',
+                data: {
+                    q: inputNumber
+                },
+                success: function(response) {
+                    $('#search_results').empty(); // Clear previous search results
+                    if (response.items.length === 0) {
+                        $('#search_results').text('Data not found'); // Show 'Data not found' if no results
+                    } else {
+                        $('#search_results').text(''); // Clear 'Data not found' text if there are results
+                        $('#phone_number').empty(); // Clear previous options
+                        $('#phone_number').append('<option value="">Select a phone number</option>'); // Add default option
+                        $.each(response.items, function(index, user) {
+                            $('#phone_number').append('<option value="' + user.id + '">' + user.text + '</option>'); // Append fetched phone numbers
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    // Handle error here
+                }
+            });
+        });
+    });
 </script> --}}
 <script>
     $('#plus').click(function () {

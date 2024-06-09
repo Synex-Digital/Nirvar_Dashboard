@@ -114,6 +114,7 @@ class DoctorController extends Controller
         $user->save();
         $doctor->degrees = $request->degrees;
         $doctor->description = $request->description;
+        $doctor->registration = $request->doctor_reg;
         $doctor->save();
         if($doctor->docHasSpec){
            $hasSpec = Doctor_has_speciality::find($doctor->docHasSpec->id);

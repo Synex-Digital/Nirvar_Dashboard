@@ -70,7 +70,6 @@
 
 
     @include('dashboard.layouts.footer')
-
     @include('dashboard.layouts.scriptLink')
     @yield('script')
 </body>
