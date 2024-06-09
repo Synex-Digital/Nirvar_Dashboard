@@ -58,17 +58,14 @@
         <div class="row border-top border-bottom   mt-3 mb-3  ">
            <div class="col-lg-3">
                 <p class="mb-0">Patient Number </p>
-            <select class="js-data-example-ajax w-100 " name="phone_number">
+            {{-- <select class="js-data-example-ajax w-100 " name="phone_number">
 
-            </select>
-            {{-- <select name="phone_number" id="phone_number">
+            </select> --}}
+            <select name="phone_number" id="phone_number" style="width: 100%">
                 <option value="">Select a phone number</option>
             </select>
 
-            <div id="phone_input_section" style="display: none;">
-                <input type="text" name="phone_input" id="phone_input">
-                <div id="search_results"></div>
-            </div> --}}
+           </div>
            <div class="col-lg-3">
                 <p class="mb-0">Patient Name </p>
                 <input type="text" class="form-control form-control-sm" name="name" id="name"  placeholder="Name">
@@ -250,7 +247,72 @@
 {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Include Select2 JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script> --}}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#phone_number').select2({
+            placeholder: 'Find or Insert',
+            ajax: {
+                url: '{{ route("selectUser") }}',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term, // search term
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
 
+                    return {
+                        results: data.items.map(function (item) {
+                            return {
+                                id: item.text, // Use phone number as the id
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: (params.page * 30) < data.total_count
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 10,
+            templateResult: formatUser,
+            templateSelection: formatUserSelection,
+            tags: true
+        });
+
+        function formatUser(user) {
+            if (user.loading) {
+                return user.text;
+            }
+            return user.text;
+        }
+
+        function formatUserSelection(user) {
+            return user.text || user.id;
+        }
+
+        $('#phone_number').on('change', function() {
+            var selectedNumber = $(this).val();
+
+            // Validation: Number should start with '01' and be exactly 11 digits long
+            if (!/^01\d{9}$/.test(selectedNumber)) {
+                alert('Invalid phone number. It should start with "01" and be exactly 11 digits long.');
+                // $(this).val('').trigger('change');
+            }
+        });
+    });
+</script>
+
+
+
+
+
+
+{{--
 <script>
 
     $(".js-data-example-ajax").select2({
@@ -302,99 +364,32 @@
     function formatRepoSelection(repo) {
         return repo.text;
     }
-
+</script> --}}
+{{-- <script>
     $(".js-data-example-ajax").on('select2:select', function (e) {
             var data = e.params.data;
-            if(data.text.startsWith('01') && data.text.length == 11){
-                console.log('hoise');
-            }
-            else{
-                console.log('hoynia');
-            }
+
             // Show the selected value in an alert
             if(data.id.toString().startsWith("0")){
-                 alert('No Data Found. Please Fillup Patient Details');
+                // alert('Selected Value: ' + data.id);
+                // $.ajax({
+                //     type:"GET",
+                //     url:"/get-designations/"+departmentId,
+                //     success:function(res){
+                //         if(res){
+                //             $("#designation").empty();
+                //             $.each(res,function(key,value){
+                //                 $("#designation").append('<option value="'+value.id+'">'+value.designation+'</option>');
+                //             });
+                //         }else{
+                //             $("#designation").empty();
+                //         }
+                //     }
+                // });
             }else{
-                  $.ajax({
-                    type:"GET",
-                    url:"/get/patient/"+data.id,
-                    success:function(res){
-                        if(res){
-                            let user = res.user;
-                            let patient = res.patient;
-
-                            $('#name').val(user.name);
-                            $('#gender').val(patient.gender);
-                            $('select[name="gender"]').val(patient.gender.toLowerCase());
-
-                           // Parse the birth date and created_at date
-                            let birthDate = new Date(patient.date_of_birth.replace(' ', 'T'));
-                            let createdAtDate = new Date(patient.created_at.replace(' ', 'T'));
-                            if (isNaN(birthDate) || isNaN(createdAtDate)) {
-                                alert('Invalid date format');
-                                return;
-                            }
-                            // Calculate age from birth date and created_at date
-                            let age = createdAtDate.getFullYear() - birthDate.getFullYear();
-                            let monthDiff = createdAtDate.getMonth() - birthDate.getMonth();
-                            if (monthDiff < 0 || (monthDiff === 0 && createdAtDate.getDate() < birthDate.getDate())) {age--; }
-                            $('#age').val(age);
-
-                            let weightHeight = patient.weight_height.split(',');
-                            let weight = weightHeight[0].trim();
-                            let height = weightHeight[1].trim().split('.');
-                            $('#weight').val(weight);
-                            $('select[name="heightFt"]').val(height[0]);
-                            $('select[name="heightIn"]').val(height[1]);
-
-                        }else{
-                            alert('not found');
-                        }
-                    }
-                });
+                // $("#designation").empty();
             }
         });
-</script>
-
-
-
-
-{{-- <script>
-    $(document).ready(function() {
-        $('#phone_number').on('click', function() {
-            $('#phone_input_section').show(); // Show the input section when the select is clicked
-        });
-
-        $('#phone_input').on('input', function() {
-            var inputNumber = $(this).val(); // Get the input number
-
-            // Make AJAX request to fetch users
-            $.ajax({
-                url: "{{ route('selectUser') }}",
-                method: 'GET',
-                data: {
-                    q: inputNumber
-                },
-                success: function(response) {
-                    $('#search_results').empty(); // Clear previous search results
-                    if (response.items.length === 0) {
-                        $('#search_results').text('Data not found'); // Show 'Data not found' if no results
-                    } else {
-                        $('#search_results').text(''); // Clear 'Data not found' text if there are results
-                        $('#phone_number').empty(); // Clear previous options
-                        $('#phone_number').append('<option value="">Select a phone number</option>'); // Add default option
-                        $.each(response.items, function(index, user) {
-                            $('#phone_number').append('<option value="' + user.id + '">' + user.text + '</option>'); // Append fetched phone numbers
-                        });
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error(error);
-                    // Handle error here
-                }
-            });
-        });
-    });
 </script> --}}
 <script>
     $('#plus').click(function () {
