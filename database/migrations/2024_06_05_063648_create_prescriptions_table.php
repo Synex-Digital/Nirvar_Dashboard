@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('patient_id')->nullable();
             $table->unsignedBigInteger('doctor_id')->nullable();
             $table->longText('chief_complaint');
+            $table->longText('tests')->nullable();
             $table->longText('prescription_advice')->nullable();
             $table->timestamps();
 

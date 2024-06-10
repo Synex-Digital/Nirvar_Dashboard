@@ -20,6 +20,15 @@
     .select2-selection__rendered{
         min-height: 0 !important;
     }
+    .select2-selection__rendered, .select2-results__option, .select2-search__field {
+    font-size: 12px !important;
+}
+.remove-button {
+    width: auto; /* Adjust the width as needed */
+    padding: 3px 10px; /* Adjust padding for smaller size */
+    margin-right: 5px; /* Adjust margin for positioning */
+}
+
 </style>
 @endsection
 
@@ -86,13 +95,29 @@
            <div class="col-lg-2">
                 <p class="mb-0">Weight</p>
 
-                <input type="text" min="" class="form-control form-control-sm" name="weight" id="weight" placeholder="kg">
+                <input type="number" min="0" class="form-control form-control-sm" name="weight" id="weight" placeholder="kg">
+            </div>
+            <div class="col-lg-2 ">
+                <p class="mb-0">Blood Group</p>
+                <select name="blood_group" id="" class="  form-control form-control-sm">
+                    <option value="">None</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+
+                </select>
             </div>
            <div class="col-lg-2 mb-3">
                 <p class="mb-0">Height</p>
                 <div class="row">
                     <div class="col-lg-6 pe-0">
                         <select name="heightFt" id=" heightFt" class="form-control form-control-sm" >
+                            <option value="">None</option>
                             <option value="2 FT"> 2 FT </option>
                             <option value="3 FT"> 3 FT</option>
                             <option value="4 FT">4 FT </option>
@@ -105,7 +130,7 @@
                     </div>
                     <div class="col-lg-6 ps-1">
                         <select name="heightIn" id =" heightIn" class="form-control form-control-sm" >
-
+                            <option value="">None</option>
                             <option value="0 IN">0 IN</option>
                             <option value="1 IN">1 IN</option>
                             <option value="2 IN">2 IN</option>
@@ -125,6 +150,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
         <div class=" mt-3">
             <div class="form-group row">
@@ -146,16 +172,17 @@
                 <div class="col-lg-6">
                     <h5>Medicine:</h5>
 
-                        <div class="row mt-2 mb-1  g-3 medi">
+                        <div class="row mt-2 mb-1  g-3 medi" style="">
                             <div class="col-4 my-1 ">
                                 <input type="text" name="type[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Type">
                             </div>
-                            <div class="col-4  my-1 ">
-                                <select name="drug[]" id="" class="form-control form-control-sm">
+                            <div class="col-4  my-1   ">
+                                <select name="drug[]" class=" form-control form-control-sm">
                                     <option value="">Select Drug</option>
                                     @foreach ($drug as $id => $name)
                                         <option value="{{ $id }}">{{ $name }}</option>
                                     @endforeach
+
                                 </select>
                             </div>
                             <div class="col-4 my-1 ">
@@ -172,7 +199,10 @@
                             </div>
                         </div>
 
-                    <button type="button" class="btn btn-primary btn-xs float-end" id="plusMedi">Add More</button>
+                        <div class="d-flex justify-content-end align-items-center mb-2">
+                            <button type="button" class="btn btn-danger btn-xs me-2" id="removeMedi" style="display: none;">Remove </button>
+                            <button type="button" class="btn btn-primary btn-xs" id="plusMedi">Add Medicine</button>
+                        </div>
                     <div class=" mt-5">
                     <div class="row mt-2   g-3 advice">
                             <div class="col-12 my-1 ">
@@ -181,12 +211,13 @@
 
                         </div>
                     </div>
+
                     <button type="button" class="btn btn-primary btn-xs float-end" id="plusAdvice">Add More</button>
                 </div>
             </div>
         </div>
         <div class="mt-5 text-center">
-            <button type="submit" class="btn btn-primary btn-sm " >Create</button>
+            <button type="submit" class="btn btn-primary btn-sm " id="create" >Create</button>
         </div>
     </form>
     </div>
@@ -302,9 +333,54 @@
             if (!/^01\d{9}$/.test(selectedNumber)) {
                 alert('Invalid phone number. It should start with "01" and be exactly 11 digits long.');
                 // $(this).val('').trigger('change');
+                $('#create').prop('disabled', true);
+            }else{
+                $('#create').prop('disabled', false);
+                  $.ajax({
+                    type:"GET",
+                    url:"/get/patient/"+selectedNumber,
+                    success:function(res){
+                        if(res){
+                            let user = res.user;
+                            let patient = res.patient;
+                            $('#name').val(user.name);
+                            $('#gender').val(patient.gender);
+                            $('select[name="gender"]').val(patient.gender.toLowerCase());
+                           // Parse the birth date and created_at date
+                            let birthDate = new Date(patient.date_of_birth.replace(' ', 'T'));
+                            let createdAtDate = new Date(patient.created_at.replace(' ', 'T'));
+                            if (isNaN(birthDate) || isNaN(createdAtDate)) {
+                                alert('Invalid date format');
+                                return;
+                            }
+                            // Calculate age from birth date and created_at date
+                            let age = createdAtDate.getFullYear() - birthDate.getFullYear();
+                            let monthDiff = createdAtDate.getMonth() - birthDate.getMonth();
+                            if (monthDiff < 0 || (monthDiff === 0 && createdAtDate.getDate() < birthDate.getDate())) {age--; }
+                            $('#age').val(age);
+                            let weightHeight = patient.weight_height.split(',');
+                            let weight = weightHeight[0].trim();
+                            let height = weightHeight[1].trim().split('.');
+                            $('#weight').val(weight);
+                            $('select[name="heightFt"]').val(height[0]);
+                            $('select[name="heightIn"]').val(height[1]);
+
+                            $('select[name="blood_group"]').val(patient.blood_group);
+                        }else{
+                            alert('not found');
+                        }
+                    }
+                })
             }
         });
+
+
+
+
     });
+
+
+
 </script>
 
 
@@ -312,100 +388,61 @@
 
 
 
-{{--
 <script>
+    $(document).ready(function() {
 
-    $(".js-data-example-ajax").select2({
-        tags: true,
-        width: "100%",
-        ajax: {
-            url: "{{ route('selectUser') }}",
-            dataType: 'json',
-            delay: 250,
-            data: function (params) {
-                return {
-                    q: params.term, // search term
-                    page: params.page
-                };
-            },
-            processResults: function (data, params) {
-                params.page = params.page || 1;
-                console.log(data);
-                return {
-                    results: data.items,
-                    pagination: {
-                        more: (params.page * 30) < data.total_count
-                    }
-                };
-            },
-            cache: true
-        },
-        placeholder: 'Find or Create',
-        escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
-        minimumInputLength: 8,
-        templateResult: formatRepo,
-        templateSelection: formatRepoSelection
-    });
-
-    function formatRepo(repo) {
-        if (repo.loading) {
-            return repo.text;
-        }
-
-        var markup = "<div class='select2-result-repository clearfix'>" +
-            "<div class='select2-result-repository__meta'>" +
-            "<div class='select2-result-repository__title' id='select_result' value='" + repo.text + "' >" + repo.text + "</div>";
-
-        markup += "</div></div>";
-
-        return markup;
-    }
-
-    function formatRepoSelection(repo) {
-        return repo.text;
-    }
-</script> --}}
-{{-- <script>
-    $(".js-data-example-ajax").on('select2:select', function (e) {
-            var data = e.params.data;
-
-            // Show the selected value in an alert
-            if(data.id.toString().startsWith("0")){
-                // alert('Selected Value: ' + data.id);
-                // $.ajax({
-                //     type:"GET",
-                //     url:"/get-designations/"+departmentId,
-                //     success:function(res){
-                //         if(res){
-                //             $("#designation").empty();
-                //             $.each(res,function(key,value){
-                //                 $("#designation").append('<option value="'+value.id+'">'+value.designation+'</option>');
-                //             });
-                //         }else{
-                //             $("#designation").empty();
-                //         }
-                //     }
-                // });
-            }else{
-                // $("#designation").empty();
-            }
-        });
-</script> --}}
-<script>
-    $('#plus').click(function () {
-        let inputNew = $('.invest:last').clone(true);
-        inputNew.find('input').val(''); // Clear the value of the cloned input fields
-        $(inputNew).insertAfter('.invest:last');
-    });
-    $('#plusMedi').click(function () {
-        let inputNew = $('.medi:last').clone(true);
-        inputNew.find('input').val(''); // Clear the value of the cloned input fields
-        $(inputNew).insertAfter('.medi:last');
-    });
-    $('#plusAdvice').click(function () {
+        $('#plusAdvice').click(function () {
         let inputNew = $('.advice:last').clone(true);
         inputNew.find('input').val(''); // Clear the value of the cloned input fields
-        $(inputNew).insertAfter('.advice:last');
+            $(inputNew).insertAfter('.advice:last');
+        });
+        $('#plus').click(function () {
+            let inputNew = $('.invest:last').clone(true);
+            inputNew.find('input').val(''); // Clear the value of the cloned input fields
+            $(inputNew).insertAfter('.invest:last');
+        });
+
+        // $('#plusMedi').click(function () {
+        //     let inputNew = $('.medi:last').clone(true);
+        //     inputNew.find('input').val(''); // Clear the value of the cloned input fields
+        //     $(inputNew).insertAfter('.medi:last');
+        // });
+        $('#plusMedi').click(function () {
+            let inputNew = $('.medi:last').clone(true);
+            inputNew.find('input').val(''); // Clear the value of the cloned input fields
+
+            // Check if the "Remove" button already exists
+            if ($('#removeMedi').length === 0) {
+                // Create and append the "Remove" button beside the "Add Medicine" button
+                let removeButton = $('<button>').text('Remove').addClass('remove-button btn btn-danger btn-xs ms-2 me-2').click(function() {
+                    $(inputNew).remove(); // Remove the cloned div
+                    if ($('.medi').length <= 1) {
+                        $('#removeMedi').hide(); // Hide the "Remove Medicine" button if there's only one "medi" div left
+                    }
+                });
+                $(this).after(removeButton);
+            }
+
+            // Show the "Remove Medicine" button if it's hidden
+            $('#removeMedi').show();
+
+            // Insert the cloned div after the last "medi" div
+            inputNew.insertAfter('.medi:last');
+        });
+
+        // Add click event handler for the "Remove Medicine" button
+        $('#removeMedi').click(function () {
+            $('.medi:last').remove(); // Remove the last cloned div
+            if ($('.medi').length <= 1) {
+                $('#removeMedi').hide(); // Hide the "Remove Medicine" button if there's only one "medi" div left
+            }
+        });
+
+
+
+
+
+
     });
 </script>
 <script>
@@ -423,3 +460,4 @@
     });
 </script>
 @endsection
+

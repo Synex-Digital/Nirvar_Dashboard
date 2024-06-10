@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('prescription_id');
             $table->unsignedBigInteger('drug_id');
-            $table->string('type')->nullable();
-            $table->string('mg_ml')->nullable();
-            $table->string('dose')->nullable();
-            $table->timestamp('duration')->nullable();
-            $table->string('advice')->nullable();
+            $table->longText('type')->nullable();
+            $table->longText('mg_ml')->nullable();
+            $table->longText('dose')->nullable();
+            $table->longText('duration')->nullable();
+            $table->longText('advice')->nullable();
             $table->timestamps();
         });
     }
