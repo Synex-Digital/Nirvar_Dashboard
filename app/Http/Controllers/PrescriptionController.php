@@ -75,12 +75,17 @@ class PrescriptionController extends Controller
             $prescription->patient_id = $user->patient->id;
             $prescription->doctor_id = Auth::user()->doctor->id;
             $prescription->chief_complaint = $request->complaint;
-            $advices = $request->advice;
-            $implodeAdvice = '"' . implode('" "', $advices) . '"';
+            //advice
+            $advice = $request->input('advice');
+            $filteredAdvice = array_filter($advice, function ($value) {  return !is_null($value);});
+            if (empty($filteredAdvice)) {  $implodeAdvice = null; }else{$implodeAdvice = '"' . implode('" "', $filteredAdvice) . '"'; }
             $prescription->prescription_advice = $implodeAdvice;
-            $tests = $request->test;
-            $implodeTest = '"' . implode('" "', $tests) . '"';
+            //tests
+            $tests = $request->input('test');
+            $filteredTest = array_filter($tests, function ($value) { return !is_null($value);    });
+            if (empty($filteredTest)) {  $implodeTest = null; }else{$implodeTest = '"' . implode('" "', $filteredTest) . '"'; }
             $prescription->tests = $implodeTest;
+            $prescription->reference = 'NRVR-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'), 0, 6);
             $prescription->save();
 
             // mediicne
@@ -148,8 +153,9 @@ class PrescriptionController extends Controller
             $implodeAdvice = '"' . implode('" "', $advices) . '"';
             $prescription->prescription_advice = $implodeAdvice;
             $tests = $request->test;
-            $implodeTest = '"' . implode('" "', $tests) . '"';
+            $implodeTest = $tests?  '"' . implode('" "', $tests) . '"' : null;
             $prescription->tests = $implodeTest;
+            $prescription->reference = 'NRVR-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'), 0, 6);
             $prescription->save();
 
             // mediicne
@@ -172,7 +178,15 @@ class PrescriptionController extends Controller
                 $medicine->save();
 
             }
-            return back();
+            $doctors = Auth::user()->doctor;
+            $patients = Patient::find($patient->id);
+            $prescriptions = Prescription::find($prescription->id);
+
+            return view('dashboard.doctor.prescription.preview',[
+                'doctors' => $doctors,
+                'patients' => $patients,
+                'prescriptions' => $prescriptions,
+            ]);
         }
 
 

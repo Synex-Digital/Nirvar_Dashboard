@@ -9,7 +9,9 @@ class Patient extends Model
 {
     use HasFactory;
     public function prescription(){
-
         return $this->hasMany(Prescription::class);
+    }
+    public function user(){
+        return $this->belongsTo(User::class , 'user_id', 'id');
     }
 }

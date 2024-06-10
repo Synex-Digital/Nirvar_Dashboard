@@ -18,6 +18,7 @@ return new class extends Migration
             $table->longText('chief_complaint');
             $table->longText('tests')->nullable();
             $table->longText('prescription_advice')->nullable();
+            $table->longText('reference')->nullable();
             $table->timestamps();
 
             // Foreign key constraints

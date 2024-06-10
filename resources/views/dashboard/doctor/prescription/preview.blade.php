@@ -31,7 +31,55 @@
 
 </style>
 @endsection
+@php
+     function calculateAge($birthdate, $currentDate)
+    {
+        $birthDate = new DateTime($birthdate);
+        $currentDate = new DateTime($currentDate);
+        $age = $currentDate->diff($birthDate)->y;
+        return $age;
+    }
+    function wHeight($input) {
+    // Initialize default values
+    $weight = null;
+    $height = null;
+    $feet = null;
+    $inches = null;
 
+    // First explode to separate weight and height
+    $parts = explode(',', $input);
+
+    // Check and assign values accordingly
+    if (isset($parts[0])) {
+        $weight = trim($parts[0]);
+    }
+
+    if (isset($parts[1])) {
+        $height = trim($parts[1]);
+    }
+
+    // If height is provided, parse it into feet and inches
+    if ($height !== null) {
+        // Use regular expression to match feet and inches
+        preg_match('/(\d+)\s*FT\s*(\d*)\s*IN*/i', $height, $matches);
+
+        if (isset($matches[1])) {
+            $feet = $matches[1];
+        }
+
+        if (isset($matches[2])) {
+            $inches = $matches[2];
+        }
+    }
+
+    return [
+        'weight' => $weight,
+        'height' => $height,
+        'feet' => $feet,
+        'inches' => $inches
+    ];
+}
+@endphp
 @section('content')
 <div class="page-titles">
     <h4>Prescription</h4>
@@ -50,50 +98,39 @@
 
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-12">
-                <h5> {{ $doctors->user->name }}</h5>
-                <p>{{ $doctors->docHasSpec->speciality->name }}</p>
-                {{-- <h5><span class="text-muted  fw-light "> {{ $doctors->docHasSpec->speciality->name }}  </span></h5> --}}
-                <h5> <span class="text-muted fw-light "> {{ $doctors->degrees }}  </span></h5>
-                <h5> <span class="text-muted fw-light fst-italic"> </span></h5>
+                <h5 class="text-uppercase"> {{ $doctors->user->name }}</h5>
+                <p class="fw-light text-capitalize mb-0 " style="color: black !important">{{ $doctors->docHasSpec->speciality->name }}</p>
+                <p class="fw-light text-capitalize mb-0 " style="color: black !important">{{ $doctors->degrees }}</p>
+                <p class="fw-light text-capitalize mb-0 " style="color: black !important">{{ $doctors->registration }}</p>
             </div>
-            <div class="col-lg-6 col-md-6 col-sm-12 ">
+            <div class="col-lg-6 col-md-6 col-sm-12  ">
                 <div class="float-end flt">
 
-                    <h5>Date: <span class=" text-muted fw-light fst-italic"> </span></h5>
-                    <h5>Ref: <span class="text-muted fw-light fst-italic"> </span></h5>
+                    <h5>Date: <span class="fw-light text-capitalize mb-0 " style="color: black !important"> {{ $prescriptions->created_at->format('d-M-y') }} </span></h5>
+                    <h5>Ref: <span class="fw-light text-capitalize mb-0 " style="color: black !important"> {{ $prescriptions->reference }}  </span></h5>
                 </div>
             </div>
         </div>
-        <div class="row border-top border-bottom   mt-3 mb-3  ">
-           <div class="col-lg-3">
-                <p class="mb-0">Patient Number  </p>
-
-
-
-           </div>
-           <div class="col-lg-3">
-                <p class="mb-0">Patient Name  </p>
-
-           </div>
-
-           <div class="col-lg-2">
-                <p class="mb-0">Gender </p>
-
-           </div>
-           <div class="col-lg-2">
-                <p class="mb-0"> Age </p>
+        <div class="row border-top border-bottom   mt-2 mb-3  ">
+           <div class="col-lg-12 mt-2  d-flex flex-row">
+               <h5 >Patient Name: <span class="fw-light text-capitalize mb-0 me-3 " style="color: black !important"> {{ $patients->user->name }}</span>  </h5>
+               <h5 class="mb-0"> Age: <span class="fw-light  me-3 " style="color: black !important" > {{ calculateAge($patients->date_of_birth, $patients->created_at) }}</span> </h5>
+               <h5 class="mb-0"> Gender: <span class="fw-light fw-capitalize me-3 " style="color: black !important" > {{ $patients->gender }}</span> </h5>
+               @if ($patients->blood_group != null)
+               <h5 class="mb-0"> Blood Group: <span class="fw-light fw-capitalize me-3 " style="color: black !important" > {{ $patients->blood_group }}</span> </h5>
+               @endif
+               <h5 class="mb-0"> Contact: <span class="fw-light fw-capitalize me-3 " style="color: black !important" > {{ $patients->user->number }}</span> </h5>
 
             </div>
-           <div class="col-lg-2">
+
+
+           <div class="col-lg-2 mt-2">
                 <p class="mb-0">Weight</p>
 
 
             </div>
-            <div class="col-lg-2 ">
-                <p class="mb-0">Blood Group</p>
 
-            </div>
-           <div class="col-lg-2 mb-3">
+           <div class="col-lg-2 mb-3 mt-2">
                 <p class="mb-0">Height</p>
                 <div class="row">
                     <div class="col-lg-6  mb-2">
