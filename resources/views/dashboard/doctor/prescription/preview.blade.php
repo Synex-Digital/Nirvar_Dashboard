@@ -39,12 +39,10 @@
         $age = $currentDate->diff($birthDate)->y;
         return $age;
     }
-    function wHeight($input) {
+    function weight($input) {
     // Initialize default values
     $weight = null;
-    $height = null;
-    $feet = null;
-    $inches = null;
+
 
     // First explode to separate weight and height
     $parts = explode(',', $input);
@@ -53,6 +51,23 @@
     if (isset($parts[0])) {
         $weight = trim($parts[0]);
     }
+
+
+
+    return $weight;
+    }
+    function height($input) {
+    // Initialize default values
+
+    $height = null;
+    $feet = null;
+    $inches = null;
+
+    // First explode to separate weight and height
+    $parts = explode(',', $input);
+
+    // Check and assign values accordingly
+
 
     if (isset($parts[1])) {
         $height = trim($parts[1]);
@@ -72,12 +87,7 @@
         }
     }
 
-    return [
-        'weight' => $weight,
-        'height' => $height,
-        'feet' => $feet,
-        'inches' => $inches
-    ];
+    return $height;
 }
 @endphp
 @section('content')
@@ -113,36 +123,23 @@
         </div>
         <div class="row border-top border-bottom   mt-2 mb-3  ">
            <div class="col-lg-12 mt-2  d-flex flex-row">
-               <h5 >Patient Name: <span class="fw-light text-capitalize mb-0 me-3 " style="color: black !important"> {{ $patients->user->name }}</span>  </h5>
-               <h5 class="mb-0"> Age: <span class="fw-light  me-3 " style="color: black !important" > {{ calculateAge($patients->date_of_birth, $patients->created_at) }}</span> </h5>
-               <h5 class="mb-0"> Gender: <span class="fw-light fw-capitalize me-3 " style="color: black !important" > {{ $patients->gender }}</span> </h5>
+               <h5 >Patient Name: <span class="fw-light text-capitalize mb-0 me-4 " style="color: black !important"> {{ $patients->user->name }}</span>  </h5>
+               <h5 class="mb-0"> Age: <span class="fw-light  me-4 " style="color: black !important" > {{ calculateAge($patients->date_of_birth, $patients->created_at) }}</span> </h5>
+               <h5 class="mb-0"> Gender: <span class="fw-light text-capitalize me-4 " style="color: black !important" > {{ $patients->gender }}</span> </h5>
                @if ($patients->blood_group != null)
-               <h5 class="mb-0"> Blood Group: <span class="fw-light fw-capitalize me-3 " style="color: black !important" > {{ $patients->blood_group }}</span> </h5>
+               <h5 class="mb-0"> Blood Group: <span class="fw-light fw-capitalize me-4 " style="color: black !important" > {{ $patients->blood_group }}</span> </h5>
                @endif
-               <h5 class="mb-0"> Contact: <span class="fw-light fw-capitalize me-3 " style="color: black !important" > {{ $patients->user->number }}</span> </h5>
-
+               @if ($patients->weight_height != null)
+                @if (weight($patients->weight_height) != null)
+                    <h5 class="mb-0"> Weight: <span class="fw-light  me-4 " style="color: black !important" > {{ weight($patients->weight_height) }}</span> </h5>
+                @endif
+                @if (height($patients->weight_height) != null)
+                    <h5 class="mb-0"> Height: <span class="fw-light  me-4 " style="color: black !important" > {{  height($patients->weight_height) }}</span> </h5>
+                @endif
+               @endif
+               <h5 class="mb-0"> Contact: <span class="fw-light fw-capitalize me-4 " style="color: black !important" > {{ $patients->user->number }}</span> </h5>
             </div>
 
-
-           <div class="col-lg-2 mt-2">
-                <p class="mb-0">Weight</p>
-
-
-            </div>
-
-           <div class="col-lg-2 mb-3 mt-2">
-                <p class="mb-0">Height</p>
-                <div class="row">
-                    <div class="col-lg-6  mb-2">
-
-
-                    </div>
-                    <div class="col-lg-6 ">
-
-
-                    </div>
-                </div>
-            </div>
 
         </div>
         <div class=" mt-3">
