@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Drugs;
+use App\Models\Specialist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class DrugsController extends Controller
+class SpecialistController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
-    {   $drugs = Drugs::all();
-        return view('dashboard.drug.index',[
-            'drugs' => $drugs
+    {
+        $speciality = Specialist::lazy();
+        return view('dashboard.specialist.index',[
+            'speciality' => $speciality
         ]);
     }
 
@@ -31,7 +32,6 @@ class DrugsController extends Controller
      */
     public function store(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'name' => 'required',
 
@@ -48,17 +48,17 @@ class DrugsController extends Controller
 
             return back()->withErrors($validator)->withInput();
         }
-        $drug = new Drugs();
-        $drug->name = $request->name;
-        $drug->save();
+
+        Specialist::create($request->all());
         flash()->options(['position' => 'bottom-right'])->success('Added Successfully');
         return back();
+
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Drugs $drugs)
+    public function show(string $id)
     {
         //
     }
@@ -68,36 +68,15 @@ class DrugsController extends Controller
      */
     public function edit(string $id)
     {
-        $data = Drugs::find($id);
-        return response()->json($data);
+        //
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, String $id)
+    public function update(Request $request, string $id)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-
-        ]);
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            foreach ($errors->messages() as  $messages) {
-                foreach ($messages as $message) {
-                    flash()->options([
-                        'position' => 'bottom-right',
-                    ])->error($message);
-                }
-            }
-
-            return back()->withErrors($validator)->withInput();
-        }
-        $drug = Drugs::find($id);
-        $drug->name = $request->name;
-        $drug->save();
-        flash()->options(['position' => 'bottom-right'])->success('Updated Successfully');
-        return back();
+        //
     }
 
     /**
@@ -105,9 +84,6 @@ class DrugsController extends Controller
      */
     public function destroy(string $id)
     {
-        Drugs::find($id)->delete();
-        flash()->options(['position' => 'bottom-right'])->success('Deleted Successfully');
-        return back();
-
+        //
     }
 }

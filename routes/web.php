@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DrugsController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\SpecialistController;
 
 Auth::routes();
 
@@ -32,4 +33,7 @@ Route::resources([
 });
 
 
-Route::resource('drug',DrugsController::class);
+Route::resources([
+    'drug'=>DrugsController::class,
+    'specialist'=>SpecialistController::class,
+]);
