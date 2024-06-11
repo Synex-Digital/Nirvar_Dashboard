@@ -21,6 +21,12 @@ class PrescriptionController extends Controller
     public function index()
     {
 
+        // $prescription = Auth::user()->doctor->prescription()->paginate(15);
+        $prescription = Prescription::where('doctor_id', Auth::user()->doctor->id)->whereBetween('created_at', [now()->subDays(7), now()])->orderBy('created_at')->paginate(15);
+        return view('dashboard.doctor.prescription.list',[
+
+            'prescription' => $prescription
+        ]);
     }
 
     /**
@@ -197,7 +203,35 @@ class PrescriptionController extends Controller
      */
     public function show(Prescription $prescription)
     {
+        $pre_check = Prescription::where('id', $prescription->id)->where('doctor_id', Auth::user()->doctor->id)->whereBetween('created_at', [now()->subDays(7), now()])->get();
+        $pre_array = $pre_check->toArray();
+        $array = array_filter($pre_array, function ($value) { return !is_null($value);    });
+        if(empty($array)){
+            return back();
+        }else{
+                $doctors = Auth::user()->doctor;
+                $patients = $prescription->patient;
+
+                return view('dashboard.doctor.prescription.preview',[
+                    'doctors' => $doctors,
+                    'patients' => $patients,
+                    'prescriptions' => $prescription,
+                ]);
+        }
+        // if(trim($pre_check) != null){
+        //     $doctors = Auth::user()->doctor;
+        //     $patients = $prescription->patient;
+
+        //     return view('dashboard.doctor.prescription.preview',[
+        //         'doctors' => $doctors,
+        //         'patients' => $patients,
+        //         'prescriptions' => $prescription,
+        //     ]);
+        // }
+        // else{
         //
+        // }
+
     }
 
     /**

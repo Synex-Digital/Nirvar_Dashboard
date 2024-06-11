@@ -29,11 +29,12 @@
                                 <li><a href="javascript:void(0)" class="disabled-link">All Prescriptions</a></li>
                             @else
                                 <li><a href="{{route('prescription.create')}}">Create Prescription</a></li>
-                                <li><a href="chart-morris.html">All Prescriptions</a></li>
+                                <li><a href="{{route('prescription.index')}}">All Prescriptions</a></li>
                             @endif
                         </ul>
                     </li>
 
+                    <li><a href="{{route('drug.index')}}" class="ai-icon" aria-expanded="false"> <i class="fa fa-pills"></i><span class="nav-text">Drugs</span></a> </li>
 
 
 

@@ -11,8 +11,10 @@ class DrugsController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        //
+    {   $drugs = Drugs::all();
+        return view('dashboard.drug.index',[
+            'drugs' => $drugs
+        ]);
     }
 
     /**
@@ -28,7 +30,11 @@ class DrugsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $drug = new Drugs();
+        $drug->name = $request->name;
+        $drug->save();
+        flash()->options(['position' => 'bottom-right'])->success('Added Successfully');
+        return back();
     }
 
     /**
@@ -42,24 +48,32 @@ class DrugsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Drugs $drugs)
+    public function edit(string $id)
     {
-        //
+        $data = Drugs::find($id);
+        return response()->json($data);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Drugs $drugs)
+    public function update(Request $request, String $id)
     {
-        //
+        $drug = Drugs::find($id);
+        $drug->name = $request->name;
+        $drug->save();
+        flash()->options(['position' => 'bottom-right'])->success('Updated Successfully');
+        return back();
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Drugs $drugs)
+    public function destroy(string $id)
     {
-        //
+        Drugs::find($id)->delete();
+        flash()->options(['position' => 'bottom-right'])->success('Deleted Successfully');
+        return back();
+
     }
 }

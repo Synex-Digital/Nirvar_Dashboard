@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\DoctorController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DrugsController;
+use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\PrescriptionController;
 
 Auth::routes();
@@ -29,3 +30,6 @@ Route::resources([
 
 
 });
+
+
+Route::resource('drug',DrugsController::class);

@@ -59,7 +59,7 @@
             <div class="col-lg-6 col-md-6 col-sm-12 ">
                 <div class="float-end flt">
 
-                    <h5>Date: <span class=" text-muted fw-light fst-italic"> {{ Carbon\Carbon::now()->format('d-m-Y')    }}</span></h5>
+                    <h5>Date: <span class=" text-muted fw-light fst-italic"> {{ Carbon\Carbon::now()->format('d-M-Y')    }}</span></h5>
                     <h5>Ref: <span class="text-muted fw-light fst-italic"> </span></h5>
                 </div>
             </div>
@@ -67,7 +67,7 @@
         <div class="row border-top border-bottom   mt-3 mb-3  ">
            <div class="col-lg-3">
                 <p class="mb-0">Patient Number <span class="text-danger">*</span> </p>
-         
+
             <select name="phone_number" id="phone_number" style="width: 100%">
                 <option value="">Select a phone number</option>
             </select>
@@ -160,9 +160,11 @@
             <div class="row">
                 <div class="col-lg-6 ">
                     <h5 class="">Investigations:</h5>
-                    <div class="row mt-2 mb-1  g-3 invest">
-                        <div class="col-12 my-1 ">
-                            <input type="text" name="test[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Test Name">
+                    <div id="inputs-container">
+                        <div class="row mt-2 mb-1  g-3 invest">
+                            <div class="col-12 my-1 ">
+                                <input type="text" name="test[]" class="form-control form-control-sm bg-white input-default inp" placeholder="Test Name" value="{{ old('test.0') }}">
+                            </div>
                         </div>
                     </div>
                     <button type="button" class="btn btn-primary btn-xs float-end" id="plus">Add More</button>
@@ -170,43 +172,47 @@
                 <div class="col-lg-6">
                     <h5>Medicine: <span class="text-danger">*</span></h5>
 
-                        <div class="row mt-2 mb-1  g-3 medi" style="">
-                            <div class="col-4 my-1 ">
-                                <input type="text" name="type[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Type">
+                    <div id="inputs-container-medi">
+                        <div class="row mt-2 mb-1 g-3 medi">
+                            <div class="col-4 my-1">
+                                <input type="text" name="type[]" class="form-control form-control-sm bg-white input-default inp" placeholder="Type" value="{{ old('type.0') }}">
                             </div>
-                            <div class="col-4  my-1   ">
-                                <select name="drug[]" class=" form-control form-control-sm">
+                            <div class="col-4 my-1">
+                                <select name="drug[]" class="form-control form-control-sm">
                                     <option value="">Select Drug</option>
+                                   
                                     @foreach ($drug as $id => $name)
-                                        <option value="{{ $id }}">{{ $name }}</option>
+                                        <option value="{{ $id }}" {{ old('drug.0') == $id ? 'selected' : '' }}>{{ $name }}</option>
                                     @endforeach
-
                                 </select>
                             </div>
-                            <div class="col-4 my-1 ">
-                                <input type="text" name="strength[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Strength">
+                            <div class="col-4 my-1">
+                                <input type="text" name="strength[]" class="form-control form-control-sm bg-white input-default inp" placeholder="Strength" value="{{ old('strength.0') }}">
                             </div>
-                            <div class="col-4 my-1 ">
-                                <input type="text" name="dose[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Dose(1+0+1)">
+                            <div class="col-4 my-1">
+                                <input type="text" name="dose[]" class="form-control form-control-sm bg-white input-default inp" placeholder="Dose(1+0+1)" value="{{ old('dose.0') }}">
                             </div>
-                            <div class="col-4 my-1 ">
-                                <input type="text" name="duration[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Duration">
+                            <div class="col-4 my-1">
+                                <input type="text" name="duration[]" class="form-control form-control-sm bg-white input-default inp" placeholder="Duration" value="{{ old('duration.0') }}">
                             </div>
-                            <div class="col-4 my-1 ">
-                                <input type="text" name="medicineAdvice[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Before Or After Meal     ">
+                            <div class="col-4 my-1">
+                                <input type="text" name="medicineAdvice[]" class="form-control form-control-sm bg-white input-default inp" placeholder="Before Or After Meal" value="{{ old('medicineAdvice.0') }}">
                             </div>
                         </div>
+                    </div>
 
                         <div class="d-flex justify-content-end align-items-center mb-2">
                             <button type="button" class="btn btn-danger btn-xs me-2" id="removeMedi" style="display: none;">Remove </button>
                             <button type="button" class="btn btn-primary btn-xs" id="plusMedi">Add Medicine</button>
                         </div>
                     <div class=" mt-5">
-                    <div class="row mt-2   g-3 advice">
-                            <div class="col-12 my-1 ">
-                                <input type="text" name="advice[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Advice">
-                            </div>
+                        <div id="inputs-container-advice">
+                            <div class="row mt-2   g-3 advice">
+                                <div class="col-12 my-1 ">
+                                    <input type="text" name="advice[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Advice">
+                                </div>
 
+                            </div>
                         </div>
                     </div>
 
@@ -323,48 +329,48 @@
             }
         });
         // Add more
-        $('#plusAdvice').click(function () {
-        let inputNew = $('.advice:last').clone(true);
-        inputNew.find('input').val(''); // Clear the value of the cloned input fields
-            $(inputNew).insertAfter('.advice:last');
-        });
-        $('#plus').click(function () {
-            let inputNew = $('.invest:last').clone(true);
-            inputNew.find('input').val(''); // Clear the value of the cloned input fields
-            $(inputNew).insertAfter('.invest:last');
-        });
+        // $('#plusAdvice').click(function () {
+        // let inputNew = $('.advice:last').clone(true);
+        // inputNew.find('input').val(''); // Clear the value of the cloned input fields
+        //     $(inputNew).insertAfter('.advice:last');
+        // });
+        // $('#plus').click(function () {
+        //     let inputNew = $('.invest:last').clone(true);
+        //     inputNew.find('input').val(''); // Clear the value of the cloned input fields
+        //     $(inputNew).insertAfter('.invest:last');
+        // });
         //add
-        $('#plusMedi').click(function () {
-            let inputNew = $('.medi:last').clone(true);
-            inputNew.find('input').val(''); // Clear the value of the cloned input fields
+        // $('#plusMedi').click(function () {
+        //     let inputNew = $('.medi:last').clone(true);
+        //     inputNew.find('input').val(''); // Clear the value of the cloned input fields
 
-            // Check if the "Remove" button already exists
-            if ($('#removeMedi').length === 0) {
-                // Create and append the "Remove" button beside the "Add Medicine" button
-                let removeButton = $('<button>').text('Remove').addClass('remove-button btn btn-danger btn-xs ms-2 me-2').click(function() {
-                    $(inputNew).remove(); // Remove the cloned div
-                    if ($('.medi').length <= 1) {
-                        $('#removeMedi').hide(); // Hide the "Remove Medicine" button if there's only one "medi" div left
-                    }
-                });
-                $(this).after(removeButton);
-            }
+        //     // Check if the "Remove" button already exists
+        //     if ($('#removeMedi').length === 0) {
+        //         // Create and append the "Remove" button beside the "Add Medicine" button
+        //         let removeButton = $('<button>').text('Remove').addClass('remove-button btn btn-danger btn-xs ms-2 me-2').click(function() {
+        //             $(inputNew).remove(); // Remove the cloned div
+        //             if ($('.medi').length <= 1) {
+        //                 $('#removeMedi').hide(); // Hide the "Remove Medicine" button if there's only one "medi" div left
+        //             }
+        //         });
+        //         $(this).after(removeButton);
+        //     }
 
-            // Show the "Remove Medicine" button if it's hidden
-            $('#removeMedi').show();
+        //     // Show the "Remove Medicine" button if it's hidden
+        //     $('#removeMedi').show();
 
-            // Insert the cloned div after the last "medi" div
-            inputNew.insertAfter('.medi:last');
-        });
+        //     // Insert the cloned div after the last "medi" div
+        //     inputNew.insertAfter('.medi:last');
+        // });
 
-        // Add click event handler for the "Remove Medicine" button
-        $('#removeMedi').click(function () {
-            $('.medi:last').remove(); // Remove the last cloned div
-            if ($('.medi').length <= 1) {
-                $('#removeMedi').hide(); // Hide the "Remove Medicine" button if there's only one "medi" div left
-            }
-        });
-        //
+        // // Add click event handler for the "Remove Medicine" button
+        // $('#removeMedi').click(function () {
+        //     $('.medi:last').remove(); // Remove the last cloned div
+        //     if ($('.medi').length <= 1) {
+        //         $('#removeMedi').hide(); // Hide the "Remove Medicine" button if there's only one "medi" div left
+        //     }
+        // });
+        // //
 
           // Function to check if the screen width is greater than 768px (desktop size)
           function isDesktopView() {
@@ -396,8 +402,119 @@
 
 </script>
 
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var oldValues = @json(old('advice', []));
+        var container = document.querySelector('#inputs-container-advice');
+
+    // Populate the initial input with old values
+    oldValues.forEach(function(value, index) {
+        if (index > 0) {
+            // Clone the input element
+            let inputNew = document.querySelector('.advice:last-child').cloneNode(true);
+            inputNew.querySelector('input').value = value;
+            container.appendChild(inputNew);
+        } else {
+            // Set value for the first input
+            container.querySelector('.advice input').value = value;
+        }
+    });
+    });
+
+    $('#plusAdvice').click(function () {
+        let inputNew = $('.advice:last').clone(true);
+        inputNew.find('input').val(''); // Clear the value of the cloned input fields
+        $(inputNew).insertAfter('.advice:last');
+    });
+
+</script>
+<script>
+      var oldValues = @json(old('test', []));
+    document.addEventListener('DOMContentLoaded', function () {
+    var oldValues = @json(old('test', []));
+    var container = document.querySelector('#inputs-container');
+
+    // Populate the initial input with old values
+    oldValues.forEach(function(value, index) {
+        if (index > 0) {
+            // Clone the input element
+            let inputNew = document.querySelector('.invest:last-child').cloneNode(true);
+            inputNew.querySelector('input').value = value;
+            container.appendChild(inputNew);
+        } else {
+            // Set value for the first input
+            container.querySelector('.invest input').value = value;
+        }
+    });
+    });
+
+    $('#plus').click(function () {
+        let inputNew = $('.invest:last').clone(true);
+        inputNew.find('input').val(''); // Clear the value of the cloned input fields
+        $(inputNew).insertAfter('.invest:last');
+    });
+
+</script>
+
+<script>
+    var oldValues = {
+        type: @json(old('type', [])),
+        drug: @json(old('drug', [])),
+        strength: @json(old('strength', [])),
+        dose: @json(old('dose', [])),
+        duration: @json(old('duration', [])),
+        medicineAdvice: @json(old('medicineAdvice', []))
+    };
 
 
+    document.addEventListener('DOMContentLoaded', function () {
+    var oldValues = {
+        type: @json(old('type', [])),
+        drug: @json(old('drug', [])),
+        strength: @json(old('strength', [])),
+        dose: @json(old('dose', [])),
+        duration: @json(old('duration', [])),
+        medicineAdvice: @json(old('medicineAdvice', []))
+    };
+
+    var container = document.querySelector('#inputs-container-medi');
+
+    // Populate the initial input with old values
+    for (var i = 1; i < oldValues.type.length; i++) {
+        let inputNew = document.querySelector('.medi:last-child').cloneNode(true);
+        inputNew.querySelector('input[name="type[]"]').value = oldValues.type[i];
+        inputNew.querySelector('select[name="drug[]"]').value = oldValues.drug[i];
+        inputNew.querySelector('input[name="strength[]"]').value = oldValues.strength[i];
+        inputNew.querySelector('input[name="dose[]"]').value = oldValues.dose[i];
+        inputNew.querySelector('input[name="duration[]"]').value = oldValues.duration[i];
+        inputNew.querySelector('input[name="medicineAdvice[]"]').value = oldValues.medicineAdvice[i];
+        container.appendChild(inputNew);
+    }
+});
+
+$('#plusMedi').click(function () {
+    let inputNew = $('.medi:last').clone(true);
+    inputNew.find('input').val(''); // Clear the value of the cloned input fields
+    inputNew.find('select').prop('selectedIndex', 0); // Reset select fields
+
+    inputNew.insertAfter('.medi:last');
+
+    // Show the "Remove Medicine" button
+    if ($('#removeMedi').is(':hidden')) {
+        $('#removeMedi').show();
+    }
+});
+
+// Add click event handler for the "Remove Medicine" button
+$('#removeMedi').click(function () {
+    $('.medi:last').remove(); // Remove the last cloned div
+    if ($('.medi').length <= 1) {
+        $('#removeMedi').hide(); // Hide the "Remove Medicine" button if there's only one "medi" div left
+    }
+});
+
+</script>
 
 
 

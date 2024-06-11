@@ -1,6 +1,6 @@
 @extends('dashboard.layouts.app')
 
-@section('title') Create Prescription @endsection
+@section('title') Preview Prescription @endsection
 @section('style')
 <link rel="stylesheet" href="{{asset('dashboard_assets/vendor/select2/css/select2.min.css')}}">
 {{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" /> --}}
@@ -40,55 +40,50 @@
         return $age;
     }
     function weight($input) {
-    // Initialize default values
-    $weight = null;
-
-
-    // First explode to separate weight and height
-    $parts = explode(',', $input);
-
-    // Check and assign values accordingly
-    if (isset($parts[0])) {
-        $weight = trim($parts[0]);
-    }
-
-
-
-    return $weight;
+        $weight = null;
+        $parts = explode(',', $input);
+        if (isset($parts[0])) {
+            $weight = trim($parts[0]);
+        }
+        return $weight;
     }
     function height($input) {
-    // Initialize default values
-
-    $height = null;
-    $feet = null;
-    $inches = null;
-
-    // First explode to separate weight and height
-    $parts = explode(',', $input);
-
-    // Check and assign values accordingly
-
-
-    if (isset($parts[1])) {
-        $height = trim($parts[1]);
+        $height = null;
+        $feet = null;
+        $inches = null;
+        $parts = explode(',', $input);
+        if (isset($parts[1])) {
+            $height = trim($parts[1]);
+        }
+        if ($height !== null) {
+            preg_match('/(\d+)\s*FT\s*(\d*)\s*IN*/i', $height, $matches);
+            if (isset($matches[1])) {
+                $feet = $matches[1];
+            }
+            if (isset($matches[2])) {
+                $inches = $matches[2];
+            }
+        }
+        return $height;
+    }
+    function tests($input) {
+        $tests = null;
+        $parts = $input ? explode('" "', trim($input, '"')) : [];
+        if (isset($parts)) {
+            $tests = $parts;
+        }
+        return $tests;
+    }
+    function prescriptionAdvice($input) {
+        $advice = null;
+        $parts = $input ? explode('" "', trim($input, '"')) : [];
+        if (isset($parts)) {
+            $advice = $parts;
+        }
+        return $advice;
     }
 
-    // If height is provided, parse it into feet and inches
-    if ($height !== null) {
-        // Use regular expression to match feet and inches
-        preg_match('/(\d+)\s*FT\s*(\d*)\s*IN*/i', $height, $matches);
 
-        if (isset($matches[1])) {
-            $feet = $matches[1];
-        }
-
-        if (isset($matches[2])) {
-            $inches = $matches[2];
-        }
-    }
-
-    return $height;
-}
 @endphp
 @section('content')
 <div class="page-titles">
@@ -122,7 +117,7 @@
             </div>
         </div>
         <div class="row border-top border-bottom   mt-2 mb-3  ">
-           <div class="col-lg-12 mt-2  d-flex flex-row">
+           <div class="col-lg-12 col-md-12 col-sm-12 mt-2  d-flex flex-row">
                <h5 >Patient Name: <span class="fw-light text-capitalize mb-0 me-4 " style="color: black !important"> {{ $patients->user->name }}</span>  </h5>
                <h5 class="mb-0"> Age: <span class="fw-light  me-4 " style="color: black !important" > {{ calculateAge($patients->date_of_birth, $patients->created_at) }}</span> </h5>
                <h5 class="mb-0"> Gender: <span class="fw-light text-capitalize me-4 " style="color: black !important" > {{ $patients->gender }}</span> </h5>
@@ -137,59 +132,62 @@
                     <h5 class="mb-0"> Height: <span class="fw-light  me-4 " style="color: black !important" > {{  height($patients->weight_height) }}</span> </h5>
                 @endif
                @endif
-               <h5 class="mb-0"> Contact: <span class="fw-light fw-capitalize me-4 " style="color: black !important" > {{ $patients->user->number }}</span> </h5>
+               <h5 class="mb-0"> Contact: <span class="fw-light me-4 " style="color: black !important" > {{ $patients->user->number }}</span> </h5>
             </div>
 
 
         </div>
-        <div class=" mt-3">
-            <div class="form-group row">
-                <h5 class="col-lg-2 col-sm-12 col-md-12 mt-2">Cheif Complaint: </h5>
-                <div class="col-lg-10 col-md-12 col-sm-12">
-
-                </div>
+        <div class=" mt-2 ">
+            <div class=" row mb-2">
+                <h5 class="col-lg-12 col-sm-12 col-md-12 ">Chief Complaint: <span class="fw-light text-capitalize me-4 " style="color: black !important" > {{ $prescriptions->chief_complaint }}</span></h5>
             </div>
             <div class="row">
                 <div class="col-lg-6 ">
                     <h5 class="">Investigations:</h5>
-                    <div class="row mt-2 mb-1  g-3 invest">
-                        <div class="col-12 my-1 ">
-
-                        </div>
-                    </div>
+                    <ul style="margin-left:35px;" >
+                        @forelse (tests($prescriptions->tests) as $test )
+                        <li style="list-style-type: inherit">{{$test}}</li>
+                        @empty
+                            <li style="list-style-type: inherit">No Tests</li>
+                        @endforelse
+                    </ul>
 
                 </div>
                 <div class="col-lg-6">
                     <h5>Medicine:</h5>
 
-                        <div class="row mt-2 mb-1  g-3 medi" style="">
-                            <div class="col-4 my-1 ">
-                                <input type="text" name="type[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Type">
-                            </div>
-                            <div class="col-4  my-1   ">
+                        <div class="row mt-2 mb-1  g-3 " style="">
 
-                            </div>
-                            <div class="col-4 my-1 ">
-                                <input type="text" name="strength[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Strength">
-                            </div>
-                            <div class="col-4 my-1 ">
-                                <input type="text" name="dose[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Dose(1+0+1)">
-                            </div>
-                            <div class="col-4 my-1 ">
-                                <input type="text" name="duration[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Duration">
-                            </div>
-                            <div class="col-4 my-1 ">
-                                <input type="text" name="medicineAdvice[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Before Or After Meal     ">
-                            </div>
+                            @forelse ($prescriptions->medicine as $medicine )
+                            <ul class="d-flex   " style="margin-left: 35px;">
+                                <li style="list-style-type: inherit" class="me-3 text-capitalize fst-italic">  {{$medicine->type}}</li>
+                                <li  class="me-3 fw-semibold">{{$medicine->drug->name}}</li>
+                                <li  class="me-3  fw-semibold">{{$medicine->mg_ml}}</li>
+
+                            </ul>
+                            <ul class="d-flex justify-content-between mt-0 border-bottom" >
+                                <li class=" me-3" style="margin-left: 35px;">{{$medicine->dose}}</li>
+                                <li class="me-3">{{$medicine->advice}}</li>
+                                <li class="me-3">{{$medicine->duration}}</li>
+                            </ul>
+                            @empty
+
+                            @endforelse
+
+
                         </div>
 
 
                     <div class=" mt-5">
-                    <div class="row mt-2   g-3 advice">
-                            <div class="col-12 my-1 ">
-                                <input type="text" name="advice[]" class="form-control form-control-sm bg-white input-default  inp " placeholder="Advice">
-                            </div>
-
+                        <div class="row mt-2   g-3 ">
+                            <h5>Advice:</h5>
+                            <ul style="margin-left:35px;" >
+                                @forelse (prescriptionAdvice($prescriptions->prescription_advice) as $advice )
+                                    <li style="list-style-type: inherit">{{$advice}}</li>
+                                @empty
+                                    <li style="list-style-type: inherit">No Advice</li>
+                                @endforelse
+                            </ul>
                         </div>
                     </div>
 

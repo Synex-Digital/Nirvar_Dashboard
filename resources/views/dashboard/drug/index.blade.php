@@ -1,0 +1,152 @@
+@extends('dashboard.layouts.app')
+@section('title') Drugs @endsection
+@section('style')
+<link href="{{asset('dashboard_assets/vendor/datatables/css/jquery.dataTables.min.css')}}" rel="stylesheet">
+<link href="{{asset('dashboar_assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css')}}" rel="stylesheet">
+    <style>
+        .form-control-sm{
+        height: 32px !important;
+    }
+    </style>
+@endsection
+
+@section('content')
+
+<div class="page-titles">
+    <h4>Drugs</h4>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{route('home')}}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="javascript:void(0)">Drugs</a></li>
+    </ol>
+</div>
+
+
+
+
+<button type="button" class="btn btn-primary btn-xs mb-2" data-bs-toggle="modal" data-bs-target="#basicModal">Add Drugs</button>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Drugs</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="example2" class="display">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($drugs as $data )
+                                <tr>
+                                    <td>{{$loop->iteration}}</td>
+                                    <td>{{$data->name}}</td>
+                                    <td class="d-flex justify-content-center">
+                                        <button type="button" class="btn btn-primary btn-xs me-2 edit" data-value="{{$data->id}}"  data-bs-toggle="modal" data-bs-target="#editModal" > <i class="fa fa-edit "></i> </button>
+                                        <form action="{{route('drug.destroy',$data->id)}}" method="POST" ">
+                                            @csrf
+                                            @method('DELETE')
+                                        <button class="btn btn-danger btn-xs"> <i class="fa fa-trash "></i> </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="basicModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Drugs</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{route('drug.store')}}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label">Drug Name</label>
+                        <input type="text" class="form-control form-control-sm" name="name" >
+                    </div>
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger  btn-xs light" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary btn-xs">Create</button>
+        </div>
+    </form>
+    </div>
+    </div>
+</div>
+<!-- edit -->
+<div class="modal fade" id="editModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Drug</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" action="{{route('drug.update',0)}}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-3">
+                        <label class="form-label">Drug Name</label>
+                        <input type="text" class="form-control form-control-sm" name="name" id="editDrug">
+                    </div>
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger  btn-xs light" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary btn-xs">Create</button>
+        </div>
+    </form>
+    </div>
+    </div>
+</div>
+
+
+
+@endsection
+@section('script')
+          <!-- Datatable -->
+    <script src="{{asset('dashboard_assets/vendor/datatables/js/jquery.dataTables.min.js')}}"></script>
+    <script src="{{asset('dashboard_assets/js/plugins-init/datatables.init.js')}}"></script>
+
+    <script>
+          $(function () {
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $('body').on('click', '.edit', function () {
+        var id = $(this).data('value');
+
+    // Construct the route dynamically
+        var route = "{{ route('drug.edit', ['drug' => ':id']) }}";
+        route = route.replace(':id', id);
+        $.get(route, function(data) {
+            $('#editDrug').val(data.name);
+        });
+        var form = $('#editForm');
+            var action = form.attr('action');
+            // Replace the last part of the action attribute with the new id
+            action = action.substring(0, action.lastIndexOf('/') + 1) + id;
+            form.attr('action', action);
+    })
+
+    });
+    </script>
+@endsection
