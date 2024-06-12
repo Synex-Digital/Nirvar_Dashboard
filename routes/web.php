@@ -1,14 +1,17 @@
 <?php
 
-use App\Http\Controllers\admin\AdminLoginController;
-use App\Http\Controllers\AdminController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DrugsController;
 use App\Http\Controllers\DoctorController;
-use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\SpecialistController;
+use App\Http\Controllers\PrescriptionController;
+use App\Http\Controllers\admin\AdminLoginController;
+use App\Http\Controllers\admin\AdminLogoutController;
+use App\Http\Controllers\admin\AdminRegisterController;
 
 Auth::routes();
 
@@ -37,8 +40,17 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-Route::get('sd_admin/login',[AdminLoginController::class, 'login'])->name('admin.login');
+Route::post('sd_admin/login/dashboard',[AdminLoginController::class, 'loginAdminForm'])->name('adminLoginDashboard');
+Route::get('sd_admin/login',[AdminLoginController::class, 'login'])->name('adminLogin');
+Route::get('sd_admin/register', function () {
+    if(DB::table('admins')->get()->count() > 0){
+        return redirect()->route('adminLogin');
+    }
+    return (new AdminRegisterController())->register();
+})->name('adminRegister');
+Route::post('sd_admin/register/store',[AdminRegisterController::class, 'register_store'])->name('adminRegisterStore');
 Route::middleware(['admin'])->group(function () {
+    Route::post('/sd_admin/logout', [AdminLogoutController::class, 'logout'])->name('adminLogout');
     Route::resources([
         'drug'=>DrugsController::class,
         'specialist'=>SpecialistController::class,

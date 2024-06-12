@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Admin;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +20,12 @@ class AdminMiddleware
         if (Auth::guard('admin')->check()) {
             return $next($request);
         }
+        if(Admin::first()){
 
-        return redirect(route('admin.login')); // Or any other route you want to redirect to
+            return redirect()->route('adminLogin'); // Or any other route you want to redirect to
+        }else{
+
+            return redirect()->route('adminRegister');
+        }
     }
 }

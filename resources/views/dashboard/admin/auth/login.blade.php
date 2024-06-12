@@ -40,26 +40,27 @@
 									<div class="text-center mb-3">
 										<a href="index.html"><img src="images/logo-full.png" alt=""></a>
 									</div>
-                                    <h4 class="text-center mb-4 text-white">Sign in </h4>
-                                    <form method="POST" action="{{ route('login') }}">
+                                    <h4 class="text-center mb-4 text-white">Sign in  {{ session('email') }} </h4>
+                                    <form method="POST" action="{{ route('adminLoginDashboard') }}" >
                                         @csrf
+
                                         <div class="form-group">
                                             <label class="mb-1 text-white"><strong>Email</strong></label>
                                             <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-                                            @error('email')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                            @enderror
+                                            @if(session('email'))
+                                            <span class="text text-danger" role="">
+                                                <strong>{{ session('email') }}</strong>
+                                            </span>
+                                            @endif
                                         </div>
                                         <div class="form-group">
                                             <label class="mb-1 text-white"><strong>Password</strong></label>
                                             <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-                                            @error('password')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                            @enderror
+                                            @if(session('password'))
+                                            <span class="text text-danger" role="">
+                                                <strong>{{ session('password') }}</strong>
+                                            </span>
+                                            @endif
                                         </div>
                                         {{-- <div class="row d-flex justify-content-between mt-4 mb-2">
                                             <div class="form-group">
