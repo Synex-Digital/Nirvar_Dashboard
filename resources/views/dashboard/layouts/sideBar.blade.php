@@ -16,9 +16,9 @@
         <div class="deznav">
             <div class="deznav-scroll">
 				<ul class="metismenu" id="menu">
-                    <li><a href="{{route('admin.index')}}" class="ai-icon" aria-expanded="false"> <i class="flaticon-381-networking"></i><span class="nav-text">Dashboard</span></a> </li>
+                    <li><a href="{{route('home')}}" class="ai-icon" aria-expanded="false"> <i class="flaticon-381-networking"></i><span class="nav-text">Dashboard</span></a> </li>
 
-                    <li class="">
+                    <li class="{{ $disablePrescriptions ? 'disabled' : '' }}">
                         <a class="has-arrow ai-icon" href="javascript:void()" aria-expanded="false">
                             <i class="fa fa-prescription"></i>
                             <span class="nav-text">Prescriptions</span>
@@ -43,7 +43,7 @@
                 </ul>
 
 				<div class="copyright">
-					<p><strong>Nirvar Admin Dashboard</strong> © {{ date('Y') }} All Rights Reserved</p>
+					<p><strong>Nirvar  Dashboard</strong> © {{ date('Y') }} All Rights Reserved</p>
 					<p>Made with <span class="heart"></span> by Synex Digital</p>
 				</div>
 			</div>

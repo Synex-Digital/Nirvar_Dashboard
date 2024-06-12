@@ -288,7 +288,7 @@ class PrescriptionController extends Controller
 
 
     public function getPatient($id){
-        $user = User::where('number', $id)->get()->first();
+        $user = User::where('number', $id)->where('role', 'patient')->get()->first();
         $patient = $user->patient;
 
         return response()->json([
@@ -300,7 +300,21 @@ class PrescriptionController extends Controller
 
 
     public function adminPrescriptionShow(){
-        return view('dashboard.admin.prescription.list');
+        $prescriptions = Prescription::orderBy('created_at', 'desc')->paginate(15);
+        return view('dashboard.admin.prescription.list',[
+            'prescriptions' => $prescriptions
+        ]);
+    }
+    public function adminPrescriptionPreview($slug){
+
+        $prescription = Prescription::where('reference', $slug)->get()->first();
+        $doctors = $prescription->doctor;
+        $patients = $prescription->patient;
+        return view('dashboard.admin.prescription.preview',[
+            'prescriptions' => $prescription,
+            'doctors' => $doctors,
+            'patients' => $patients
+        ]);
     }
 
 

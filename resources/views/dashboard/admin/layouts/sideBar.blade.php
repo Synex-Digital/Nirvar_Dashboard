@@ -19,6 +19,10 @@
                     <li><a href="{{route('admin.index')}}" class="ai-icon" aria-expanded="false"> <i class="flaticon-381-networking"></i><span class="nav-text">Dashboard</span></a> </li>
 
 
+                    <li><a href="{{ route('adminDoctor') }}" class="ai-icon" aria-expanded="false"> <i class="fa fa-user-md"></i></i><span class="nav-text">Doctors</span></a> </li>
+
+                    <li><a href="{{ route('adminPatient') }}" class="ai-icon" aria-expanded="false"> <i class="fa fa-user"></i></i><span class="nav-text">Patients</span></a> </li>
+
                     <li><a href="{{ route('adminPrescriptionShow') }}" class="ai-icon" aria-expanded="false"> <i class="fa fa-prescription"></i></i><span class="nav-text">Prescriptions</span></a> </li>
                     <li><a href="{{route('drug.index')}}" class="ai-icon" aria-expanded="false"> <i class="fa fa-pills"></i><span class="nav-text">Drugs</span></a> </li>
                     <li><a href="{{route('specialist.index')}}" class="ai-icon" aria-expanded="false"> <i class="fa fa-syringe"></i><span class="nav-text">Speciality</span></a> </li>

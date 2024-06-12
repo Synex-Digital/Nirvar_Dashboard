@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PatientController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -51,7 +52,14 @@ Route::get('sd_admin/register', function () {
 Route::post('sd_admin/register/store',[AdminRegisterController::class, 'register_store'])->name('adminRegisterStore');
 
 Route::middleware(['admin'])->group(function () {
+
+    Route::get('/admin/patient', [PatientController::class, 'adminPatient'])->name('adminPatient');
+    Route::get('/admin/doctor', [DoctorController::class, 'adminDoctor'])->name('adminDoctor');
     Route::get('/admin/prescriptions', [PrescriptionController::class, 'adminPrescriptionShow'])->name('adminPrescriptionShow');
+    Route::get('/admin/prescription/preview{slug}', [PrescriptionController::class, 'adminPrescriptionPreview'])->name('adminPrescriptionPreview');
+
+
+
     Route::post('/sd_admin/logout', [AdminLogoutController::class, 'logout'])->name('adminLogout');
     Route::resources([
         'drug'=>DrugsController::class,

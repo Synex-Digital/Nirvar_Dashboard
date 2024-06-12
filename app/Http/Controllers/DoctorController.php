@@ -166,5 +166,13 @@ class DoctorController extends Controller
         ]);
     }
 
+    //admin
+    public function adminDoctor(){
+
+        $doctors = Doctor::paginate(10);
+        return view('dashboard.admin.doctor.index',[
+            'doctors' => $doctors,
+        ]);
+    }
 
 }
