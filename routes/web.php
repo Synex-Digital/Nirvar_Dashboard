@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\admin\AdminLoginController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -35,7 +37,9 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+Route::get('/sd_admin/admin/login',[AdminLoginController::class, 'login'])->name('admin.login');
 Route::middleware(['admin'])->group(function () {
+    Route::get('/sd_admin/admin',[AdminLoginController::class, 'index'])->name('admin.in');
     Route::resources([
         'drug'=>DrugsController::class,
         'specialist'=>SpecialistController::class,

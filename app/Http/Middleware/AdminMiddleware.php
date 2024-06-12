@@ -20,6 +20,6 @@ class AdminMiddleware
             return $next($request);
         }
 
-        return redirect('/login'); // Or any other route you want to redirect to
+        return redirect(route('admin.login')); // Or any other route you want to redirect to
     }
 }

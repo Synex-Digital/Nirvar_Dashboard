@@ -11,9 +11,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!-- Title -->
-	<title>Nirvar Dashoboard</title>
+	<title>Nirvar Admin Login</title>
     <!-- Favicon icon -->
-<link rel="icon" type="image/png" sizes="16x16" href="{{asset('dashboard_assets/images/logoN.png')}}">
+   <link rel="icon" type="image/png" sizes="16x16" href="{{asset('dashboard_assets/images/logoN.png')}}">
   <link href="{{ asset('dashboard_assets/css/style.css') }}" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&amp;family=Roboto:wght@100;300;400;500;700;900&amp;display=swap" rel="stylesheet">
     <style>
@@ -40,7 +40,7 @@
 									<div class="text-center mb-3">
 										<a href="index.html"><img src="images/logo-full.png" alt=""></a>
 									</div>
-                                    <h4 class="text-center mb-4 text-white">Sign in your account</h4>
+                                    <h4 class="text-center mb-4 text-white">Sign in </h4>
                                     <form method="POST" action="{{ route('login') }}">
                                         @csrf
                                         <div class="form-group">
@@ -73,12 +73,12 @@
                                             </div>
                                         </div> --}}
                                         <div class="text-center mt-5" >
-                                            <button type="submit" class="btn btn-primary  ">Sign Me In</button>
+                                            <button type="submit" class="btn btn-primary  ">Sign In</button>
                                         </div>
                                     </form>
-                                    <div class="new-account mt-3">
+                                    {{-- <div class="new-account mt-3">
                                         <p class="text-white">Don't have an account? <a class="text-white" href="{{ route('register') }}">Sign Up</a></p>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                         </div>
