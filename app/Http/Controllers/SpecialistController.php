@@ -13,9 +13,9 @@ class SpecialistController extends Controller
      */
     public function index()
     {
-        $speciality = Specialist::lazy();
+        $speciality = Specialist::all();
         return view('dashboard.specialist.index',[
-            'speciality' => $speciality
+            'speciality' => $speciality,
         ]);
     }
 
@@ -68,7 +68,8 @@ class SpecialistController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = Specialist::find($id);
+        return response()->json($data);
     }
 
     /**
@@ -76,7 +77,26 @@ class SpecialistController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+
+        ]);
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            foreach ($errors->messages() as  $messages) {
+                foreach ($messages as $message) {
+                    flash()->options([
+                        'position' => 'bottom-right',
+                    ])->error($message);
+                }
+            }
+
+            return back()->withErrors($validator)->withInput();
+        }
+
+        Specialist::find($id)->update($request->all());
+        flash()->options(['position' => 'bottom-right'])->success('Updated Successfully');
+        return back();
     }
 
     /**
@@ -84,6 +104,8 @@ class SpecialistController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Specialist::find($id)->delete();
+        flash()->options(['position' => 'bottom-right'])->success('Deleted Successfully');
+        return back();
     }
 }

@@ -47,7 +47,7 @@
                                     <td>{{$data->name}}</td>
                                     <td class="d-flex justify-content-center">
                                         <button type="button" class="btn btn-primary btn-xs me-2 edit" data-value="{{$data->id}}"  data-bs-toggle="modal" data-bs-target="#editModal" > <i class="fa fa-edit "></i> </button>
-                                        <form action="{{route('drug.destroy',$data->id)}}" method="POST" ">
+                                        <form action="{{route('specialist.destroy',$data->id)}}" method="POST" ">
                                             @csrf
                                             @method('DELETE')
                                         <button class="btn btn-danger btn-xs"> <i class="fa fa-trash "></i> </button>
@@ -94,22 +94,22 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Edit Drug</h5>
+                <h5 class="modal-title">Edit Speciality</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal">
                 </button>
             </div>
             <div class="modal-body">
-                <form id="editForm" action="{{route('drug.update',0)}}" method="POST">
+                <form id="editForm" action="{{route('specialist.update',0)}}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
-                        <label class="form-label">Drug Name</label>
-                        <input type="text" class="form-control form-control-sm" name="name" id="editDrug">
+                        <label class="form-label">Speciality Name</label>
+                        <input type="text" class="form-control form-control-sm" name="name" id="editSpc">
                     </div>
                 </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger  btn-xs light" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary btn-xs">Create</button>
+            <button type="submit" class="btn btn-primary btn-xs">Update</button>
         </div>
     </form>
     </div>
@@ -135,10 +135,10 @@
         var id = $(this).data('value');
 
     // Construct the route dynamically
-        var route = "{{ route('drug.edit', ['drug' => ':id']) }}";
+        var route = "{{ route('specialist.edit', ['specialist' => ':id']) }}";
         route = route.replace(':id', id);
         $.get(route, function(data) {
-            $('#editDrug').val(data.name);
+            $('#editSpc').val(data.name);
         });
         var form = $('#editForm');
             var action = form.attr('action');
