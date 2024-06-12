@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewPrescription;
 use ArrayIterator;
 use App\Models\User;
 use App\Models\Drugs;
@@ -11,6 +12,7 @@ use App\Models\Medicine;
 use App\Models\Prescription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class PrescriptionController extends Controller
@@ -23,7 +25,7 @@ class PrescriptionController extends Controller
 
         // $prescription = Auth::user()->doctor->prescription()->paginate(15);
         $prescription = Prescription::where('doctor_id', Auth::user()->doctor->id)->whereBetween('created_at', [now()->subDays(7), now()])->orderBy('created_at')->paginate(15);
-        return view('dashboard.doctor.prescription.list',[
+        return view('dashboard.doctor.prescription.list', [
 
             'prescription' => $prescription
         ]);
@@ -38,7 +40,7 @@ class PrescriptionController extends Controller
         $doctor = $user->doctor;
         $drug = Drugs::pluck('name', 'id');
 
-        return view('dashboard.doctor.prescription.create',[
+        return view('dashboard.doctor.prescription.create', [
             'doctor' => $doctor,
             'drug' => $drug
 
@@ -50,7 +52,6 @@ class PrescriptionController extends Controller
      */
     public function store(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'phone_number' => 'required',
             'name' => 'required',
@@ -59,9 +60,10 @@ class PrescriptionController extends Controller
             'drug.*' => 'required',
             'complaint' => 'required',
 
-        ],[
+        ], [
             'drug.*.required' => 'Drug is required',
         ]);
+
         if ($validator->fails()) {
             $errors = $validator->errors();
             foreach ($errors->messages() as  $messages) {
@@ -76,20 +78,32 @@ class PrescriptionController extends Controller
 
         $prescription = new Prescription();
         $user = User::where('role', 'patient')->where('number', $request->phone_number)->get()->first();
-        if($user){
+        if ($user) {
             //prescription
             $prescription->patient_id = $user->patient->id;
             $prescription->doctor_id = Auth::user()->doctor->id;
             $prescription->chief_complaint = $request->complaint;
             //advice
             $advice = $request->input('advice');
-            $filteredAdvice = array_filter($advice, function ($value) {  return !is_null($value);});
-            if (empty($filteredAdvice)) {  $implodeAdvice = null; }else{$implodeAdvice = '"' . implode('" "', $filteredAdvice) . '"'; }
+            $filteredAdvice = array_filter($advice, function ($value) {
+                return !is_null($value);
+            });
+            if (empty($filteredAdvice)) {
+                $implodeAdvice = null;
+            } else {
+                $implodeAdvice = '"' . implode('" "', $filteredAdvice) . '"';
+            }
             $prescription->prescription_advice = $implodeAdvice;
             //tests
             $tests = $request->input('test');
-            $filteredTest = array_filter($tests, function ($value) { return !is_null($value);    });
-            if (empty($filteredTest)) {  $implodeTest = null; }else{$implodeTest = '"' . implode('" "', $filteredTest) . '"'; }
+            $filteredTest = array_filter($tests, function ($value) {
+                return !is_null($value);
+            });
+            if (empty($filteredTest)) {
+                $implodeTest = null;
+            } else {
+                $implodeTest = '"' . implode('" "', $filteredTest) . '"';
+            }
             $prescription->tests = $implodeTest;
             $prescription->reference = 'NRVR-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'), 0, 6);
             $prescription->save();
@@ -102,7 +116,7 @@ class PrescriptionController extends Controller
             $mi->attachIterator(new ArrayIterator($request->dose));
             $mi->attachIterator(new ArrayIterator($request->duration));
             $mi->attachIterator(new ArrayIterator($request->medicineAdvice));
-            foreach ($mi as list($drug, $type, $strength, $dose, $duration, $medicineAdvice) ) {
+            foreach ($mi as list($drug, $type, $strength, $dose, $duration, $medicineAdvice)) {
                 $medicine = new Medicine();
                 $medicine->prescription_id = $prescription->id;
                 $medicine->drug_id = $drug;
@@ -112,21 +126,17 @@ class PrescriptionController extends Controller
                 $medicine->duration = $duration;
                 $medicine->advice = $medicineAdvice;
                 $medicine->save();
-
             }
             $doctors = Auth::user()->doctor;
             $patients = $user->patient;
             $prescriptions = Prescription::find($prescription->id);
 
-            return view('dashboard.doctor.prescription.preview',[
+            return view('dashboard.doctor.prescription.preview', [
                 'doctors' => $doctors,
                 'patients' => $patients,
                 'prescriptions' => $prescriptions,
             ]);
-
-        }else{
-
-
+        } else {
             //user
             $newUser = new User();
             $newUser->number = $request->phone_number;
@@ -143,10 +153,26 @@ class PrescriptionController extends Controller
             $patient->date_of_birth = $birthDate;
             //weight and height
             $weight_height = null;
-            $w = $request->weight? $request->weight :null;
+            $w = $request->weight ? $request->weight : null;
             $h = ($request->heightFt ? $request->heightFt . '.' : '') . ($request->heightIn ? $request->heightIn : '');
-            if($request->heightFt){ if($request->heightIn){   $h = $request->heightFt . '.' . $request->heightIn;  }else{$h = $request->heightFt; }}elseif($request->heightIn){ $h = $request->heightIn; }
-            if($w){ if($h){   $weight_height = $w.','.$h;  }else{$weight_height = $w; } }elseif($h){ $weight_height = $h; }
+            if ($request->heightFt) {
+                if ($request->heightIn) {
+                    $h = $request->heightFt . '.' . $request->heightIn;
+                } else {
+                    $h = $request->heightFt;
+                }
+            } elseif ($request->heightIn) {
+                $h = $request->heightIn;
+            }
+            if ($w) {
+                if ($h) {
+                    $weight_height = $w . ',' . $h;
+                } else {
+                    $weight_height = $w;
+                }
+            } elseif ($h) {
+                $weight_height = $h;
+            }
             $patient->weight_height = $weight_height;
 
             $patient->blood_group = $request->blood_group;
@@ -159,7 +185,7 @@ class PrescriptionController extends Controller
             $implodeAdvice = '"' . implode('" "', $advices) . '"';
             $prescription->prescription_advice = $implodeAdvice;
             $tests = $request->test;
-            $implodeTest = $tests?  '"' . implode('" "', $tests) . '"' : null;
+            $implodeTest = $tests ?  '"' . implode('" "', $tests) . '"' : null;
             $prescription->tests = $implodeTest;
             $prescription->reference = 'NRVR-' . substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'), 0, 6);
             $prescription->save();
@@ -172,7 +198,7 @@ class PrescriptionController extends Controller
             $mi->attachIterator(new ArrayIterator($request->dose));
             $mi->attachIterator(new ArrayIterator($request->duration));
             $mi->attachIterator(new ArrayIterator($request->medicineAdvice));
-            foreach ($mi as list($drug, $type, $strength, $dose, $duration, $medicineAdvice) ) {
+            foreach ($mi as list($drug, $type, $strength, $dose, $duration, $medicineAdvice)) {
                 $medicine = new Medicine();
                 $medicine->prescription_id = $prescription->id;
                 $medicine->drug_id = $drug;
@@ -182,20 +208,17 @@ class PrescriptionController extends Controller
                 $medicine->duration = $duration;
                 $medicine->advice = $medicineAdvice;
                 $medicine->save();
-
             }
             $doctors = Auth::user()->doctor;
             $patients = Patient::find($patient->id);
             $prescriptions = Prescription::find($prescription->id);
 
-            return view('dashboard.doctor.prescription.preview',[
+            return view('dashboard.doctor.prescription.preview', [
                 'doctors' => $doctors,
                 'patients' => $patients,
                 'prescriptions' => $prescriptions,
             ]);
         }
-
-
     }
 
     /**
@@ -205,18 +228,20 @@ class PrescriptionController extends Controller
     {
         $pre_check = Prescription::where('id', $prescription->id)->where('doctor_id', Auth::user()->doctor->id)->whereBetween('created_at', [now()->subDays(7), now()])->get();
         $pre_array = $pre_check->toArray();
-        $array = array_filter($pre_array, function ($value) { return !is_null($value);    });
-        if(empty($array)){
+        $array = array_filter($pre_array, function ($value) {
+            return !is_null($value);
+        });
+        if (empty($array)) {
             return back();
-        }else{
-                $doctors = Auth::user()->doctor;
-                $patients = $prescription->patient;
+        } else {
+            $doctors = Auth::user()->doctor;
+            $patients = $prescription->patient;
 
-                return view('dashboard.doctor.prescription.preview',[
-                    'doctors' => $doctors,
-                    'patients' => $patients,
-                    'prescriptions' => $prescription,
-                ]);
+            return view('dashboard.doctor.prescription.preview', [
+                'doctors' => $doctors,
+                'patients' => $patients,
+                'prescriptions' => $prescription,
+            ]);
         }
         // if(trim($pre_check) != null){
         //     $doctors = Auth::user()->doctor;
@@ -287,8 +312,14 @@ class PrescriptionController extends Controller
     }
 
 
+<<<<<<< Updated upstream
     public function getPatient($id){
         $user = User::where('number', $id)->where('role', 'patient')->get()->first();
+=======
+    public function getPatient($id)
+    {
+        $user = User::where('number', $id)->get()->first();
+>>>>>>> Stashed changes
         $patient = $user->patient;
 
         return response()->json([
@@ -297,6 +328,7 @@ class PrescriptionController extends Controller
         ]);
     }
 
+<<<<<<< Updated upstream
 
 
     public function adminPrescriptionShow(){
@@ -315,7 +347,15 @@ class PrescriptionController extends Controller
             'doctors' => $doctors,
             'patients' => $patients
         ]);
+=======
+    public function adminPrescriptionShow()
+    {
+        return view('dashboard.admin.prescription.list');
+>>>>>>> Stashed changes
     }
 
-
+    protected function mail($mail, $data = null)
+    {
+        Mail::to($mail)->send(new NewPrescription($data));
+    }
 }

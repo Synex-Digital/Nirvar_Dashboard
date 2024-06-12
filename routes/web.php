@@ -13,13 +13,16 @@ use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\admin\AdminLoginController;
 use App\Http\Controllers\admin\AdminLogoutController;
 use App\Http\Controllers\admin\AdminRegisterController;
+use App\Http\Controllers\MailController;
 
 Auth::routes();
 
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/', function () {return redirect(route('home')); });
+    Route::get('/', function () {
+        return redirect(route('home'));
+    });
     Route::get('/dashboard', [HomeController::class, 'index'])->name('home');
     //prescription
     Route::get('/select/users', [PrescriptionController::class, 'selectUsers'])->name('selectUser');
@@ -28,28 +31,26 @@ Route::middleware(['auth'])->group(function () {
     //doctor
     Route::get('/doctor/profile', [DoctorController::class, 'doctorProfile'])->name('doctor.profile');
     Route::get('/doctor/profile/error', [DoctorController::class, 'doctorProfile_error'])->name('doctorProfile.error');
-
+    Route::post('/mail/prescription', [MailController::class, 'mail'])->name('mail.prescription');
 
     Route::resources([
-        'doctor'=> DoctorController::class,
-        'prescription'=> PrescriptionController::class,
-        ]);
-
-
+        'doctor' => DoctorController::class,
+        'prescription' => PrescriptionController::class,
+    ]);
 });
 
 
 
 
-Route::post('sd_admin/login/dashboard',[AdminLoginController::class, 'loginAdminForm'])->name('adminLoginDashboard');
-Route::get('sd_admin/login',[AdminLoginController::class, 'login'])->name('adminLogin');
+Route::post('sd_admin/login/dashboard', [AdminLoginController::class, 'loginAdminForm'])->name('adminLoginDashboard');
+Route::get('sd_admin/login', [AdminLoginController::class, 'login'])->name('adminLogin');
 Route::get('sd_admin/register', function () {
-    if(DB::table('admins')->get()->count() > 0){
+    if (DB::table('admins')->get()->count() > 0) {
         return redirect()->route('adminLogin');
     }
     return (new AdminRegisterController())->register();
 })->name('adminRegister');
-Route::post('sd_admin/register/store',[AdminRegisterController::class, 'register_store'])->name('adminRegisterStore');
+Route::post('sd_admin/register/store', [AdminRegisterController::class, 'register_store'])->name('adminRegisterStore');
 
 Route::middleware(['admin'])->group(function () {
 
@@ -62,8 +63,8 @@ Route::middleware(['admin'])->group(function () {
 
     Route::post('/sd_admin/logout', [AdminLogoutController::class, 'logout'])->name('adminLogout');
     Route::resources([
-        'drug'=>DrugsController::class,
-        'specialist'=>SpecialistController::class,
+        'drug' => DrugsController::class,
+        'specialist' => SpecialistController::class,
         'admin' => AdminController::class,
     ]);
 });
