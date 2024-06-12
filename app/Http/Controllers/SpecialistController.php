@@ -14,7 +14,7 @@ class SpecialistController extends Controller
     public function index()
     {
         $speciality = Specialist::all();
-        return view('dashboard.specialist.index',[
+        return view('dashboard.admin.specialist.index',[
             'speciality' => $speciality,
         ]);
     }

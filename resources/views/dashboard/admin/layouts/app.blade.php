@@ -12,7 +12,7 @@
 	<!-- Title -->
 
 	<title>Nirvar @yield('title')</title>
-    @include('dashboard.layouts.headerLink')
+    @include('dashboard.admin.layouts.headerLink')
     @yield('style')
     <style>
         .disabled {
@@ -53,9 +53,9 @@
     <div id="main-wrapper">
 
 
-        @include('dashboard.layouts.navBar')
+        @include('dashboard.admin.layouts.navBar')
 
-        @include('dashboard.layouts.sideBar')
+        @include('dashboard.admin.layouts.sideBar')
         <div class="content-body">
             <!-- row -->
 			<div class="container-fluid">
@@ -69,8 +69,8 @@
     </div>
 
 
-    @include('dashboard.layouts.footer')
-    @include('dashboard.layouts.scriptLink')
+    @include('dashboard.admin.layouts.footer')
+    @include('dashboard.admin.layouts.scriptLink')
     @yield('script')
 </body>
 </html>

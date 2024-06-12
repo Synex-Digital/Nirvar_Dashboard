@@ -13,7 +13,7 @@ class DrugsController extends Controller
      */
     public function index()
     {   $drugs = Drugs::all();
-        return view('dashboard.drug.index',[
+        return view('dashboard.admin.drug.index',[
             'drugs' => $drugs
         ]);
     }

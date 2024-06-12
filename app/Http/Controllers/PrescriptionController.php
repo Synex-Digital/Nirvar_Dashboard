@@ -296,4 +296,12 @@ class PrescriptionController extends Controller
             'patient' => $patient
         ]);
     }
+
+
+
+    public function adminPrescriptionShow(){
+        return view('dashboard.admin.prescription.list');
+    }
+
+
 }

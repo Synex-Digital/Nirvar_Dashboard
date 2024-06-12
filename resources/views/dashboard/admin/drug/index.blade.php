@@ -1,5 +1,5 @@
-@extends('dashboard.layouts.app')
-@section('title') Speciality @endsection
+@extends('dashboard.admin.layouts.app')
+@section('title') Drugs @endsection
 @section('style')
 <link href="{{asset('dashboard_assets/vendor/datatables/css/jquery.dataTables.min.css')}}" rel="stylesheet">
 <link href="{{asset('dashboar_assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css')}}" rel="stylesheet">
@@ -13,10 +13,10 @@
 @section('content')
 
 <div class="page-titles">
-    <h4>Speciality</h4>
+    <h4>Drugs</h4>
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{route('home')}}">Dashboard</a></li>
-        <li class="breadcrumb-item active"><a href="javascript:void(0)">Spacility</a></li>
+        <li class="breadcrumb-item active"><a href="javascript:void(0)">Drugs</a></li>
     </ol>
 </div>
 
@@ -25,10 +25,10 @@
 
 <div class="row">
     <div class="col-lg-8 m-auto">
-        <button type="button" class="btn btn-primary btn-xs mb-2 " data-bs-toggle="modal" data-bs-target="#basicModal">Add Speciality</button>
+        <button type="button" class="btn btn-primary btn-xs mb-2" data-bs-toggle="modal" data-bs-target="#basicModal">Add Drugs</button>
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Speciality</h4>
+                <h4 class="card-title">Drugs</h4>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -41,13 +41,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($speciality as $data )
+                            @forelse ($drugs as $data )
                                 <tr>
                                     <td>{{$loop->iteration}}</td>
                                     <td>{{$data->name}}</td>
                                     <td class="d-flex justify-content-center">
                                         <button type="button" class="btn btn-primary btn-xs me-2 edit" data-value="{{$data->id}}"  data-bs-toggle="modal" data-bs-target="#editModal" > <i class="fa fa-edit "></i> </button>
-                                        <form action="{{route('specialist.destroy',$data->id)}}" method="POST" ">
+                                        <form action="{{route('drug.destroy',$data->id)}}" method="POST" ">
                                             @csrf
                                             @method('DELETE')
                                         <button class="btn btn-danger btn-xs"> <i class="fa fa-trash "></i> </button>
@@ -69,16 +69,16 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add Speciality</h5>
+                <h5 class="modal-title">Add Drugs</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal">
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{route('specialist.store')}}" method="POST">
+                <form action="{{route('drug.store')}}" method="POST">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label">Speciality Name</label>
-                        <input type="text" class="form-control form-control-sm" name="name" >
+                        <label class="form-label">Drug Name</label>
+                        <input type="text" class="form-control form-control-sm" name="name" required value="{{ old('name') }}">
                     </div>
                 </div>
             <div class="modal-footer">
@@ -94,17 +94,17 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Edit Speciality</h5>
+                <h5 class="modal-title">Edit Drug</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal">
                 </button>
             </div>
             <div class="modal-body">
-                <form id="editForm" action="{{route('specialist.update',0)}}" method="POST">
+                <form id="editForm" action="{{route('drug.update',0)}}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
-                        <label class="form-label">Speciality Name</label>
-                        <input type="text" class="form-control form-control-sm" name="name" id="editSpc">
+                        <label class="form-label">Drug Name</label>
+                        <input type="text" class="form-control form-control-sm" name="name" id="editDrug" required>
                     </div>
                 </div>
             <div class="modal-footer">
@@ -135,10 +135,10 @@
         var id = $(this).data('value');
 
     // Construct the route dynamically
-        var route = "{{ route('specialist.edit', ['specialist' => ':id']) }}";
+        var route = "{{ route('drug.edit', ['drug' => ':id']) }}";
         route = route.replace(':id', id);
         $.get(route, function(data) {
-            $('#editSpc').val(data.name);
+            $('#editDrug').val(data.name);
         });
         var form = $('#editForm');
             var action = form.attr('action');

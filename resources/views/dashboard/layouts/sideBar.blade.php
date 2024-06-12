@@ -1,4 +1,4 @@
-{{--
+
  @php
     $user = Auth::user();
     $doctor = $user->doctor;
@@ -8,7 +8,7 @@
         $disablePrescriptions = true;
     }
 
- @endphp --}}
+ @endphp
 
     <!--**********************************
             Sidebar start
@@ -24,15 +24,18 @@
                             <span class="nav-text">Prescriptions</span>
                         </a>
                         <ul aria-expanded="false">
-
-                                <li><a href="javascript:void(0)" class="disabled-link">Create Prescription</a></li>
-                                <li><a href="javascript:void(0)" class="disabled-link">All Prescriptions</a></li>
-
+                            @if ($disablePrescriptions)
+                            <li><a href="javascript:void(0)" class="disabled-link">Create Prescription</a></li>
+                            <li><a href="javascript:void(0)" class="disabled-link">All Prescriptions</a></li>
+                        @else
+                            <li><a href="{{route('prescription.create')}}">Create Prescription</a></li>
+                            <li><a href="{{route('prescription.index')}}">All Prescriptions</a></li>
+                        @endif
                         </ul>
                     </li>
 
-                    <li><a href="{{route('drug.index')}}" class="ai-icon" aria-expanded="false"> <i class="fa fa-pills"></i><span class="nav-text">Drugs</span></a> </li>
-                    <li><a href="{{route('specialist.index')}}" class="ai-icon" aria-expanded="false"> <i class="fa fa-syringe"></i><span class="nav-text">Speciality</span></a> </li>
+                    {{-- <li><a href="{{route('drug.index')}}" class="ai-icon" aria-expanded="false"> <i class="fa fa-pills"></i><span class="nav-text">Drugs</span></a> </li>
+                    <li><a href="{{route('specialist.index')}}" class="ai-icon" aria-expanded="false"> <i class="fa fa-syringe"></i><span class="nav-text">Speciality</span></a> </li> --}}
 
 
 

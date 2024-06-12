@@ -35,7 +35,7 @@ Route::middleware(['auth'])->group(function () {
         ]);
 
 
-        });
+});
 
 
 
@@ -49,7 +49,9 @@ Route::get('sd_admin/register', function () {
     return (new AdminRegisterController())->register();
 })->name('adminRegister');
 Route::post('sd_admin/register/store',[AdminRegisterController::class, 'register_store'])->name('adminRegisterStore');
+
 Route::middleware(['admin'])->group(function () {
+    Route::get('/admin/prescriptions', [PrescriptionController::class, 'adminPrescriptionShow'])->name('adminPrescriptionShow');
     Route::post('/sd_admin/logout', [AdminLogoutController::class, 'logout'])->name('adminLogout');
     Route::resources([
         'drug'=>DrugsController::class,
