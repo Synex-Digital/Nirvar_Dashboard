@@ -37,11 +37,11 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-Route::get('/sd_admin/admin/login',[AdminLoginController::class, 'login'])->name('admin.login');
+Route::get('sd_admin/login',[AdminLoginController::class, 'login'])->name('admin.login');
 Route::middleware(['admin'])->group(function () {
-    Route::get('/sd_admin/admin',[AdminLoginController::class, 'index'])->name('admin.in');
     Route::resources([
         'drug'=>DrugsController::class,
         'specialist'=>SpecialistController::class,
+        'admin' => AdminController::class,
     ]);
 });
