@@ -45,6 +45,7 @@ class PrescriptionController extends Controller
             'drug' => $drug
 
         ]);
+        
     }
 
     /**

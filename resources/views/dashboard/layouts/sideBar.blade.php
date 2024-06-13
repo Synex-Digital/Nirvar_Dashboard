@@ -1,14 +1,5 @@
 
- @php
-    $user = Auth::user();
-    $doctor = $user->doctor;
-    if ($doctor->degrees != null && $doctor->docHasSpec()->exists()) {
-        $disablePrescriptions = false;
-    }else{
-        $disablePrescriptions = true;
-    }
 
- @endphp
 
     <!--**********************************
             Sidebar start

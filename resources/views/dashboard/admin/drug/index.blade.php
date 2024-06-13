@@ -105,6 +105,7 @@
                     <div class="mb-3">
                         <label class="form-label">Drug Name</label>
                         <input type="text" class="form-control form-control-sm" name="name" id="editDrug" required>
+                        <input type="hidden" name="unique_token" value="{{ $uniqueToken}}">
                     </div>
                 </div>
             <div class="modal-footer">

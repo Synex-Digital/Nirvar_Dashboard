@@ -30,6 +30,7 @@
             color: #aaa !important; /* Grey out the icon */
         }
     </style>
+
 </head>
 <body>
 
@@ -52,11 +53,29 @@
     ***********************************-->
     <div id="main-wrapper">
 
+        @php
+        $user = Auth::user();
+        $doctor = $user->doctor;
+        $count = 0;
+        $doctor->degrees == null ? $count ++ : '';
+        // // $doctor->description == null ? $count++ : '';
+        $doctor->docHasSpec == null ? $count++ : '';
+        $docHasSpec = $doctor->docHasSpec()->exists();
+        if ($doctor->degrees == null || !$docHasSpec	 ) {
+            $count++;
+        }
+        if ($doctor->degrees != null && $docHasSpec) {
+            $disablePrescriptions = false;
+        }else{
+            $disablePrescriptions = true;
+        }
+        @endphp
 
         @include('dashboard.layouts.navBar')
 
         @include('dashboard.layouts.sideBar')
         <div class="content-body">
+
             <!-- row -->
 			<div class="container-fluid">
                 @yield('content')

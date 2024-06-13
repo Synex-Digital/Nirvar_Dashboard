@@ -24,7 +24,8 @@
                             <th scope="col">#</th>
                             <th scope="col">Patient Name</th>
                             <th scope="col">Number</th>
-                            <th scope="col">Date</th>
+                            <th scope="col">Date </th>
+                            <th scope="col">Validity</th>
                             <th scope="col">Action</th>
                         </tr>
                     </thead>
@@ -35,6 +36,7 @@
                             <td> {{$data->patient->user? $data->patient->user->name : 'UNKNOWN'}}</td>
                             <td> {{$data->patient->user? $data->patient->user->number : 'UNKNOWN'}}</td>
                             <td> {{$data->created_at->format('d-M-y')}}</td>
+                            <td> {{$data->created_at->format('d-M-y')  }}</td>
                             <td>
                                 <a href="{{route('prescription.show',$data->id)}}" class="btn btn-primary btn-xs"> <i class="fa fa-eye "></i> </a>
                             </td>

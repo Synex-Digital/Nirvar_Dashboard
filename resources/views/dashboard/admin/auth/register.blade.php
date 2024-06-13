@@ -81,7 +81,7 @@
 
                                         </div>
                                         <div class="text-center mt-5" >
-                                            <button type="submit" class="btn bg-primary text-white ">Resgister</button>
+                                            <button type="submit" class="btn bg-primary text-white ">Register</button>
                                         </div>
 
                                     </form>

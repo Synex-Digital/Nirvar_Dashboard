@@ -16,7 +16,7 @@
     <h4>Speciality</h4>
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{route('home')}}">Dashboard</a></li>
-        <li class="breadcrumb-item active"><a href="javascript:void(0)">Spacility</a></li>
+        <li class="breadcrumb-item active"><a href="javascript:void(0)">Speciality</a></li>
     </ol>
 </div>
 

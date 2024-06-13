@@ -1,15 +1,3 @@
-@php
-    $user = Auth::user();
-    $doctor = $user->doctor;
-    $count = 0;
-    $doctor->degrees == null ? $count ++ : '';
-    // // $doctor->description == null ? $count++ : '';
-    $doctor->docHasSpec == null ? $count++ : '';
-
-    if ($doctor->degrees == null || !$doctor->docHasSpec()->exists()	 ) {
-        $count++;
-    }
-@endphp
 
   <!--**********************************
             Nav header start
@@ -98,7 +86,7 @@
                                                 </a>
 											</li>
                                             @endif
-                                            @if  ($doctor->degrees == null || !$doctor->docHasSpec()->exists()	 )
+                                            @if  ($doctor->degrees == null || !$docHasSpec	 )
 
                                                 <li>
                                                     <a href="{{ route('doctorProfile.error' ) }}">

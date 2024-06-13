@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Drugs;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class DrugsController extends Controller
@@ -12,9 +15,13 @@ class DrugsController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {   $drugs = Drugs::all();
+    {
+        $uniqueToken = Str::random(40);
+        session(['unique_token' => $uniqueToken]);
+        $drugs = Drugs::all();
         return view('dashboard.admin.drug.index',[
-            'drugs' => $drugs
+            'drugs' => $drugs,
+            'uniqueToken' => $uniqueToken,
         ]);
     }
 
@@ -29,6 +36,7 @@ class DrugsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
 
