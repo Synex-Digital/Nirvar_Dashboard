@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use App\Models\Doctor;
+use App\Models\Patient;
+use App\Models\Prescription;
 use Illuminate\Http\Request;
 
 
@@ -13,7 +16,14 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return view('dashboard.admin.index');
+        $prescriptionCount = Prescription::pluck('id')->count();
+        $doctorCount = Doctor::pluck('id')->count();
+        $patientCount = Patient::pluck('id')->count();
+        return view('dashboard.admin.index',[
+            'prescriptionCount' => $prescriptionCount,
+            'doctorCount' => $doctorCount,
+            'patientCount' => $patientCount
+        ]);
     }
 
     /**

@@ -159,7 +159,7 @@
             </div>
             <div class="row">
                 <div class="col-lg-6 ">
-                    <h5 class="">Investigations:</h5>
+                    <h5 class="">Diagnosis Tests:</h5>
                     <div id="inputs-container">
                         <div class="row mt-2 mb-1  g-3 invest">
                             <div class="col-12 my-1 ">
@@ -180,7 +180,7 @@
                             <div class="col-4 my-1">
                                 <select name="drug[]" class="form-control form-control-sm">
                                     <option value="">Select Drug</option>
-                                   
+
                                     @foreach ($drug as $id => $name)
                                         <option value="{{ $id }}" {{ old('drug.0') == $id ? 'selected' : '' }}>{{ $name }}</option>
                                     @endforeach
@@ -298,7 +298,10 @@
                         if(res){
                             let user = res.user;
                             let patient = res.patient;
-                            $('#name').val(user.name);
+                            if(patient == 'false'){
+                                alert('Number Exists')
+                            }else{
+                                $('#name').val(user.name);
                             $('#gender').val(patient.gender);
                             $('select[name="gender"]').val(patient.gender.toLowerCase());
                            // Parse the birth date and created_at date
@@ -321,6 +324,8 @@
                             $('select[name="heightIn"]').val(height[1]);
 
                             $('select[name="blood_group"]').val(patient.blood_group);
+                            }
+
                         }else{
                             alert('not found');
                         }

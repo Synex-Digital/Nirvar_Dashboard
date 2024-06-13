@@ -31145,11 +31145,11 @@ span#counter {
   width: 20%; }
 
 .dz-scroll {
-  overflow-y: scroll; }
+  overflow-y: scroll;  }
 
 body > * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(111, 133, 147, 0.1) #fff0; }
+  scrollbar-color: #fff #fff0; }
 
 ::-webkit-scrollbar {
   width: 5px;
@@ -31159,7 +31159,7 @@ body > * {
 	background:  rgba(111, 133, 147, 0.0);
 } */
 ::-webkit-scrollbar-thumb {
-  background: rgba(111, 133, 147, 0.1); }
+  background: #007A64; }
 
 .pull-right {
   float: right; }

@@ -207,7 +207,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-6 ">
-                        <h5 class="">Investigations:</h5>
+                        <h5 class="">Diagnosis Tests:</h5>
                         <ul style="margin-left:35px;">
                             @forelse (tests($prescriptions->tests) as $test)
                                 <li style="list-style-type: inherit">{{ $test }}</li>
@@ -277,7 +277,7 @@
 
             print.addEventListener('click', function() {
 
-                
+
                 document.body.innerHTML = printable;
                 window.print();
                 document.body.innerHTML = originalContent;

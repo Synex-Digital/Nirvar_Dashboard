@@ -13,7 +13,7 @@
     <!--**********************************
             Sidebar start
         ***********************************-->
-        <div class="deznav">
+        <div class="deznav"  >
             <div class="deznav-scroll">
 				<ul class="metismenu" id="menu">
                     <li><a href="{{route('admin.index')}}" class="ai-icon" aria-expanded="false"> <i class="flaticon-381-networking"></i><span class="nav-text">Dashboard</span></a> </li>
@@ -32,7 +32,7 @@
 
                 </ul>
 
-				<div class="copyright">
+				<div class="copyright" style="margin-top:80px !important; margin-bottom:0px !important; ">
 					<p><strong>Nirvar Admin Dashboard</strong> © {{ date('Y') }} All Rights Reserved</p>
 					<p>Made with <span class="heart"></span> by Synex Digital</p>
 				</div>

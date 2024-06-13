@@ -33,8 +33,8 @@
 
                 </ul>
 
-				<div class="copyright">
-					<p><strong>Nirvar  Dashboard</strong> © {{ date('Y') }} All Rights Reserved</p>
+				<div class="copyright" style="margin-top:0px !important; margin-bottom:0px !important; position:fixed; bottom:0;">
+					<p><strong>Nirvar Doctor Dashboard</strong> © {{ date('Y') }} All Rights Reserved</p>
 					<p>Made with <span class="heart"></span> by Synex Digital</p>
 				</div>
 			</div>

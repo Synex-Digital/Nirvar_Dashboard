@@ -312,8 +312,12 @@ class PrescriptionController extends Controller
         ]);
     }
     public function getPatient($id){
-        $user = User::where('number', $id)->where('role', 'patient')->get()->first();
-        $patient = $user->patient;
+        $user = User::where('number', $id)->get()->first();
+        if($user->role == 'patient'){
+            $patient = $user->patient;
+        }else{
+            $patient = 'false';
+        }
 
         return response()->json([
             'user' => $user,
