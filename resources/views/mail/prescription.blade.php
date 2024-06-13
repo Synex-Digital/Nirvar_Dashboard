@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <h1>Your prescription code is #103508</h1>
+    <h1>{{$prescription->id}}</h1>
 </body>
 
 </html>

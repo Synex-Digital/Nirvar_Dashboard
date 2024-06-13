@@ -16,6 +16,7 @@
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">All Prescriptions</h4>
+                <p> Each Prescription is valid for 7 days</p>
             </div>
             <div class="card-body">
                 <table class="table ">
@@ -36,7 +37,7 @@
                             <td> {{$data->patient->user? $data->patient->user->name : 'UNKNOWN'}}</td>
                             <td> {{$data->patient->user? $data->patient->user->number : 'UNKNOWN'}}</td>
                             <td> {{$data->created_at->format('d-M-y')}}</td>
-                            <td> {{$data->created_at->format('d-M-y')  }}</td>
+                            <td> {{  round(now()->diffInDays($data->created_at->addDays(7), false)) }} Days</td>
                             <td>
                                 <a href="{{route('prescription.show',$data->id)}}" class="btn btn-primary btn-xs"> <i class="fa fa-eye "></i> </a>
                             </td>

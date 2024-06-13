@@ -24,7 +24,7 @@ class PrescriptionController extends Controller
     {
 
         // $prescription = Auth::user()->doctor->prescription()->paginate(15);
-        $prescription = Prescription::where('doctor_id', Auth::user()->doctor->id)->whereBetween('created_at', [now()->subDays(7), now()])->orderBy('created_at')->paginate(15);
+        $prescription = Prescription::where('doctor_id', Auth::user()->doctor->id)->whereBetween('created_at', [now()->subDays(7), now()])->orderBy('created_at', 'desc')->paginate(15);
         return view('dashboard.doctor.prescription.list', [
 
             'prescription' => $prescription
@@ -45,7 +45,7 @@ class PrescriptionController extends Controller
             'drug' => $drug
 
         ]);
-        
+
     }
 
     /**

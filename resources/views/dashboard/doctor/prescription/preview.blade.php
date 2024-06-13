@@ -114,8 +114,9 @@
                     <div class="modal-body">
 
                         <div class="mb-2">
-                            <input type="text" class="form-control" name="email" value="{{ $patients->user ? $patients->user->email : 'UNKNOWN' }}"
-                                placeholder="email">
+                            <input type="text" class="form-control" name="email" value="{{ $patients->user ? $patients->user->email : 'UNKNOWN' }}" placeholder="email">
+                            <input type="hidden"  name="prescription_id" value="{{ $prescriptions->id }}" >
+
                         </div>
 
                     </div>
@@ -137,12 +138,14 @@
         </div>
         <div>
             <!-- Button trigger modal -->
-            <button type="button" class="btn  btn-primary btn-sm mb-2" data-bs-toggle="modal"
-                data-bs-target="#basicModal">Mail</button>
+            <button type="button" class="btn  btn-primary btn-sm mb-2" id="print">Print</button>
+
+            <button type="button" class="btn  btn-primary btn-sm mb-2" data-bs-toggle="modal" data-bs-target="#basicModal">Mail</button>
+
         </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="printable">
         <div class="card-header d-flex justify-content-center align-items-center">
             <img src="{{ asset('dashboard_assets/images/logoN.png') }}" width="65" class="mx-2" alt="">
             <img src="{{ asset('dashboard_assets/images/logotextN.png') }}" width="160" class="" alt=""
@@ -266,6 +269,24 @@
     <script src="{{ asset('dashboard_assets/vendor/select2/js/select2.full.min.js') }}"></script>
     <script src="{{ asset('dashboard_assets/js/plugins-init/select2-init.js') }}"></script>
 
+    <script>
+        $(document).ready(function() {
+            let printable = document.getElementById('printable').innerHTML;
+            let print = document.getElementById('print');
+            var originalContent = document.body.innerHTML;
+
+            print.addEventListener('click', function() {
+
+                
+                document.body.innerHTML = printable;
+                window.print();
+                document.body.innerHTML = originalContent;
+
+                // To re-run any JavaScript that was lost during the content replacement
+                window.location.reload();
+            });
+        });
+    </script>
 
 
 

@@ -39,7 +39,11 @@ class NewPrescription extends Mailable
     public function content(): Content
     {
         return new Content(
+
             view: 'mail.prescription',
+            with: [
+                'prescription' => $this->prescription
+            ]
         );
     }
 
