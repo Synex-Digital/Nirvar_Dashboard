@@ -15,7 +15,12 @@ class Doctor extends Model
         return $this->hasOne(Doctor_has_speciality::class, 'doctor_id', 'id');
     }
     public function user(){
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id')->withDefault([
+            'name'      => 'Unknown',
+            'email'     => 'Unknown',
+            'number'    => 'Unknown',
+
+        ]);
     }
     public function prescription(){
         return $this->hasMany(Prescription::class, 'doctor_id', 'id');

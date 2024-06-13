@@ -36,7 +36,7 @@
                             <td> {{$loop->iteration}}</td>
                             <td> {{$data->user->name}}</td>
                             <td> {{$data->user->number}}</td>
-                            <td> {{$data->docHasSpec->speciality->name}}</td>
+                            <td> {{$data->docHasSpec? $data->docHasSpec->speciality->name: 'UNKNOWN'}}</td>
                             <td> {{$data->registration}}</td>
 
                             <td>

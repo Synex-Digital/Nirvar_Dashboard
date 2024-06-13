@@ -104,7 +104,7 @@
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-12">
                 <h5 class="text-uppercase"> {{ $doctors->user->name }}</h5>
-                <p class="fw-light text-capitalize mb-0 " style="color: black !important">{{ $doctors->docHasSpec->speciality->name }}</p>
+                <p class="fw-light text-capitalize mb-0 " style="color: black !important">{{ $doctors->docHasSpec? $doctors->docHasSpec->speciality->name : 'UNKNOWN' }}</p>
                 <p class="fw-light text-capitalize mb-0 " style="color: black !important">{{ $doctors->degrees }}</p>
                 <p class="fw-light text-capitalize mb-0 " style="color: black !important">{{ $doctors->registration }}</p>
             </div>
@@ -118,7 +118,7 @@
         </div>
         <div class="row border-top border-bottom   mt-2 mb-3  ">
            <div class="col-lg-12 col-md-12 col-sm-12 mt-2  d-flex flex-row">
-               <h5 >Patient Name: <span class="fw-light text-capitalize mb-0 me-4 " style="color: black !important"> {{ $patients->user->name }}</span>  </h5>
+               <h5 >Patient Name: <span class="fw-light text-capitalize mb-0 me-4 " style="color: black !important"> {{ $patients->user? $patients->user->name  : 'UNKNOWN'}}</span>  </h5>
                <h5 class="mb-0"> Age: <span class="fw-light  me-4 " style="color: black !important" > {{ calculateAge($patients->date_of_birth, $patients->created_at) }}</span> </h5>
                <h5 class="mb-0"> Gender: <span class="fw-light text-capitalize me-4 " style="color: black !important" > {{ $patients->gender }}</span> </h5>
                @if ($patients->blood_group != null)
@@ -132,7 +132,7 @@
                     <h5 class="mb-0"> Height: <span class="fw-light  me-4 " style="color: black !important" > {{  height($patients->weight_height) }}</span> </h5>
                 @endif
                @endif
-               <h5 class="mb-0"> Contact: <span class="fw-light me-4 " style="color: black !important" > {{ $patients->user->number }}</span> </h5>
+               <h5 class="mb-0"> Contact: <span class="fw-light me-4 " style="color: black !important" > {{ $patients->user ? $patients->user->number : 'UNKNOWN' }}</span> </h5>
             </div>
 
 
@@ -161,7 +161,7 @@
                             @forelse ($prescriptions->medicine as $medicine )
                             <ul class="d-flex   " style="margin-left: 35px;">
                                 <li style="list-style-type: inherit" class="me-3 text-capitalize fst-italic">  {{$medicine->type}}</li>
-                                <li  class="me-3 fw-semibold">{{$medicine->drug->name}}</li>
+                                <li  class="me-3 fw-semibold">{{$medicine->drug ? $medicine->drug->name : 'UNKNOWN'}}</li>
                                 <li  class="me-3  fw-semibold">{{$medicine->mg_ml}}</li>
 
                             </ul>

@@ -310,16 +310,8 @@ class PrescriptionController extends Controller
             'total_count' => $total_count
         ]);
     }
-
-
-<<<<<<< Updated upstream
     public function getPatient($id){
         $user = User::where('number', $id)->where('role', 'patient')->get()->first();
-=======
-    public function getPatient($id)
-    {
-        $user = User::where('number', $id)->get()->first();
->>>>>>> Stashed changes
         $patient = $user->patient;
 
         return response()->json([
@@ -327,8 +319,6 @@ class PrescriptionController extends Controller
             'patient' => $patient
         ]);
     }
-
-<<<<<<< Updated upstream
 
 
     public function adminPrescriptionShow(){
@@ -347,11 +337,6 @@ class PrescriptionController extends Controller
             'doctors' => $doctors,
             'patients' => $patients
         ]);
-=======
-    public function adminPrescriptionShow()
-    {
-        return view('dashboard.admin.prescription.list');
->>>>>>> Stashed changes
     }
 
     protected function mail($mail, $data = null)

@@ -33,8 +33,8 @@
                     @forelse ($prescriptions as $data )
                         <tr>
                             <td> {{$loop->iteration}}</td>
-                            <td> {{$data->patient->user->name}}</td>
-                            <td> {{$data->patient->user->number}}</td>
+                            <td> {{$data->patient->user? $data->patient->user->name : 'UNKNOWN'}}</td>
+                            <td> {{$data->patient->user? $data->patient->user->number : 'UNKNOWN'}}</td>
                             <td> {{$data->created_at->format('d-M-y')}}</td>
                             <td>
                                 <a href="{{route('adminPrescriptionPreview',['slug' =>$data->reference])}}" class="btn btn-primary btn-xs"> <i class="fa fa-eye "></i> </a>

@@ -13,7 +13,9 @@ class Doctor_has_speciality extends Model
     }
 
     public function speciality(){
-        return $this->belongsTo(Specialist::class, 'specialist_id', 'id');
+        return $this->belongsTo(Specialist::class, 'specialist_id', 'id')->withDefault([
+            'name'      => 'Unknown',
+        ]);
     }
 
 }
