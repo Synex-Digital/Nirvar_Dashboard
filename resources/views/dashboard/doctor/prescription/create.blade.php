@@ -299,7 +299,8 @@
                             let user = res.user;
                             let patient = res.patient;
                             if(patient == 'false'){
-                                alert('Number Exists')
+                                alert('Number exits!')
+                                $('#create').prop('disabled', true);
                             }else{
                                 $('#name').val(user.name);
                             $('#gender').val(patient.gender);

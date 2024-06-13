@@ -16,12 +16,11 @@ class DrugsController extends Controller
      */
     public function index()
     {
-        $uniqueToken = Str::random(40);
-        session(['unique_token' => $uniqueToken]);
+
         $drugs = Drugs::all();
+
         return view('dashboard.admin.drug.index',[
             'drugs' => $drugs,
-            'uniqueToken' => $uniqueToken,
         ]);
     }
 

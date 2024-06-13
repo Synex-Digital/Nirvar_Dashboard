@@ -37,6 +37,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
+                                <th>Used in prescription</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -45,6 +46,9 @@
                                 <tr>
                                     <td>{{$loop->iteration}}</td>
                                     <td>{{$data->name}}</td>
+                                    <td class="text-center">
+                                        {{$data->medicine->pluck('drug_id')->count()}} Times
+                                    </td>
                                     <td class="d-flex justify-content-center">
                                         <button type="button" class="btn btn-primary btn-xs me-2 edit" data-value="{{$data->id}}"  data-bs-toggle="modal" data-bs-target="#editModal" > <i class="fa fa-edit "></i> </button>
                                         <form action="{{route('drug.destroy',$data->id)}}" method="POST" ">
@@ -105,7 +109,7 @@
                     <div class="mb-3">
                         <label class="form-label">Drug Name</label>
                         <input type="text" class="form-control form-control-sm" name="name" id="editDrug" required>
-                        <input type="hidden" name="unique_token" value="{{ $uniqueToken}}">
+
                     </div>
                 </div>
             <div class="modal-footer">
