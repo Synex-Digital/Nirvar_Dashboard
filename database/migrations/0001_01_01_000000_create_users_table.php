@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique()->nullable();
             $table->string('number')->unique();
-            $table->timestamp('regiser_at')->nullable();
+            $table->timestamp('register_at')->nullable();
             $table->string('photo')->nullable();
             $table->enum('role',['doctor','patient']);
             $table->timestamp('email_verified_at')->nullable();
