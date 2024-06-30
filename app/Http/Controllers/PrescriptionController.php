@@ -17,6 +17,11 @@ use Illuminate\Support\Facades\Validator;
 
 class PrescriptionController extends Controller
 {
+
+
+
+
+
     /**
      * Display a listing of the resource.
      */
@@ -47,6 +52,7 @@ class PrescriptionController extends Controller
         ]);
 
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -128,15 +134,13 @@ class PrescriptionController extends Controller
                 $medicine->advice = $medicineAdvice;
                 $medicine->save();
             }
-            $doctors = Auth::user()->doctor;
-            $patients = $user->patient;
-            $prescriptions = Prescription::find($prescription->id);
 
-            return view('dashboard.doctor.prescription.preview', [
-                'doctors' => $doctors,
-                'patients' => $patients,
-                'prescriptions' => $prescriptions,
-            ]);
+            // $doctors = Auth::user()->doctor;
+            // $patients = $user->patient;
+            $prescriptions = Prescription::find($prescription->id);
+            return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
+
+
         } else {
             //user
             $newUser = new User();
@@ -210,15 +214,11 @@ class PrescriptionController extends Controller
                 $medicine->advice = $medicineAdvice;
                 $medicine->save();
             }
-            $doctors = Auth::user()->doctor;
-            $patients = Patient::find($patient->id);
+            // $doctors = Auth::user()->doctor;
+            // $patients = Patient::find($patient->id);
             $prescriptions = Prescription::find($prescription->id);
 
-            return view('dashboard.doctor.prescription.preview', [
-                'doctors' => $doctors,
-                'patients' => $patients,
-                'prescriptions' => $prescriptions,
-            ]);
+            return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
         }
     }
 
@@ -325,6 +325,18 @@ class PrescriptionController extends Controller
         ]);
     }
 
+    public function prescriptionPreview($slug){
+
+
+        $prescriptions = Prescription::where('reference', $slug)->get()->first();
+        $doctors = $prescriptions->doctor;
+        $patients = $prescriptions->patient;
+         return view('dashboard.doctor.prescription.preview', [
+                'doctors' => $doctors,
+                'patients' => $patients,
+                'prescriptions' => $prescriptions,
+            ]);
+    }
 
     public function adminPrescriptionShow(){
         $prescriptions = Prescription::orderBy('created_at', 'desc')->paginate(15);

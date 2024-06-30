@@ -47,7 +47,7 @@
         <img src="{{asset('dashboard_assets/images/logotextN.png')}}" width="160" class="" alt="" style="margin-top:15px;">
     </div>
     <div class="card-body">
-        <form action="{{route('prescription.store')}}" method="POST">
+        <form class="prevent-form-submit" action="{{route('prescription.store')}}" method="POST">
             @csrf
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-12">
@@ -221,7 +221,7 @@
             </div>
         </div>
         <div class="mt-5 text-center">
-            <button type="submit" class="btn btn-primary btn-sm " id="create" >Create</button>
+            <button type="submit" class="btn btn-primary btn-sm prevent-form-submit" id="create" >Create</button>
         </div>
     </form>
     </div>
@@ -520,10 +520,17 @@ $('#removeMedi').click(function () {
     }
 });
 
+
 </script>
 
 
-
+<script type="text/javascript">
+    (function(){
+    $('.prevent-form-submit').on('submit', function(){
+        $('.prevent-form-submit').attr('disabled','true');
+    })
+    })();
+    </script>
 
 
 @endsection

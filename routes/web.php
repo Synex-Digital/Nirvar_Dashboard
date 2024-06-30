@@ -26,6 +26,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('home');
     //prescription
     Route::get('/select/users', [PrescriptionController::class, 'selectUsers'])->name('selectUser');
+    Route::get('/prescription/preview/{slug}', [PrescriptionController::class, 'prescriptionPreview'])->name('prescriptionpreview');
     //ajax
     Route::get('/get/patient/{id}', [PrescriptionController::class, 'getPatient'])->name('getPatient');
     //doctor
