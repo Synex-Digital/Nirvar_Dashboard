@@ -43,7 +43,7 @@ class PatientRegisterController extends Controller
                     'email'     => $request->email,
                     'number'    => $request->number,
                     'password'  => Hash::make($request->password),
-                    'role'      => 'patient',
+                    'role'      => 'patient'
                 ]);
               $otp =  OtpVerify::create([
                    'type' => 'patient',
@@ -55,7 +55,8 @@ class PatientRegisterController extends Controller
                 return response()->json([
                     'status' => 1,
                     'message'   => "OTP sent successfully, Expire in 15 minutes",
-                    'data'   => $user
+                    'data'   => $user,
+                    // 'token' =>$user->createToken('passportToken')->accessToken
                 ],200);
             } catch (\Throwable $th) {
                 return response()->json([
