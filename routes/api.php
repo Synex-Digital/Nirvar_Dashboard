@@ -23,7 +23,9 @@ Route::middleware('auth:api')->group(function () {
 });
 
 
-
-Route::post('/patient/folder/create', [PatientFolderController::class, 'create']);
+//folder get, create, update, delete
 Route::get('/patient/folders/{id}', [PatientFolderController::class, 'getFolders']);
+Route::post('/patient/folder/create', [PatientFolderController::class, 'create']);
+Route::post('/patient/folder/update', [PatientFolderController::class, 'update']);
+Route::get('/patient/folder/delete/{id}', [PatientFolderController::class, 'delete']);
 // Route::get('/files/{folder}', [FileController::class, 'getFiles']);
