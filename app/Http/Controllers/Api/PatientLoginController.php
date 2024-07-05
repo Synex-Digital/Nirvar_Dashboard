@@ -29,17 +29,19 @@ class PatientLoginController extends Controller
             ],200);
         }
         $user = User::where('number', $request->number)->where('role','patient')->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
+
+        if (!$user || $user->register_at == null || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'status'    => 0,
                 'message'   => 'Invalid Credentials',
             ],200);
-        }else{
+        }elseif($user->register_at|| Hash::check($request->password, $user->password)){
             return response()->json([
                 'status'    => 1,
                 'message'   => 'Login successfully',
                 'data'      => $user,
                 'token'     => $user->createToken('passportToken')->accessToken
+
             ],200);
         }
 
