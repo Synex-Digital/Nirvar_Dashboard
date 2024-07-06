@@ -18,14 +18,11 @@ class PatientRegisterController extends Controller
 
             // Validate the request
            $validate = Validator::make($request->all(), [
-               'name'       => 'required|string|max:255',
-               'email'      => 'required|string|email|max:255|unique:users',
-               'number'     => 'required|digits:11|regex:/^0/|unique:users',
-               'password'   => 'required|string|min:8',
+               'number'     => 'required|digits:11|regex:/^0/',
            ],[
             'number.digits' => 'Phone number must be 11 digits',
             'number.regex'  => 'Phone number must start with 0',
-            'number.unique' => 'Phone number already exists',
+            // 'number.unique' => 'Phone number already exists',
            ]);
 
            // if validation fails
@@ -36,13 +33,30 @@ class PatientRegisterController extends Controller
                 ],200);
            }
 
-            // Create the user
-            try {
+           $patient = User::where('number', $request->number)->where('role','patient')->first();
+           //patient check or create
+           if($patient){
+            //patient register check
+            if($patient->register_at != null){
+                return response()->json([
+                    'status'    => 1,
+                    'message'   => "User already registerd, Please login",
+                ]);
+            }else{
+                return response()->json([
+                    'status'    => 1,
+                    'message'   => "User registerd not verified, Please verify your account via OTP",
+                    'data'      => $patient
+                ]);
+            }
+
+           }else{
+               try {
                 $user = User::create([
-                    'name'      => $request->name,
-                    'email'     => $request->email,
+                    // 'name'      => $request->name,
+                    // 'email'     => $request->email,
                     'number'    => $request->number,
-                    'password'  => Hash::make($request->password),
+                    // 'password'  => Hash::make($request->password),
                     'role'      => 'patient'
                 ]);
               $otp =  OtpVerify::create([
@@ -64,6 +78,36 @@ class PatientRegisterController extends Controller
                     'message'   => "Failed to create user, $th",
                 ],200);
             }
+           }
+
+            // Create the user
+            // try {
+            //     $user = User::create([
+            //         'name'      => $request->name,
+            //         'email'     => $request->email,
+            //         'number'    => $request->number,
+            //         'password'  => Hash::make($request->password),
+            //         'role'      => 'patient'
+            //     ]);
+            //   $otp =  OtpVerify::create([
+            //        'type' => 'patient',
+            //        'user_id' => $user->id,
+            //        'otp' => rand(1000, 9999),
+            //        'count' => 0,
+            //        'duration' => now()->addMinutes(15),
+            //    ]);
+            //     return response()->json([
+            //         'status' => 1,
+            //         'message'   => "OTP sent successfully, Expire in 15 minutes",
+            //         'data'   => $user,
+            //         // 'token' =>$user->createToken('passportToken')->accessToken
+            //     ],200);
+            // } catch (\Throwable $th) {
+            //     return response()->json([
+            //         'status' => 0,
+            //         'message'   => "Failed to create user, $th",
+            //     ],200);
+            // }
     }
     public function otp(Request $request){
         $otp = OtpVerify::where('type', 'patient')->where('user_id', $request->user_id)->first();
@@ -76,10 +120,12 @@ class PatientRegisterController extends Controller
         }else{
             //check otp
             if($otp->otp != $request->otp){
+                $otp->count = $otp->count + 1;
+                $otp->save();
                 return response()->json([
-                    'status' => 0,
+                    'status'    => 0,
                     'message'   => "OTP not matched!",
-
+                    'attempt'   => $otp->count
                 ],200);
             }else{
                 //check otp expriy
@@ -93,9 +139,34 @@ class PatientRegisterController extends Controller
                     $user->register_at = now();
                     $user->save();
                     $otp->delete();
-                    return response()->json($user ,200);
+                    return response()->json([
+                        'status' => 1,
+                        'message'   => "User registerd successfully",
+                        'data'      => $user,
+                        'token'     => $user->createToken('passportToken')->accessToken
+                    ] ,200);
                 }
             }
+        }
+
+    }
+    public function resend_otp(Request $request){
+        $otp = OtpVerify::where('type', 'patient')->where('user_id', $request->user_id)->first();
+        if($otp == null ){
+            return response()->json([
+                'status' => 0,
+                'message'   => "User not found!",
+            ],200);
+        }else{
+            $otp->otp = rand(1000, 9999);
+            $otp->count = 0;
+            $otp->duration = now()->addMinutes(15);
+            $otp->save();
+            return response()->json([
+                'status' => 1,
+                'message'   => "OTP sent successfully, Expire in 15 minutes",
+                'data'   => $otp
+            ],200);
         }
 
     }

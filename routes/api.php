@@ -14,8 +14,10 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/patient/create', [PatientRegisterController::class, 'store']);
-Route::post('/patient/create/otp', [PatientRegisterController::class, 'otp']);
+Route::post('/patient/register', [PatientRegisterController::class, 'store']);
+Route::post('/patient/register/otp', [PatientRegisterController::class, 'otp']);
+Route::post('/patient/resend/otp', [PatientRegisterController::class, 'resend_otp']);
+
 Route::post('/patient/login',[PatientLoginController::class, 'login']);
 
 
