@@ -138,6 +138,9 @@ class PatientRegisterController extends Controller
                     $user = User::find($otp->user_id);
                     $user->register_at = now();
                     $user->save();
+                    $patient = new Patient;
+                    $patient->user_id = $user->id;
+                    $patient->save();
                     $otp->delete();
                     return response()->json([
                         'status' => 1,

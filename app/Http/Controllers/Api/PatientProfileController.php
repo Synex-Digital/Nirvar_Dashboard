@@ -26,4 +26,9 @@ class PatientProfileController extends Controller
             // return response()->json($user);
         }
     }
+
+    public function profile_update(Request $request){
+        return response()->json($request->all());
+    }
+
 }

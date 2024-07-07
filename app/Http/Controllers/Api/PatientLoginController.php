@@ -29,21 +29,52 @@ class PatientLoginController extends Controller
             ],200);
         }
         $user = User::where('number', $request->number)->where('role','patient')->first();
+        if($user){
+            if($user->register_at == null){
+                return response()->json([
+                    'status'    => 0,
+                    'message'   => 'Please verify your account via OTP',
+                ],200);
+            }elseif($user->password == null){
+                return response()->json([
+                    'status'    => 0,
+                    'message'   => 'Please set a password and update your profile',
+                ],200);
 
-        if (!$user || $user->register_at == null || !Hash::check($request->password, $user->password)) {
+            }elseif(Hash::check($request->password, $user->password)){
+                return response()->json([
+                    'status'    => 1,
+                    'message'   => 'Login successfully',
+                    'data'      => $user,
+                    'token'     => $user->createToken('passportToken')->accessToken
+                ],200);
+            }else{
+                return response()->json([
+                    'status'    => 0,
+                    'message'   => 'Invalid Credentials ',
+                ],200);
+            }
+        }else{
             return response()->json([
                 'status'    => 0,
-                'message'   => 'Invalid Credentials',
-            ],200);
-        }elseif($user->register_at|| Hash::check($request->password, $user->password)){
-            return response()->json([
-                'status'    => 1,
-                'message'   => 'Login successfully',
-                'data'      => $user,
-                'token'     => $user->createToken('passportToken')->accessToken
-
+                'message'   => 'Invalid Credentials ',
             ],200);
         }
+
+        // if (!$user || $user->register_at == null || !Hash::check($request->password, $user->password)) {
+        //     return response()->json([
+        //         'status'    => 0,
+        //         'message'   => 'Invalid Credentials',
+        //     ],200);
+        // }elseif($user->register_at|| Hash::check($request->password, $user->password)){
+        //     return response()->json([
+        //         'status'    => 1,
+        //         'message'   => 'Login successfully',
+        //         'data'      => $user,
+        //         'token'     => $user->createToken('passportToken')->accessToken
+
+        //     ],200);
+        // }
 
     }
 
