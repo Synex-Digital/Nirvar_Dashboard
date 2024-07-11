@@ -18,29 +18,6 @@ class PatientProfileController extends Controller
                 'message'   => "User not found",
             ],200);
         }else{
-            // //get weight
-            // $weight = null;
-            // $data = $user->patient->weight_height;
-            // if(is_null($data)){
-            //     $weight = null;
-            // }else{
-            //     if (strpos($data, ',') !== false) {
-            //         $parts = explode(',', $data);
-            //         $weight = trim($parts[0]);
-            //     }
-            // }
-            // //get height
-            // $height = null;
-            // $data = $user->patient->weight_height;
-            // if(is_null($data)){
-            //     $height = null;
-            // }else{
-            //     if (strpos($data, ',') !== false) {
-            //         $parts = explode(',', $data);
-            //         $height = $parts[1];
-
-            //     }
-            // }
             $data = $user->patient->weight_height;
 
             // Initialize variables
@@ -98,6 +75,9 @@ class PatientProfileController extends Controller
                 'message'   => "User not found",
             ],200);
         }else{
+            $request->validate([
+                'password' => 'required|min:6'
+            ]);
             $user->name     = $request->name;
             $user->email    = $request->email;
             $user->password = $request->password ? Hash::make($request->password): null;

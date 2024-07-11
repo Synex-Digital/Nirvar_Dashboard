@@ -168,7 +168,7 @@ class PatientRegisterController extends Controller
             return response()->json([
                 'status' => 1,
                 'message'   => "OTP sent successfully, Expire in 15 minutes",
-                'data'   => $otp
+                // 'data'   => $otp
             ],200);
         }
 
