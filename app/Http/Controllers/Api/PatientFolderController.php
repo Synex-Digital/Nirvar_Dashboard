@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Folder;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Folder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class PatientFolderController extends Controller
 {
 
     public function getFolders($id){
-        $folders = Folder::where('user_id', $id)->get();
+        $folders = Auth::guard('api')->user()->folders;
         if(count($folders) > 0){
             return response()->json([
                 'status'    => 1,
@@ -28,7 +29,7 @@ class PatientFolderController extends Controller
 
     public function create(Request $request)
     {
-        $user = $request->user_id;
+        $user = Auth::guard('api')->user()->id;
         $folder_database = Folder::where('name', $request->name)->first();
 
         if(is_null($folder_database)){
@@ -83,10 +84,15 @@ class PatientFolderController extends Controller
                 'message'   => "Folder not found",
             ], 200);
         }else{
+            foreach($folder->files as $data){
+                $path = public_path('uploads/patient/files/' . $data->name);
+                unlink($path);
+            }
+            $folder->files()->delete();
             $folder->delete();
             return response()->json([
                 'status'    => 1,
-                'message'   => "Folder deleted successfully",
+                'message'   => "Folder and files in it deleted successfully",
             ], 200);
         }
     }

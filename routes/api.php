@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PatientFileController;
 use App\Http\Controllers\Api\PatientFolderController;
 use App\Http\Controllers\Api\PatientLoginController;
 use App\Http\Controllers\Api\PatientLogoutController;
@@ -31,10 +32,12 @@ Route::middleware('auth:api')->group(function () {
 
 
 //folder get, create, update, delete
-Route::get('/patient/folders/{id}', [PatientFolderController::class, 'getFolders']);
+Route::get('/patient/folders', [PatientFolderController::class, 'getFolders']);
 Route::post('/patient/folder/create', [PatientFolderController::class, 'create']);
 Route::post('/patient/folder/update', [PatientFolderController::class, 'update']);
 Route::get('/patient/folder/delete/{id}', [PatientFolderController::class, 'delete']);
-//file get, create, update, delete
+//file get, upload, delete
+Route::get('/patient/files/{id}',[PatientFileController::class, 'getFiles']);
+Route::post('/patient/file/upload', [PatientFileController::class, 'upload']);
+Route::get('/patient/file/delete/{id}', [PatientFileController::class, 'delete']);
 
-// Route::get('/files/{folder}', [FileController::class, 'getFiles']);

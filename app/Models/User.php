@@ -43,6 +43,10 @@ class User extends Authenticatable
 
         return $this->hasOne(Patient::class, 'user_id', 'id');
     }
+    public function folders(){
+
+        return $this->hasMany(Folder::class, 'user_id', 'id');
+    }
 
     /**
      * Get the attributes that should be cast.

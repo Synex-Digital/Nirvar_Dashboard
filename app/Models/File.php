@@ -5,11 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Folder extends Model
+class File extends Model
 {
     use HasFactory;
-
-    public function files(){
-        return $this->hasMany(File::class, 'folder_id');
-    }
 }

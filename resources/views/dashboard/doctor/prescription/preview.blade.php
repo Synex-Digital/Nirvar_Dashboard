@@ -50,35 +50,38 @@
         $age = $currentDate->diff($birthDate)->y;
         return $age;
     }
-    function weight($input)
+    function weightHeight(String $input)
     {
+        $data = $input;
+
+// Initialize variables
         $weight = null;
-        $parts = explode(',', $input);
-        if (isset($parts[0])) {
-            $weight = trim($parts[0]);
-        }
-        return $weight;
-    }
-    function height($input)
-    {
         $height = null;
-        $feet = null;
-        $inches = null;
-        $parts = explode(',', $input);
-        if (isset($parts[1])) {
-            $height = trim($parts[1]);
-        }
-        if ($height !== null) {
-            preg_match('/(\d+)\s*FT\s*(\d*)\s*IN*/i', $height, $matches);
-            if (isset($matches[1])) {
-                $feet = $matches[1];
+        if($data){
+          if (preg_match('/^(\d+),?\s*(\d+)\s*FT\.?\s*(\d*)\s*IN?$/i', $data, $matches)) {
+                $weight = !empty($matches[1]) ? $matches[1] : null;
+                $height = trim($matches[2] . ' FT ' . $matches[3] . ' IN');
+            } elseif (preg_match('/^(\d+),?\s*(\d+)\s*FT$/i', $data, $matches)) {
+                $weight = !empty($matches[1]) ? $matches[1] : null;
+                $height = trim($matches[2] . ' FT');
+            } elseif (preg_match('/^(\d+)\s*FT\.?\s*(\d*)\s*IN?$/i', $data, $matches)) {
+                $weight = null;
+                $height = trim($matches[1] . ' FT ' . $matches[2] . ' IN');
+            } elseif (preg_match('/^(\d+)$/i', $data, $matches)) {
+                $weight = $matches[1];
+                $height = null;
+            } elseif (preg_match('/^(\d+)\s*FT$/i', $data, $matches)) {
+                $weight = null;
+                $height = trim($matches[1] . ' FT');
+            } elseif (preg_match('/^(\d+)\s*FT\.?\s*(\d+)\s*IN?$/i', $data, $matches)) {
+                $weight = null;
             }
-            if (isset($matches[2])) {
-                $inches = $matches[2];
-            }
         }
-        return $height;
+
+        return ['weight'=>$weight, 'height'=>$height];
+
     }
+
     function tests($input)
     {
         $tests = null;
@@ -174,7 +177,7 @@
             </div>
             <div class="row border-top border-bottom   mt-2 mb-3  ">
                 <div class="col-lg-12 col-md-12 col-sm-12 mt-2  d-flex flex-row">
-                    <h5>Patient Name: <span class="fw-light text-capitalize mb-0 me-4 " style="color: black !important">
+                    <h5>Patient Name:  <span class="fw-light text-capitalize mb-0 me-4 " style="color: black !important">
                             {{ $patients->user? $patients->user->name : 'UNKNOWN' }}</span> </h5>
                     <h5 class="mb-0"> Age: <span class="fw-light  me-4 " style="color: black !important">
                             {{ calculateAge($patients->date_of_birth, $patients->created_at) }}</span> </h5>
@@ -185,13 +188,14 @@
                                 style="color: black !important"> {{ $patients->blood_group }}</span> </h5>
                     @endif
                     @if ($patients->weight_height != null)
-                        @if (weight($patients->weight_height) != null)
+                        @if (weightHeight($patients->weight_height)['weight'] != null)
                             <h5 class="mb-0"> Weight: <span class="fw-light  me-4 " style="color: black !important">
-                                    {{ weight($patients->weight_height) }}</span> </h5>
+                                {{ weightHeight($patients->weight_height)['weight'] }}
+                            </span> </h5>
                         @endif
-                        @if (height($patients->weight_height) != null)
+                        @if (weightHeight($patients->weight_height)['height'] != null)
                             <h5 class="mb-0"> Height: <span class="fw-light  me-4 " style="color: black !important">
-                                    {{ height($patients->weight_height) }}</span> </h5>
+                                    {{ weightHeight($patients->weight_height)['height'] }}</span> </h5>
                         @endif
                     @endif
                     <h5 class="mb-0"> Contact: <span class="fw-light me-4 " style="color: black !important">
