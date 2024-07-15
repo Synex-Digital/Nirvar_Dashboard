@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class PatientFolderController extends Controller
 {
 
-    public function getFolders($id){
+    public function getFolders(){
         $folders = Auth::guard('api')->user()->folders;
         if(count($folders) > 0){
             return response()->json([

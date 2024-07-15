@@ -27,10 +27,9 @@ Route::post('/patient/login',[PatientLoginController::class, 'login']);
 
 
 Route::middleware('auth:api')->group(function () {
-
 });
-//profile
 Route::get('/patient/profile/{id}', [PatientProfileController::class, 'profile']);
+//profile
 //logout
 Route::post('/patient/logout',[PatientLogoutController::class, 'logout']);
 //profile update
