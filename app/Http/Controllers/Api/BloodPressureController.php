@@ -164,16 +164,16 @@ class BloodPressureController extends Controller
         }
 
 
-        // $submissionCount = BloodPressure::where('user_id', auth('api')->user()->id)
-        //     ->where('created_at', '>=', Carbon::now()->subDay())
-        //     ->count();
+        $submissionCount = BloodPressure::where('user_id', auth('api')->user()->id)
+            ->where('created_at', '>=', Carbon::now()->subDay())
+            ->count();
 
-        // if ($submissionCount >= 2) {
-        //     return response()->json(['status' => 0,'error' => 'You can only submit your blood pressure data twice within a 24-hour period.'] );
-        // }
+        if ($submissionCount >= 2) {
+            return response()->json(['status' => 0,'error' => 'You can only submit your blood pressure data twice within a 24-hour period.'] );
+        }
 
         $bp = new Bloodpressure();
-        $bp->user_id =6;
+        $bp->user_id = auth('api')->user()->id;
         $bp->systolic = $request->systolic;
         $bp->diastolic = $request->diastolic;
 
