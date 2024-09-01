@@ -28,26 +28,25 @@ class DiabetesController extends Controller
         $user = auth('api')->user();
 
         // Check the number of submissions in the last 24 hours
-        $submissionCount = Diabetes::where('user_id', 7)
+        $submissionCount = Diabetes::where('user_id', 6)
             ->where('created_at', '>=', Carbon::now()->subHours(24))
             ->count();
 
-        if ($submissionCount >= 2) {
-            return response()->json(['error' => 'You can only make 2 submissions in the last 24 hours.'], 400);
-        }
+        // if ($submissionCount >= 2) {
+        //     return response()->json(['error' => 'You can only make 2 submissions in the last 24 hours.'], 400);
+        // }
         $diabetes = new Diabetes();
-        $diabetes->user_id = 7;
+        $diabetes->user_id = 6;
         $diabetes->blood_sugar_level = $request->blood_sugar_level;
 
-        if ($diabetes->blood_sugar_level >= 200) {
-            $diabetes->category = "Very High";
-        } elseif ($diabetes->blood_sugar_level >= 140 && $diabetes->blood_sugar_level < 200) {
-            $diabetes->category = "High";
-        } elseif ($diabetes->blood_sugar_level >= 70 && $diabetes->blood_sugar_level < 140) {
+        if ($diabetes->blood_sugar_level < 3.9) {
+            $diabetes->category = "Low Sugar(Hypoglycemia)";
+        } elseif ($diabetes->blood_sugar_level >= 4 && $diabetes->blood_sugar_level <= 7) {
             $diabetes->category = "Normal";
-        } elseif ($diabetes->blood_sugar_level < 70) {
-            $diabetes->category = "Low";
-        } else {
+        } elseif ($diabetes->blood_sugar_level > 7) {
+            $diabetes->category = "High";
+        }
+        else {
             $diabetes->category = "Blood sugar classification not found.";
         }
 
@@ -59,7 +58,7 @@ class DiabetesController extends Controller
 
    public function diabetes_today(){
         $user = auth('api')->user();
-        $data = Diabetes::where('user_id', 7)
+        $data = Diabetes::where('user_id', 6)
             ->whereDate('created_at', Carbon::today())
             ->orderBy('created_at', 'desc')
             ->get();
@@ -82,7 +81,7 @@ class DiabetesController extends Controller
     }
    public function diabetes_seven_days(){
         $user = auth('api')->user();
-        $data = Diabetes::where('user_id', 7)
+        $data = Diabetes::where('user_id', 6)
             ->whereBetween('created_at', [Carbon::now()->subDays(7), Carbon::now()])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -103,12 +102,11 @@ class DiabetesController extends Controller
         $user = auth('api')->user();
         // Get the current date and the first day of the current month
         $currentDate = Carbon::now();
-        $firstDayOfMonth = $currentDate->copy()->endOfMonth();
+        $firstDayOfMonth = $currentDate->copy()->startOfMonth();
 
         // Define the start date of each week in the current month
         $weekOneStart = $firstDayOfMonth;
         $weekTwoStart = $firstDayOfMonth->copy()->subDays(7);
-        // return $weekTwoStart;
         $weekThreeStart = $firstDayOfMonth->copy()->subDays(14);
         $weekFourStart = $firstDayOfMonth->copy()->subDays(21);
         $weekFiveStart = $firstDayOfMonth->copy()->subDays(28);
@@ -121,21 +119,21 @@ class DiabetesController extends Controller
                 ->whereBetween('created_at', [ $weekTwoStart,$weekOneStart])
                 ->first(),
 
-            'Week Two' => DB::table('blood_pressures')
+            'Week Two' => DB::table('diabetes')
                 // ->where('user_id', $user->id)
-                ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+                ->select(DB::raw('MIN(blood_sugar_level) as minimum, MAX(blood_sugar_level) as maximum'))
                 ->whereBetween('created_at', [$weekTwoStart, $weekThreeStart])
                 ->first(),
 
-            'Week Three' => DB::table('blood_pressures')
+            'Week Three' => DB::table('diabetes')
                 // ->where('user_id', $user->id)
-                ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+                ->select(DB::raw('MIN(blood_sugar_level) as minimum, MAX(blood_sugar_level) as maximum'))
                 ->whereBetween('created_at', [$weekThreeStart, $weekFourStart])
                 ->first(),
 
-            'Week Four' => DB::table('blood_pressures')
+            'Week Four' => DB::table('diabetes')
                 // ->where('user_id', $user->id)
-                ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+                ->select(DB::raw('MIN(blood_sugar_level) as minimum, MAX(blood_sugar_level) as maximum'))
                 ->whereBetween('created_at', [$weekFourStart, $weekFiveStart])
                 ->first(),
         ];
@@ -144,6 +142,52 @@ class DiabetesController extends Controller
             'status'    => 1,
             'message'   => "success",
             'data'      => $weeklyAverages,
+        ], 200);
+
+    }
+    public function diabetes_monthly(){
+        $user = auth('api')->user();
+       // Get the current date and define the start of the last four months
+       $currentDate = Carbon::now();
+       $monthOneStart = $currentDate->copy()->startOfMonth();
+       $monthOneEnd = $currentDate->copy()->endOfMonth();
+
+       $monthTwoStart = $currentDate->copy()->subMonth(1)->startOfMonth();
+       $monthTwoEnd = $currentDate->copy()->subMonth(1)->endOfMonth();
+       $monthThreeStart =$currentDate->copy()->subMonth(3)->endOfMonth();
+       $monthThreeEnd = $currentDate->copy()->subMonth(1)->startOfMonth();
+
+
+       $monthFourStart = $currentDate->copy()->subMonth(3)->startOfMonth();
+       $monthFourEnd = $currentDate->copy()->subMonth(3)->endOfMonth();
+
+        // Query to calculate monthly averages and round them
+        $monthlyAverages = [
+            'Month One' => DB::table('diabetes')
+                 ->select(DB::raw('MIN(blood_sugar_level) as minimum, MAX(blood_sugar_level) as maximum'))
+                ->whereBetween('created_at', [$monthOneStart, $monthOneEnd])
+                ->first(),
+
+            'Month Two' => DB::table('diabetes')
+                ->select(DB::raw('MIN(blood_sugar_level) as minimum, MAX(blood_sugar_level) as maximum'))
+                ->whereBetween('created_at', [$monthTwoStart, $monthTwoEnd])
+                ->first(),
+
+            'Month Three' => DB::table('diabetes')
+                ->select(DB::raw('MIN(blood_sugar_level) as minimum, MAX(blood_sugar_level) as maximum'))
+                ->whereBetween('created_at', [$monthThreeStart, $monthThreeEnd])
+                ->first(),
+
+            'Month Four' => DB::table('diabetes')
+                ->select(DB::raw('MIN(blood_sugar_level) as minimum, MAX(blood_sugar_level) as maximum'))
+                ->whereBetween('created_at', [$monthFourStart, $monthFourEnd])
+                ->first(),
+        ];
+        // Fetch data for the past 4 months
+        return response()->json([
+            'status'    => 1,
+            'message'   => "success",
+            'data'      => $monthlyAverages,
         ], 200);
 
     }

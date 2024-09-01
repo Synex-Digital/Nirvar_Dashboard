@@ -30,37 +30,34 @@ Route::post('/patient/login',[PatientLoginController::class, 'login']);
 
 
 Route::middleware('auth:api')->group(function () {
+    //profile
+    Route::get('/patient/profile/{id}', [PatientProfileController::class, 'profile']);
+    //logout
+    Route::post('/patient/logout',[PatientLogoutController::class, 'logout']);
+    //profile update
+    Route::post('/patient/profile/update', [PatientProfileController::class, 'profile_update']);
+    //folder get, create, update, delete
+    Route::get('/patient/folders', [PatientFolderController::class, 'getFolders']);
+    Route::post('/patient/folder/create', [PatientFolderController::class, 'create']);
+    Route::post('/patient/folder/update', [PatientFolderController::class, 'update']);
+    Route::get('/patient/folder/delete/{id}', [PatientFolderController::class, 'delete']);
+    //file get, upload, delete
+    Route::get('/patient/files/{id}',[PatientFileController::class, 'getFiles']);
+    Route::post('/patient/file/upload', [PatientFileController::class, 'upload']);
+    Route::get('/patient/file/delete/{id}', [PatientFileController::class, 'delete']);
 
+    //micro service tool
+
+    //blood pressure
+    Route::get('/patient/blood-pressure/today', [BloodPressureController::class, 'blood_pressure_today']);
+    Route::get('/patient/blood-pressure/past-seven-days', [BloodPressureController::class, 'blood_pressure_seven_days']);
+    Route::get('/patient/blood-pressure/weekly', [BloodPressureController::class, 'blood_pressure_weekly']);
+    Route::get('/patient/blood-pressure/monthly', [BloodPressureController::class, 'blood_pressure_monthly']);
+    Route::post('/patient/blood-pressure/store', [BloodPressureController::class, 'blood_pressure_store']);
+    // diabetes
+    Route::get('/patient/diabetes/today', [DiabetesController::class, 'diabetes_today']);
+    Route::get('/patient/diabetes/past-seven-days', [DiabetesController::class, 'diabetes_seven_days']);
+    Route::get('/patient/diabetes/weekly', [DiabetesController::class, 'diabetes_weekly']);
+    Route::get('/patient/diabetes/monthly', [DiabetesController::class, 'diabetes_monthly']);
+    Route::post('/patient/diabetes/store', [DiabetesController::class, 'diabetes_store']);
 });
-Route::get('/patient/profile/{id}', [PatientProfileController::class, 'profile']);
-//profile
-//logout
-Route::post('/patient/logout',[PatientLogoutController::class, 'logout']);
-//profile update
-Route::post('/patient/profile/update', [PatientProfileController::class, 'profile_update']);
-//folder get, create, update, delete
-Route::get('/patient/folders', [PatientFolderController::class, 'getFolders']);
-Route::post('/patient/folder/create', [PatientFolderController::class, 'create']);
-Route::post('/patient/folder/update', [PatientFolderController::class, 'update']);
-Route::get('/patient/folder/delete/{id}', [PatientFolderController::class, 'delete']);
-//file get, upload, delete
-Route::get('/patient/files/{id}',[PatientFileController::class, 'getFiles']);
-Route::post('/patient/file/upload', [PatientFileController::class, 'upload']);
-Route::get('/patient/file/delete/{id}', [PatientFileController::class, 'delete']);
-
-
-
-//micro service tool
-
-//blood pressure
-Route::get('/patient/blood-pressure/today', [BloodPressureController::class, 'blood_pressure_today']);
-Route::get('/patient/blood-pressure/past-seven-days', [BloodPressureController::class, 'blood_pressure_seven_days']);
-Route::get('/patient/blood-pressure/weekly', [BloodPressureController::class, 'blood_pressure_weekly']);
-Route::get('/patient/blood-pressure/monthly', [BloodPressureController::class, 'blood_pressure_monthly']);
-Route::post('/patient/blood-pressure/store', [BloodPressureController::class, 'blood_pressure_store']);
-// diabetes
-Route::get('/patient/diabetes/today', [DiabetesController::class, 'diabetes_today']);
-Route::get('/patient/diabetes/past-seven-days', [DiabetesController::class, 'diabetes_seven_days']);
-Route::get('/patient/diabetes/weekly', [DiabetesController::class, 'diabetes_weekly']);
-Route::get('/patient/blood-pressure/monthly', [BloodPressureController::class, 'blood_pressure_monthly']);
-Route::post('/patient/diabetes/store', [DiabetesController::class, 'diabetes_store']);

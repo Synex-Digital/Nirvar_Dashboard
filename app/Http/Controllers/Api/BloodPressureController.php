@@ -164,32 +164,28 @@ class BloodPressureController extends Controller
         }
 
 
-        $submissionCount = BloodPressure::where('user_id', auth('api')->user()->id)
-            ->where('created_at', '>=', Carbon::now()->subDay())
-            ->count();
+        // $submissionCount = BloodPressure::where('user_id', auth('api')->user()->id)
+        //     ->where('created_at', '>=', Carbon::now()->subDay())
+        //     ->count();
 
-        if ($submissionCount >= 2) {
-            return response()->json(['status' => 0,'error' => 'You can only submit your blood pressure data twice within a 24-hour period.'] );
-        }
+        // if ($submissionCount >= 2) {
+        //     return response()->json(['status' => 0,'error' => 'You can only submit your blood pressure data twice within a 24-hour period.'] );
+        // }
 
         $bp = new Bloodpressure();
-        $bp->user_id =auth('api')->user()->id;
+        $bp->user_id =6;
         $bp->systolic = $request->systolic;
         $bp->diastolic = $request->diastolic;
 
-        if ($bp->systolic >= 180 || $bp->diastolic >= 110) {
-            $bp->category = "High blood pressure (Hypertensive crisis)";
-        } elseif (($bp->systolic >= 160 && $bp->systolic < 180) || ($bp->diastolic >= 100 && $bp->diastolic < 110)) {
-            $bp->category = "High blood pressure (Stage 2)";
-        } elseif (($bp->systolic >= 140 && $bp->systolic < 160) || ($bp->diastolic >= 90 && $bp->diastolic < 100)) {
-            $bp->category = "High blood pressure (Stage 1)";
-        } elseif (($bp->systolic >= 130 && $bp->systolic < 140) || ($bp->diastolic >= 80 && $bp->diastolic < 90)) {
-            $bp->category = "Pre-high blood pressure";
-        } elseif ($bp->systolic < 90 || $bp->diastolic < 60) {
+        if ($bp->systolic <= 90 || $bp->diastolic <= 60) {
             $bp->category = "Low blood pressure";
-        } elseif ($bp->systolic < 120 && $bp->diastolic < 80) {
-            $bp->category = "Ideal blood pressure";
-        } else {
+        } elseif (($bp->systolic > 90 && $bp->systolic < 130) || ($bp->diastolic > 60 && $bp->diastolic < 80)) {
+            $bp->category = "Normal blood pressure ";
+        }
+        elseif (($bp->systolic > 130 ) || ($bp->diastolic > 80 )) {
+            $bp->category = "High blood pressure";
+        }
+        else {
             $bp->category = "Blood pressure classification not found.";
         }
 
