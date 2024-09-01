@@ -176,7 +176,7 @@ class PatientRegisterController extends Controller
             $otp->count = 0;
             $otp->duration = now()->addMinutes(3);
             $otp->save();
-            SmsOtp::Send($otp->user->number, 'Your OTP for registration is'.$otp->otp.'. Expire in 3 minutes.');
+            SmsOtp::Send($otp->user->number, 'Your OTP for registration is '.$otp->otp.'. Expire in 3 minutes.');
             return response()->json([
                 'status' => 1,
                 'message'   => "OTP sent successfully, Expire in 3 minutes",
