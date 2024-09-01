@@ -2,20 +2,29 @@
 
 namespace App\Http\Controllers\Api;
 
+
 use App\Models\User;
+use App\Models\Patient;
+use App\Models\OtpVerify;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\OtpVerify;
-use App\Models\Patient;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Helper\SmsOtp;
 use Illuminate\Validation\ValidationException;
 
 class PatientRegisterController extends Controller
 {
 
     public function store(Request $request){
+        //SmsOtp::Send($request->number, 'Your Facebook password reset successfully!');
+        //return response()->json([
+            //             'status' => 1,
+            //             'message'   => "OTP sent successfully, Expire in 3 minutes",
+            //             'data'   => $user,
 
+            //             // 'token' =>$user->createToken('passportToken')->accessToken
+            //         ],200);
             // Validate the request
            $validate = Validator::make($request->all(), [
                'number'     => 'required|digits:11|regex:/^0/',
@@ -64,12 +73,14 @@ class PatientRegisterController extends Controller
                    'user_id' => $user->id,
                    'otp' => rand(1000, 9999),
                    'count' => 0,
-                   'duration' => now()->addMinutes(15),
+                   'duration' => now()->addMinutes(3),
                ]);
+               SmsOtp::Send($request->number, 'Your Facebook password reset successfully!');
                 return response()->json([
                     'status' => 1,
-                    'message'   => "OTP sent successfully, Expire in 15 minutes",
+                    'message'   => "OTP sent successfully, Expire in 3 minutes",
                     'data'   => $user,
+
                     // 'token' =>$user->createToken('passportToken')->accessToken
                 ],200);
             } catch (\Throwable $th) {
@@ -163,11 +174,12 @@ class PatientRegisterController extends Controller
         }else{
             $otp->otp = rand(1000, 9999);
             $otp->count = 0;
-            $otp->duration = now()->addMinutes(15);
+            $otp->duration = now()->addMinutes(3);
             $otp->save();
+            SmsOtp::Send($otp->user->number, 'Your OTP for registration is'.$otp->otp.'. Expire in 3 minutes.');
             return response()->json([
                 'status' => 1,
-                'message'   => "OTP sent successfully, Expire in 15 minutes",
+                'message'   => "OTP sent successfully, Expire in 3 minutes",
                 // 'data'   => $otp
             ],200);
         }
