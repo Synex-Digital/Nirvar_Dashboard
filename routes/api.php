@@ -61,6 +61,6 @@ Route::post('/patient/blood-pressure/store', [BloodPressureController::class, 'b
 // diabetes
 Route::get('/patient/diabetes/today', [DiabetesController::class, 'diabetes_today']);
 Route::get('/patient/diabetes/past-seven-days', [DiabetesController::class, 'diabetes_seven_days']);
-Route::get('/patient/blood-pressure/weekly', [BloodPressureController::class, 'blood_pressure_weekly']);
+Route::get('/patient/diabetes/weekly', [DiabetesController::class, 'diabetes_weekly']);
 Route::get('/patient/blood-pressure/monthly', [BloodPressureController::class, 'blood_pressure_monthly']);
 Route::post('/patient/diabetes/store', [DiabetesController::class, 'diabetes_store']);
