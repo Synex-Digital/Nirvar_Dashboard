@@ -190,6 +190,9 @@ class BloodPressureController extends Controller
         }
 
         $bp->save();
-        return response()->json(['success' => 'Blood pressure data stored successfully.'], 201);
+        return response()->json([
+            'status' => 1,
+            'message' => 'Blood pressure data stored successfully.'
+        ], 200);
     }
 }

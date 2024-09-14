@@ -33,7 +33,9 @@ class DiabetesController extends Controller
             ->count();
 
         if ($submissionCount >= 2) {
-            return response()->json(['error' => 'You can only make 2 submissions in the last 24 hours.'], 400);
+            return response()->json([
+                'status' => 0,
+                'message' => 'You can only make 2 submissions in the last 24 hours.'], 200);
         }
         $diabetes = new Diabetes();
         $diabetes->user_id = $user->id;
@@ -52,7 +54,10 @@ class DiabetesController extends Controller
 
         $diabetes->save();
 
-        return response()->json(['success' => 'Blood sugar data stored successfully.'], 201);
+        return response()->json([
+            'status' => 1,
+            'message' => 'Blood sugar data stored successfully.'
+        ], 200);
 
    }
 

@@ -27,11 +27,11 @@ class PatientRegisterController extends Controller
             //         ],200);
             // Validate the request
            $validate = Validator::make($request->all(), [
-               'number'     => 'required|digits:11|regex:/^0/',
+               'number'     => 'required|digits:11|regex:/^0/|unique:users,number,id',
            ],[
             'number.digits' => 'Phone number must be 11 digits',
             'number.regex'  => 'Phone number must start with 0',
-            // 'number.unique' => 'Phone number already exists',
+            // 'number.unique' => 'Phone number already exists, Please login',
            ]);
 
            // if validation fails
@@ -54,7 +54,7 @@ class PatientRegisterController extends Controller
             }else{
                 return response()->json([
                     'status'    => 1,
-                    'message'   => "User registerd not verified, Please verify your account via OTP",
+                    'message'   => "Number not verified, Please verify your account via OTP",
                     'data'      => $patient
                 ]);
             }
@@ -75,7 +75,7 @@ class PatientRegisterController extends Controller
                    'count' => 0,
                    'duration' => now()->addMinutes(3),
                ]);
-               SmsOtp::Send($request->number, 'Your Facebook password reset successfully!');
+            //    SmsOtp::Send($request->number, 'Your Facebook password reset successfully!');
                 return response()->json([
                     'status' => 1,
                     'message'   => "OTP sent successfully, Expire in 3 minutes",
@@ -131,6 +131,14 @@ class PatientRegisterController extends Controller
         }else{
             //check otp
             if($otp->otp != $request->otp){
+                //check otp count
+                if($otp->count >= 3){
+                    return response()->json([
+                        'status' => 0,
+                        'message'   => "OTP max count reached",
+                        'attempt'   => $otp->count
+                    ],200);
+                }
                 $otp->count = $otp->count + 1;
                 $otp->save();
                 return response()->json([
