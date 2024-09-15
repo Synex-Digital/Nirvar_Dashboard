@@ -84,6 +84,11 @@ class PatientProfileController extends Controller
             $user->name     = $request->name;
             $user->email    = $request->email;
             $user->password = $request->password ? Hash::make($request->password): null;
+            $uploaded_file = $request->file('photo');
+            $extn = $uploaded_file->getClientOriginalExtension();
+            $fileName = 'PROFILE_'.rand(100000,999999) . '.' . $extn;
+            $uploaded_file->move(public_path('uploads/patient/profile/'), $fileName);
+            $user->photo = $fileName;
             $user->save();
             $patient = $user->patient;
             $patient->blood_group   = $request->blood_group;

@@ -71,7 +71,8 @@ class PatientRegisterController extends Controller
               $otp =  OtpVerify::create([
                    'type' => 'patient',
                    'user_id' => $user->id,
-                   'otp' => rand(1000, 9999),
+                   'otp' => 1234,
+                //    'otp' => rand(1000, 9999),
                    'count' => 0,
                    'duration' => now()->addMinutes(3),
                ]);
@@ -80,7 +81,7 @@ class PatientRegisterController extends Controller
                     'status' => 1,
                     'message'   => "OTP sent successfully, Expire in 3 minutes",
                     'data'   => $user,
-
+                    
                     // 'token' =>$user->createToken('passportToken')->accessToken
                 ],200);
             } catch (\Throwable $th) {
