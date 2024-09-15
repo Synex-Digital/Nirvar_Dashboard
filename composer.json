@@ -6,13 +6,15 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.2",
+        "kreait/firebase-php": "^7.15",
+        "laravel-notification-channels/fcm": "^4.3",
         "laravel/framework": "^11.9",
         "laravel/passport": "^12.2",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
-        "php-flasher/flasher-laravel": "^2.0",
-        "guzzlehttp/guzzle": "^7.2"
+        "php-flasher/flasher-laravel": "^2.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",
