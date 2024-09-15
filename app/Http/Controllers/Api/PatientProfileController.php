@@ -172,6 +172,24 @@ class PatientProfileController extends Controller
                 'message'   => $validate->errors()->messages(),
             ],200);
         }
+
+        $user = User::find(auth('api')->user()->id);
+        if (!Hash::check($request->old_password, $user->password)) {
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'Old password is incorrect',
+            ],200);
+        }else{
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+            return response()->json([
+                'status'    => 1,
+                'message'   => 'Password changed successfully',
+            ],200);
+        }
+
+
+
     }
 
 }
