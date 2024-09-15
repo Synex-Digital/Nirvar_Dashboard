@@ -38,6 +38,7 @@ class PatientFileController extends Controller
 
 //upload
     public function upload(Request $request){
+
         $folder = Folder::find($request->folder_id);
         if(is_null($folder)){
             return response()->json([
@@ -47,16 +48,19 @@ class PatientFileController extends Controller
         }else{
             if($folder->user_id == Auth::guard('api')->user()->id){
                 $request->validate([
-                    'file' => 'required|file|max:2048|mimes:pdf,jpeg,png,jpg,gif',
+                    'file' => 'required|file|max:5124|mimes:pdf,jpeg,png,jpg,gif,heic',
                 ]);
 
                 $uploaded_file = $request->file('file');
-                $filename =  'FILE_' . time() . '.' . $uploaded_file->getClientOriginalExtension();
+
+                $info = pathinfo( $request->file_name);
+                $filename = $info['filename'] .($request->type == 'prescription' ? 'PR-':'TR-'). rand(1000, 9999) . '.' . $info['extension'];
                 $uploaded_file->move(public_path('uploads/patient/files'), $filename);
                 $file = new File;
                 $file->name = $filename;
                 $file->folder_id = $request->folder_id;
                 $file->save();
+
                 return response()->json([
                     'status'    => 1,
                     'message'   => "File uploaded successfully",

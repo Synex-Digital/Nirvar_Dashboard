@@ -17,16 +17,16 @@ class TestNotication extends PushNotification
     }
     public function getCode(): string
     {
-        return 'test_notification';
+        return 'Noticiation';
     }
     public function getTitle(): string
     {
-        return 'Test Notification Title';
+        return 'Nirvar';
     }
 
     public function getBody(): string
     {
-        return 'Test Notification Body';
+        return 'New prescription added. Check it out!';
     }
     /**
      * Create a new notification instance.

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\NewPrescription;
 use ArrayIterator;
 use App\Models\User;
 use App\Models\Drugs;
@@ -11,8 +10,10 @@ use App\Models\Patient;
 use App\Models\Medicine;
 use App\Models\Prescription;
 use Illuminate\Http\Request;
+use App\Mail\NewPrescription;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Notifications\TestNotication;
 use Illuminate\Support\Facades\Validator;
 
 class PrescriptionController extends Controller
@@ -326,6 +327,15 @@ class PrescriptionController extends Controller
     }
 
     public function prescriptionPreview($slug){
+        // $user = Auth::user();  // Get the user instance by ID or any other identifier
+
+        // // Creating a new notification instance
+        // $notification = new TestNotication();  // Assuming TestNotication extends PushNotification
+
+        // // Sending the notification
+        // $user->notify($notification);
+
+
 
 
         $prescriptions = Prescription::where('reference', $slug)->get()->first();

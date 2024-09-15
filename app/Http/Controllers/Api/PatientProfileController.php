@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\File;
 use App\Models\User;
+use App\Models\Folder;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class PatientProfileController extends Controller
 {
@@ -118,6 +121,57 @@ class PatientProfileController extends Controller
             ],200);
         }
 
+    }
+    public function search(Request $request){
+        $user_id = auth('api')->user()->id;
+        $search_data = $request->search_data;
+
+        // Fetch folders that belong to the user and match the search criteria
+        $folders = Folder::where('user_id', $user_id)
+            ->where('name', 'like', '%' . $search_data . '%')
+            ->get();
+
+        // Fetch files that belong to the user's folders and match the search criteria
+        $files = File::whereHas('folder', function ($query) use ($user_id) {
+                $query->where('user_id', $user_id);
+            })
+            ->where('name', 'like', '%' . $search_data . '%')
+            ->get();
+
+            // Prepare the response
+            return response()->json([
+                'status' => 1,
+                'message' => "success",
+                'folders' => $folders->map(function ($folder) {
+                    return [
+                        'id' => $folder->id,
+                        'name' => $folder->name,
+                    ];
+                }),
+                'files' => $files->map(function ($file) {
+                    return [
+                        'id' => $file->id,
+                        'name' => $file->name,
+                        'folder_id' => $file->folder_id, // Include folder ID if needed
+                    ];
+                }),
+            ], 200);
+    }
+    public function password_change(Request $request){
+        $validate = Validator::make($request->all(), [
+            'old_password' => 'required',
+            'new_password' => 'required|min:6',
+        ],[
+            'old_password' => 'Old password is required',
+            'new_password'  => 'New password is required',
+
+        ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'status'    => 0,
+                'message'   => $validate->errors()->messages(),
+            ],200);
+        }
     }
 
 }

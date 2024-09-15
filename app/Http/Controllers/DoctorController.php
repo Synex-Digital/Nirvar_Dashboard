@@ -150,24 +150,14 @@ class DoctorController extends Controller
 
     public function doctorProfile()
     {
-        $user = Auth::user();  // Get the user instance by ID or any other identifier
 
-        // Creating a new notification instance
-        $notification = new TestNotication();  // Assuming TestNotication extends PushNotification
-
-        // Sending the notification
-        $user->notify($notification);
-        Log::info('Returning from sendNotification', ['user_id' => $user->id]);
-        // Return a proper response
-        return response()->json(['message' => 'Notification sent successfully!']);
-
-        // $doctor = Auth::user()->doctor;
-        // $specialities = Specialist::all();
-        // return view('dashboard.doctor.profile',[
-        //     'doctor' => $doctor,
-        //     'specialities' => $specialities,
-        //     'settingError' => 'false',
-        // ]);
+        $doctor = Auth::user()->doctor;
+        $specialities = Specialist::all();
+        return view('dashboard.doctor.profile',[
+            'doctor' => $doctor,
+            'specialities' => $specialities,
+            'settingError' => 'false',
+        ]);
     }
     public function doctorProfile_error()
     {

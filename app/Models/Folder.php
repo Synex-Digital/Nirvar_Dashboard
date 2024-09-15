@@ -9,7 +9,8 @@ class Folder extends Model
 {
     use HasFactory;
 
-    public function files(){
-        return $this->hasMany(File::class, 'folder_id');
+    public function files()
+    {
+        return $this->hasMany(File::class, 'folder_id');  // 'folder_id' is the foreign key
     }
 }

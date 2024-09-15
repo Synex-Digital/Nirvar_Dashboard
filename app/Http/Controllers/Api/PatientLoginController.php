@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\NotificationToken;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -75,6 +76,45 @@ class PatientLoginController extends Controller
 
         //     ],200);
         // }
+
+    }
+    public function get_fcm_token(Request $request){
+        $validate = Validator::make($request->all(), [
+            'user_id'     => 'required',
+            'device_token'   => 'required',
+            'device_id'   => 'required',
+            'device_type'   => 'required',
+        ],[
+            'user_id' => 'user ID is required',
+            'device_token'  => 'FCM token is required',
+            'device_id'  => 'device id is required',
+            'device_type'  => 'device type is required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'status'    => 0,
+                'message'   => $validate->errors()->messages(),
+            ],200);
+        }
+
+        $user = User::find($request->user_id);
+        if($user){
+            $notification_token = new NotificationToken();
+            $notification_token->user_id = $request->user_id;
+            $notification_token->device_token = $request->device_token;
+            $notification_token->device_id = $request->device_id;
+            $notification_token->device_type = $request->device_type;
+            $notification_token->save();
+            return response()->json([
+                'status'    => 1,
+                'message'   => 'token added success',
+            ],200);
+        }else{
+            return response()->json([
+                'status'    => 0,
+                'message'   => 'user not found',
+            ],200);
+        }
 
     }
 

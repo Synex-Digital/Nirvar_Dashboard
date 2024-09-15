@@ -27,15 +27,20 @@ Route::post('/patient/password/reset/confirm', [PatientPasswordResetController::
 Route::post('/patient/password/reset', [PatientPasswordResetController::class, 'reset']);
 
 Route::post('/patient/login',[PatientLoginController::class, 'login']);
-
+//?
+//push notification token
+Route::post('/patient/fcm-token', [PatientLoginController::class, 'get_fcm_token']);
 
 Route::middleware('auth:api')->group(function () {
     //profile
     Route::get('/patient/profile/{id}', [PatientProfileController::class, 'profile']);
+    Route::post('/patient/password/change', [PatientProfileController::class, 'password_change']);
     //logout
     Route::post('/patient/logout',[PatientLogoutController::class, 'logout']);
     //profile update
     Route::post('/patient/profile/update', [PatientProfileController::class, 'profile_update']);
+    //get search data
+    Route::post('/patient/search', [PatientProfileController::class, 'search']);
     //folder get, create, update, delete
     Route::get('/patient/folders', [PatientFolderController::class, 'getFolders']);
     Route::post('/patient/folder/create', [PatientFolderController::class, 'create']);
