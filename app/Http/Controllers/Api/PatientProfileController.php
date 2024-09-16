@@ -56,7 +56,7 @@ class PatientProfileController extends Controller
                 'name'          => $user->name,
                 'email'         => $user->email,
                 'number'        => $user->number,
-                'photo'         => $user->photo,
+                'photo'         =>url('uploads/patient/profile/'.$user->photo) ,
                 'blood_gorup'   => $user->patient->blood_group,
                 'date_of_birth' => $user->patient->date_of_birth,
                 'age'           => $user->patient->date_of_birth ? \Carbon\Carbon::parse($user->patient->date_of_birth)->age : null,
