@@ -16,10 +16,13 @@ class PatientLoginController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'number'     => 'required|digits:11|regex:/^0/',
-            'password'   => 'required|min:8',
+            'password'   => 'required|min:6',
         ],[
+            'number.required' => 'Phone number is required',
             'number.digits' => 'Phone number must be 11 digits',
             'number.regex'  => 'Phone number must start with 0',
+            'password.required' => 'Password is required',
+            'password.min' => 'Password must be at least 6 characters',
         ]);
 
         // if validation fails

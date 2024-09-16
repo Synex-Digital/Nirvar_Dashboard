@@ -70,7 +70,33 @@ class PatientProfileController extends Controller
         }
     }
 
-    public function profile_update(Request $request){
+    public function profile_register(Request $request){
+        $validate = Validator::make($request->all(),[
+            'user_id'       => 'required',
+            'name'          => 'required',
+            'email'         => $request->email ? 'required|email' : 'nullable',
+            'password'      => 'required|min:6',
+            'gender'        => 'required',
+            'date_of_birth' => 'required',
+            'blood_group'   => 'required',
+            'photo'         => $request->photo ? 'mimes:jpg,jpeg,png,webp,heif' : 'nullable',
+        ],[
+            'user_id.required'          => 'User id is required',
+            'name.required'             => 'Name is required',
+            'email.required'            => 'Email is required',
+            'email.email'               => 'Email must be a valid email address',
+            'gender.required'           => 'Gender is required',
+            'date_of_birth.required'    => 'Date of birth is required',
+            'blood_group.required'      => 'Blood group is required',
+            'password.required'         => 'Password is required',
+            'password.min'              => 'Password must be at least 6 characters',
+        ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'status'    => 0,
+                'message'   => $validate->errors()->messages(),
+            ],200);
+        }
         $user = User::where('id',$request->user_id)->where('role','patient')->first();
         if(is_null($user)){
             return response()->json([
@@ -78,17 +104,106 @@ class PatientProfileController extends Controller
                 'message'   => "User not found",
             ],200);
         }else{
-            $request->validate([
-                'password' => 'required|min:6'
-            ]);
+
+            $user->name     = $request->name;
+            $user->email    = $request->email?? null;
+            $user->password = Hash::make($request->password);
+            $uploaded_file  = $request->file('photo');
+            $extn           = $uploaded_file?->getClientOriginalExtension();
+            $fileName       = 'PROFILE_'.rand(100000,999999) . '.' . $extn;
+            $uploaded_file?->move(public_path('uploads/patient/profile/'), $fileName);
+            $user->photo    = $uploaded_file ?  $fileName : null;
+            $user->save();
+            $patient = $user->patient;
+            $patient->blood_group   = $request->blood_group;
+            $patient->date_of_birth = $request->date_of_birth;
+            $patient->gender        = $request->gender;
+            $patient->address       = $request->address ?? null;
+
+            //weight and height
+            $weight_height = null;
+            $w = $request->weight ? $request->weight : null;
+            $h = ($request->height_ft ? $request->height_ft . '.' : '') . ($request->height_in ? $request->height_in : '');
+            if ($request->height_ft) {
+                if ($request->height_in) {
+                    $h = $request->height_ft . '.' . $request->height_in;
+                } else {
+                    $h = $request->height_ft;
+                }
+            } elseif ($request->height_in) {
+                $h = $request->height_in;
+            }
+            if ($w) {
+                if ($h) {
+                    $weight_height = $w . ',' . $h;
+                } else {
+                    $weight_height = $w;
+                }
+            } elseif ($h) {
+                $weight_height = $h;
+            }
+            $patient->weight_height = $weight_height;
+            $patient->save();
+            return response()->json([
+                'status'    => 1,
+                'message'   => "Profile updated successfully",
+            ],200);
+        }
+
+    }
+    public function profile_update(Request $request){
+        $validate = Validator::make($request->all(),[
+            'photo'         => 'required|mimes:jpg,jpeg,png,webp,heif',
+            'name'          => 'required',
+            'email'         => 'required|email',
+            'password'      => 'required|min:6',
+            'gender'        => 'required',
+            'date_of_birth' => 'required',
+            'blood_group'   => 'required',
+            'weight'        => 'required',
+            'height_ft'     => 'required',
+            'height_in'     => 'required',
+            'address'       => 'required',
+
+        ],[
+            'user_id.required'          => 'User id is required',
+            'name.required'             => 'Name is required',
+            'email.required'            => 'Email is required',
+            'email.email'               => 'Email must be a valid email address',
+            'gender.required'           => 'Gender is required',
+            'date_of_birth.required'    => 'Date of birth is required',
+            'blood_group.required'      => 'Blood group is required',
+            'password.required'         => 'Password is required',
+            'password.min'              => 'Password must be at least 6 characters',
+            'weight.required'           => 'Weight is required',
+            'height_ft.required'        => 'Height ft is required',
+            'height_in.required'        => 'Height in is required',
+            'address.required'          => 'Address is required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'status'    => 0,
+                'message'   => $validate->errors()->messages(),
+            ],200);
+        }
+        $user = User::where('id',auth('api')->user()->id)->where('role','patient')->first();
+        if(is_null($user)){
+            return response()->json([
+                'status'    => 0,
+                'message'   => "User not found",
+            ],200);
+        }else{
             $user->name     = $request->name;
             $user->email    = $request->email;
-            $user->password = $request->password ? Hash::make($request->password): null;
-            $uploaded_file = $request->file('photo');
-            $extn = $uploaded_file->getClientOriginalExtension();
-            $fileName = 'PROFILE_'.rand(100000,999999) . '.' . $extn;
+            if($user->photo !== null){
+               $path = public_path('uploads/patient/profile/'.$user->photo);
+               unlink($path);
+            }
+            $uploaded_file  = $request->file('photo');
+            $extn           = $uploaded_file->getClientOriginalExtension();
+            $fileName       = 'PROFILE_'.rand(100000,999999) . '.' . $extn;
             $uploaded_file->move(public_path('uploads/patient/profile/'), $fileName);
-            $user->photo = $fileName;
+            $user->photo    =$fileName;
             $user->save();
             $patient = $user->patient;
             $patient->blood_group   = $request->blood_group;
@@ -128,6 +243,18 @@ class PatientProfileController extends Controller
 
     }
     public function search(Request $request){
+        $validate = Validator::make($request->all(),[
+            'search_data' => 'required',
+
+        ],[
+            'search_data.required' => 'Search input cannot be empty',
+        ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'status'    => 0,
+                'message'   => $validate->errors()->messages(),
+            ],200);
+        }
         $user_id = auth('api')->user()->id;
         $search_data = $request->search_data;
 

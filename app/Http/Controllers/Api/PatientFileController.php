@@ -7,6 +7,7 @@ use App\Models\Folder;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class PatientFileController extends Controller
 {
@@ -38,7 +39,19 @@ class PatientFileController extends Controller
 
 //upload
     public function upload(Request $request){
-
+        $validate = Validator::make($request->all(),[
+            'folder_id'     => 'required',
+            'file'          => 'required|file|max:5124|mimes:pdf,jpeg,png,jpg,gif,heic',
+            'file_name'     => 'required',
+        ],[
+            'name.required' => 'Folder name is required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'status'    => 0,
+                'message'   => $validate->errors()->messages(),
+            ],200);
+        }
         $folder = Folder::find($request->folder_id);
         if(is_null($folder)){
             return response()->json([
@@ -47,12 +60,7 @@ class PatientFileController extends Controller
             ], 200);
         }else{
             if($folder->user_id == Auth::guard('api')->user()->id){
-                $request->validate([
-                    'file' => 'required|file|max:5124|mimes:pdf,jpeg,png,jpg,gif,heic',
-                ]);
-
                 $uploaded_file = $request->file('file');
-
                 $info = pathinfo( $request->file_name);
                 $filename = $info['filename'] .($request->type == 'prescription' ? 'PR-':'TR-'). rand(1000, 9999) . '.' . $info['extension'];
                 $uploaded_file->move(public_path('uploads/patient/files'), $filename);

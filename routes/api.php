@@ -37,6 +37,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/patient/password/change', [PatientProfileController::class, 'password_change']);
     //logout
     Route::post('/patient/logout',[PatientLogoutController::class, 'logout']);
+    //profile register
+    Route::post('/patient/profile/register', [PatientProfileController::class, 'profile_register']);
     //profile update
     Route::post('/patient/profile/update', [PatientProfileController::class, 'profile_update']);
     //get search data

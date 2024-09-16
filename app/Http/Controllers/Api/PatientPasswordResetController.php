@@ -80,7 +80,7 @@ class PatientPasswordResetController extends Controller
 
         $request->validate([
             'user_id'     => 'required',
-            'password'    => 'required|min:8',
+            'password'    => 'required|min:6',
         ]);
         $user = User::where('role','patient')->where('id', $request->user_id)->first();
         if(is_null($user)){

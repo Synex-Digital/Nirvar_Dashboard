@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class PatientFolderController extends Controller
 {
@@ -29,6 +30,17 @@ class PatientFolderController extends Controller
 
     public function create(Request $request)
     {
+        $validate = Validator::make($request->all(),[
+            'name'    => 'required',
+        ],[
+            'name.required' => 'Folder name is required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'status'    => 0,
+                'message'   => $validate->errors()->messages(),
+            ],200);
+        }
         $user = Auth::guard('api')->user()->id;
         $folder_database = Folder::where('name', $request->name)->first();
 
@@ -51,6 +63,18 @@ class PatientFolderController extends Controller
     }
 
     public function update(Request $request){
+        $validate = Validator::make($request->all(),[
+            'folder_id'    => 'required',
+            'name'    => 'required',
+        ],[
+            'name.required' => 'Folder name cannot be empty',
+        ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'status'    => 0,
+                'message'   => $validate->errors()->messages(),
+            ],200);
+        }
         $folder = Folder::find($request->folder_id);
         if(is_null($folder)){
             return response()->json([
