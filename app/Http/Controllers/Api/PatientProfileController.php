@@ -51,7 +51,7 @@ class PatientProfileController extends Controller
             }
 
             return response()->json([
-                'status'        => 0,
+                'status'        => 1,
                 'message'       => "User found",
                 'name'          => $user->name,
                 'email'         => $user->email,
