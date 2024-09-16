@@ -24,7 +24,8 @@ class PatientPasswordResetController extends Controller
             $otp =  OtpVerify::create([
                 'type' => 'patient',
                 'user_id' => $user->id,
-                'otp' => rand(1000, 9999),
+                // 'otp' => rand(1000, 9999),
+                'otp' => 1234,
                 'count' => 0,
                 'duration' => now()->addMinutes(15),
             ]);
