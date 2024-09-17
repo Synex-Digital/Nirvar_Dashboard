@@ -53,17 +53,20 @@ class PatientProfileController extends Controller
             return response()->json([
                 'status'        => 1,
                 'message'       => "User found",
-                'name'          => $user->name,
-                'email'         => $user->email,
-                'number'        => $user->number,
-                'photo'         =>url('uploads/patient/profile/'.$user->photo) ,
-                'blood_gorup'   => $user->patient->blood_group,
-                'date_of_birth' => $user->patient->date_of_birth,
-                'age'           => $user->patient->date_of_birth ? \Carbon\Carbon::parse($user->patient->date_of_birth)->age : null,
-                'weight'        => $weight,
-                'height'        => $height,
-                'gender'        => $user->patient->gender,
-                'address'       => $user->patient->address,
+                'data'          => [
+                    'name'          => $user->name,
+                    'email'         => $user->email,
+                    'number'        => $user->number,
+                    'photo'         =>url('uploads/patient/profile/'.$user->photo) ,
+                    'blood_gorup'   => $user->patient->blood_group,
+                    'date_of_birth' => $user->patient->date_of_birth,
+                    'age'           => $user->patient->date_of_birth ? \Carbon\Carbon::parse($user->patient->date_of_birth)->age : null,
+                    'weight'        => $weight,
+                    'height'        => $height,
+                    'gender'        => $user->patient->gender,
+                    'address'       => $user->patient->address,
+                ]
+
 
             ],200);
             // return response()->json($user);
@@ -74,7 +77,7 @@ class PatientProfileController extends Controller
         $validate = Validator::make($request->all(),[
             'user_id'       => 'required',
             'name'          => 'required',
-            'email'         => $request->email ? 'required|email' : 'nullable',
+            'email'         => $request->email ? 'required|email|unique:users,email' : 'nullable',
             'password'      => 'required|min:6',
             'gender'        => 'required',
             'date_of_birth' => 'required',
@@ -152,11 +155,12 @@ class PatientProfileController extends Controller
 
     }
     public function profile_update(Request $request){
+        $user = User::find(auth()->user()->id);
         $validate = Validator::make($request->all(),[
             'photo'         => 'required|mimes:jpg,jpeg,png,webp,heif',
             'name'          => 'required',
-            'email'         => 'required|email',
-            'password'      => 'required|min:6',
+            'email'         => 'required|email|unique:users,email,'.$user->id,
+
             'gender'        => 'required',
             'date_of_birth' => 'required',
             'blood_group'   => 'required',
@@ -166,15 +170,13 @@ class PatientProfileController extends Controller
             'address'       => 'required',
 
         ],[
-            'user_id.required'          => 'User id is required',
             'name.required'             => 'Name is required',
             'email.required'            => 'Email is required',
             'email.email'               => 'Email must be a valid email address',
             'gender.required'           => 'Gender is required',
             'date_of_birth.required'    => 'Date of birth is required',
             'blood_group.required'      => 'Blood group is required',
-            'password.required'         => 'Password is required',
-            'password.min'              => 'Password must be at least 6 characters',
+
             'weight.required'           => 'Weight is required',
             'height_ft.required'        => 'Height ft is required',
             'height_in.required'        => 'Height in is required',
@@ -186,7 +188,7 @@ class PatientProfileController extends Controller
                 'message'   => $validate->errors()->messages(),
             ],200);
         }
-        $user = User::where('id',auth('api')->user()->id)->where('role','patient')->first();
+
         if(is_null($user)){
             return response()->json([
                 'status'    => 0,
@@ -274,19 +276,22 @@ class PatientProfileController extends Controller
             return response()->json([
                 'status' => 1,
                 'message' => "success",
-                'folders' => $folders->map(function ($folder) {
-                    return [
-                        'id' => $folder->id,
-                        'name' => $folder->name,
-                    ];
-                }),
-                'files' => $files->map(function ($file) {
-                    return [
-                        'id' => $file->id,
-                        'name' => $file->name,
-                        'folder_id' => $file->folder_id, // Include folder ID if needed
-                    ];
-                }),
+                'data'    => [
+                    'folders' => $folders->map(function ($folder) {
+                        return [
+                            'id' => $folder->id,
+                            'name' => $folder->name,
+                        ];
+                    }),
+                    'files' => $files->map(function ($file) {
+                        return [
+                            'id' => $file->id,
+                            'name' => $file->name,
+                            'folder_id' => $file->folder_id, // Include folder ID if needed
+                        ];
+                    }),
+                ]
+
             ], 200);
     }
     public function password_change(Request $request){

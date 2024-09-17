@@ -169,7 +169,10 @@ class BloodPressureController extends Controller
             ->count();
 
         if ($submissionCount >= 2) {
-            return response()->json(['status' => 0,'error' => 'You can only submit your blood pressure data twice within a 24-hour period.'] );
+            return response()->json([
+                'status' => 0,
+                'error' => 'You can only submit your blood pressure data twice within a 24-hour period.'
+            ], 200);
         }
 
         $bp = new Bloodpressure();

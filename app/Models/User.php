@@ -49,7 +49,7 @@ class User extends Authenticatable
     }
     public function folders(){
 
-        return $this->hasMany(Folder::class, 'user_id', 'id');
+        return $this->hasMany(Folder::class, 'user_id', 'id')->latest();
     }
 
     /**

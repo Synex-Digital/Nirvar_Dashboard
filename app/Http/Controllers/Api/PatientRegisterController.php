@@ -42,13 +42,13 @@ class PatientRegisterController extends Controller
                 return response()->json([
                     'status'    => 1,
                     'message'   => "User already registerd, Please login",
-                ]);
+                ],200);
             }else{
                 return response()->json([
                     'status'    => 1,
                     'message'   => "Number not verified, Please verify your account via OTP",
                     'data'      => $patient
-                ]);
+                ],200);
             }
 
            }else{
@@ -132,7 +132,7 @@ class PatientRegisterController extends Controller
                     return response()->json([
                         'status' => 0,
                         'message'   => "OTP expired!",
-                    ]);
+                    ],200);
                 }else{
                     $user = User::find($otp->user_id);
                     $user->register_at = now();

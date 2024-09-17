@@ -17,8 +17,15 @@ class PatientFolderController extends Controller
         if(count($folders) > 0){
             return response()->json([
                 'status'    => 1,
-                'data'      => $folders,
-            ]);
+                'data'      => $folders->map(function ($folder) {
+                    return [
+                        'id'            => $folder->id,
+                        'user_id'       => $folder->user_id,
+                        'name'          => $folder->name,
+                        'created_at'    => $folder->created_at->format('d-M-y'),
+                    ];
+                }),
+            ], 200);
         }else{
             return response()->json([
                 'status'    => 0,
@@ -64,8 +71,8 @@ class PatientFolderController extends Controller
 
     public function update(Request $request){
         $validate = Validator::make($request->all(),[
-            'folder_id'    => 'required',
-            'name'    => 'required',
+            'folder_id'     => 'required',
+            'name'          => 'required',
         ],[
             'name.required' => 'Folder name cannot be empty',
         ]);

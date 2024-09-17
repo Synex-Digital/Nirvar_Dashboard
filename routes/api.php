@@ -48,10 +48,12 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/patient/folder/create', [PatientFolderController::class, 'create']);
     Route::post('/patient/folder/update', [PatientFolderController::class, 'update']);
     Route::get('/patient/folder/delete/{id}', [PatientFolderController::class, 'delete']);
-    //file get, upload, delete
+    //file get, rename,upload, delete, download
     Route::get('/patient/files/{id}',[PatientFileController::class, 'getFiles']);
     Route::post('/patient/file/upload', [PatientFileController::class, 'upload']);
+    Route::post('/patient/file/rename', [PatientFileController::class, 'rename']);
     Route::get('/patient/file/delete/{id}', [PatientFileController::class, 'delete']);
+    Route::get('/patient/file/download/{id}', [PatientFileController::class, 'download']);
 
     //micro service tool
 
