@@ -20,24 +20,36 @@ class PatientPasswordResetController extends Controller
                 'status'    => 0,
                 'message'   => "User not found",
             ],200);
-        }elseif(!is_null($user->register_at) && !is_null($user->password)){
-            $otp =  OtpVerify::create([
-                'type' => 'patient',
-                'user_id' => $user->id,
+        }elseif(!is_null($user->register_at) ){
+            $otp = OtpVerify::where('user_id', $user->id)->first();
+            if($otp){
                 // 'otp' => rand(1000, 9999),
-                'otp' => 1234,
-                'count' => 0,
-                'duration' => now()->addMinutes(15),
-            ]);
+                $otp->otp = 1234;
+                $otp->duration = now()->addMinutes(3);
+                $otp->save();
+                //  SmsOtp::Send($request->number, 'Otp for password reset is '.$otp->otp.'. Expire in 3 minutes!');
+            }else{
+               $newotp =  OtpVerify::create([
+                    'type' => 'patient',
+                    'user_id' => $user->id,
+                    // 'otp' => rand(1000, 9999),
+                    'otp' => 1234,
+                    'count' => 0,
+                    'duration' => now()->addMinutes(3),
+                ]);
+                  //  SmsOtp::Send($request->number, 'Otp for password reset is '.$newotp->otp.'. Expire in 3 minutes!');
+            }
             return response()->json([
                 'status'    => 1,
                 'message'   => "OTP sent successfully",
-                'user_id'   => $user->id,
+                'data'   => [
+                    'user_id' => $user->id,
+                ]
             ],200);
         }else{
             return response()->json([
                 'status'    => 0,
-                'message'   => "User not Registered",
+                'message'   => "User not verified",
             ],200);
         }
     }
@@ -49,29 +61,49 @@ class PatientPasswordResetController extends Controller
             'otp'        => 'required|digits:4',
         ]);
         $user = User::where('role','patient')->where('id', $request->user_id)->first();
-        $otp = OtpVerify::where('user_id', $user->id)->where('otp', $request->otp)->first();
+        $otp = OtpVerify::where('user_id', $user->id)->first();
         if(is_null($user)){
             return response()->json([
                 'status'    => 0,
                 'message'   => "User not found",
             ],200);
         }else{
-
-            if(is_null($otp)){
+            if($otp->otp != $request->otp){
+                //check otp count
+                if($otp->count >= 3){
+                    return response()->json([
+                        'status' => 0,
+                        'message'   => "OTP max count reached",
+                        'attempt'   => $otp->count
+                    ],200);
+                }
+                $otp->count = $otp->count + 1;
+                $otp->save();
                 return response()->json([
                     'status'    => 0,
-                    'message'   => "Invalid OTP",
-
+                    'message'   => "OTP not matched!",
+                    'attempt'   => $otp->count
                 ],200);
             }else{
-                $otp->delete();
-                $user->remember_token = 'verified';
-                $user->save();
-                return response()->json([
-                    'status'    => 1,
-                    'message'   => "OTP verified successfully",
-                    'user_id'   => $user->id,
-                ],200);
+                 //check otp expriy
+                 if($otp->duration < now()){
+                    return response()->json([
+                        'status' => 0,
+                        'message'   => "OTP expired!",
+                        'data'   => [
+                            'user_id' => $user->id,
+                        ]
+                    ],200);
+                }else{
+                    $otp->delete();
+                    $user->remember_token = 'verified';
+                    $user->save();
+                    return response()->json([
+                        'status'    => 1,
+                        'message'   => "OTP verified successfully",
+                        'user_id'   => $user->id,
+                    ],200);
+                }
             }
         }
     }

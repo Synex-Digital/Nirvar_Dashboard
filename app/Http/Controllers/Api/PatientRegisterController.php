@@ -19,7 +19,7 @@ class PatientRegisterController extends Controller
     public function store(Request $request){
 
            $validate = Validator::make($request->all(), [
-               'number'     => 'required|digits:11|regex:/^0/|unique:users,number,id',
+               'number'     => 'required|digits:11|regex:/^0/',
            ],[
             'number.digits' => 'Phone number must be 11 digits',
             'number.regex'  => 'Phone number must start with 0',
@@ -47,7 +47,9 @@ class PatientRegisterController extends Controller
                 return response()->json([
                     'status'    => 1,
                     'message'   => "Number not verified, Please verify your account via OTP",
-                    'data'      => $patient
+                    'data'      => [
+                        'id' => $patient->id
+                    ]
                 ],200);
             }
 
