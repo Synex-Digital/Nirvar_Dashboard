@@ -40,7 +40,7 @@ class PatientRegisterController extends Controller
             //patient register check
             if($patient->register_at != null){
                 return response()->json([
-                    'status'    => 1,
+                    'status'    => 0,
                     'message'   => "User already registerd, Please login",
                 ],200);
             }else{
