@@ -168,6 +168,7 @@ class PatientFileController extends Controller
             if ($fileParts) {
                 $newFileName = $newName .$fileParts['code'] . $fileParts['extension'];
                 $path = public_path('uploads/patient/files/' . $originalName);
+                dd($path);
                 rename($path, public_path('uploads/patient/files/' .$newFileName));
                 $file->name = $newFileName;
                 $file->save();
