@@ -97,9 +97,9 @@ class PatientFileController extends Controller
                 $file = new File;
                 $file->name = $filename;
                 $file->folder_id = $request->folder_id;
-                $file->type = 'prescription';
+                $file->type = $request->type;
                 $file->save();
-                
+
 
                 return response()->json([
                     'status'    => 1,
