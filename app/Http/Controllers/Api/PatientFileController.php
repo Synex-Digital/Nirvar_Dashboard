@@ -22,6 +22,12 @@ class PatientFileController extends Controller
             ], 200);
         }else{
             if($patient->id == $folder->user_id){
+                if($folder->files == null){
+                    return response()->json([
+                        'status'    => 1,
+                        'message'   => "No files found",
+                    ]);
+                }else{
                 return response()->json([
                     'status'    => 1,
                     'message'   => "success",
@@ -52,6 +58,7 @@ class PatientFileController extends Controller
 
                     ]
                 ],200);
+            }
             }else{
                 return response()->json([
                     'status'    => 0,
