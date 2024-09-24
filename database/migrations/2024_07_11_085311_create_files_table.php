@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('folder_id');
             $table->string('name');
-            $table->enum('type',['presctiption', 'test-report'])->default('presctiption');
+            $table->enum('type',['prescription', 'test-report'])->default('prescription');
             $table->timestamps();
         });
     }

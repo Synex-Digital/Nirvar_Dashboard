@@ -65,9 +65,10 @@ class PatientFileController extends Controller
 
 //upload
     public function upload(Request $request){
+
         $validate = Validator::make($request->all(),[
             'folder_id'     => 'required',
-            'file'          => 'required|file|max:5124|mimes:pdf,jpeg,png,jpg,gif,heic',
+            'file'          => 'required|file|max:5124|mimes:pdf,jpeg,png,jpg,gif,heic,PNG,JPG,JPEG,PDF,HEIC',
             'file_name'     => 'required',
         ],[
             'name.required' => 'Folder name is required',
@@ -86,17 +87,19 @@ class PatientFileController extends Controller
             ], 200);
         }else{
             if($folder->user_id == Auth::guard('api')->user()->id){
+                $explodedName = explode('.', $request->file_name);
+                $name = implode('.', array_slice($explodedName, 0, -1));
+                $extention = end($explodedName);
 
                 $uploaded_file = $request->file('file');
-                $extention = $uploaded_file->getClientOriginalExtension();
-
-                $filename = $request->file_name.($request->type == 'prescription' ? '_PR-':'_TR-'). rand(1000, 9999) . '.' . $extention;
+                $filename = $name.($request->type == 'prescription' ? '_PR-':'_TR-'). rand(1000, 9999) . '.' . $extention;
                 $uploaded_file->move(public_path('uploads/patient/files'), $filename);
                 $file = new File;
                 $file->name = $filename;
                 $file->folder_id = $request->folder_id;
-                $file->type = $request->type;
+                $file->type = 'prescription';
                 $file->save();
+                dd($file);
 
                 return response()->json([
                     'status'    => 1,

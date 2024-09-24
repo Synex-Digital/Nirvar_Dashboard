@@ -70,3 +70,4 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/patient/diabetes/monthly', [DiabetesController::class, 'diabetes_monthly']);
     Route::post('/patient/diabetes/store', [DiabetesController::class, 'diabetes_store']);
 });
+
