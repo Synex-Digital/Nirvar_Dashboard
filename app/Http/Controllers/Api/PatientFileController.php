@@ -99,7 +99,7 @@ class PatientFileController extends Controller
                 $file->folder_id = $request->folder_id;
                 $file->type = 'prescription';
                 $file->save();
-                dd($file);
+                
 
                 return response()->json([
                     'status'    => 1,
