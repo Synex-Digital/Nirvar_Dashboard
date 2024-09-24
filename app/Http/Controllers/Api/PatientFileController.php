@@ -168,8 +168,15 @@ class PatientFileController extends Controller
             if ($fileParts) {
                 $newFileName = $newName .$fileParts['code'] . $fileParts['extension'];
                 $path = public_path('uploads/patient/files/' . $originalName);
-                dd($path);
-                rename($path, public_path('uploads/patient/files/' .$newFileName));
+                $new_path = public_path('uploads/patient/files/' . $newFileName);
+                if(file_exists($path)){
+                    rename($path, $new_path);
+                }else{
+                    return response()->json([
+                        'status' => 0,
+                        'message' => 'File not found to rename'
+                    ], 200);
+                }
                 $file->name = $newFileName;
                 $file->save();
             } else {
