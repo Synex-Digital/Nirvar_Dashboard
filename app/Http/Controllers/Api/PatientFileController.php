@@ -22,6 +22,7 @@ class PatientFileController extends Controller
             ], 200);
         }else{
             if($patient->id == $folder->user_id){
+                dd($folder->files);
                 if($folder->files == null){
                     return response()->json([
                         'status'    => 1,
