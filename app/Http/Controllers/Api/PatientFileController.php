@@ -22,6 +22,12 @@ class PatientFileController extends Controller
             ], 200);
         }else{
             if($patient->id == $folder->user_id){
+                if($folder->files->isEmpty()){
+                    return response()->json([
+                        'status'    => 1,
+                        'message'   => "No files found",
+                    ]);
+                }else{
                 return response()->json([
                     'status'    => 1,
                     'message'   => "success",
@@ -54,6 +60,7 @@ class PatientFileController extends Controller
 
                     ]
                 ],200);
+            }
             }else{
                 return response()->json([
                     'status'    => 0,
@@ -99,7 +106,7 @@ class PatientFileController extends Controller
                 $file = new File;
                 $file->name = $filename;
                 $file->folder_id = $request->folder_id;
-                $file->type = 'prescription';
+                $file->type = $request->type;
                 $file->save();
 
 
@@ -162,6 +169,16 @@ class PatientFileController extends Controller
             $fileParts = $this->splitFileName($originalName);
             if ($fileParts) {
                 $newFileName = $newName .$fileParts['code'] . $fileParts['extension'];
+                $path = public_path('uploads/patient/files/' . $originalName);
+                $new_path = public_path('uploads/patient/files/' . $newFileName);
+                if(file_exists($path)){
+                    rename($path, $new_path);
+                }else{
+                    return response()->json([
+                        'status' => 0,
+                        'message' => 'File not found to rename'
+                    ], 200);
+                }
                 $file->name = $newFileName;
                 $file->save();
             } else {

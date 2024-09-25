@@ -22,6 +22,7 @@ class PatientFolderController extends Controller
                         'id'            => $folder->id,
                         'user_id'       => $folder->user_id,
                         'name'          => $folder->name,
+                        'file_count'    => count($folder->files),
                         'created_at'    => $folder->created_at->format('d-M-y'),
                     ];
                 }),
@@ -45,7 +46,7 @@ class PatientFolderController extends Controller
         if ($validate->fails()) {
             return response()->json([
                 'status'    => 0,
-                'message'   => $validate->errors()->messages(),
+                'message'   => 'Folder name is required',
             ],200);
         }
         $user = Auth::guard('api')->user()->id;
