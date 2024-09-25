@@ -36,6 +36,7 @@ class PatientFileController extends Controller
                                 'name'          => $file->name,
                                 'rename'        => $renameName,
                                 'type'          => $file->type,
+                                'path'          => url('uploads/patient/files/' . $file->name),
                                 'created_at'    => $file->created_at->format('d-M-y'),
                             ];
                         }),
@@ -46,6 +47,7 @@ class PatientFileController extends Controller
                                 'id'            => $file->id,
                                 'name'          => $file->name,
                                 'type'          => $file->type,
+                                'path'          => url('uploads/patient/files/' . $file->name),
                                 'created_at'    => $file->created_at->format('d-M-y'),
                             ];
                         })
@@ -99,7 +101,7 @@ class PatientFileController extends Controller
                 $file->folder_id = $request->folder_id;
                 $file->type = 'prescription';
                 $file->save();
-                
+
 
                 return response()->json([
                     'status'    => 1,
