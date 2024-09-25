@@ -47,11 +47,14 @@ class PatientFileController extends Controller
                             ];
                         }),
                         'test_report' =>$folder->test_report_files->map(function ($file){
+                            $rename = $this->splitFileName($file->name);
+                            $renameName = $rename ? $rename['name'] : null;
                             return[
                                 'folder_id'     => $file->folder_id,
                                 'folder_name'   => $file->folder->name,
                                 'id'            => $file->id,
                                 'name'          => $file->name,
+                                'rename'        => $renameName,
                                 'type'          => $file->type,
                                 'path'          => url('uploads/patient/files/' . $file->name),
                                 'created_at'    => $file->created_at->format('d-M-y'),
