@@ -28,8 +28,8 @@ class BloodPressureController extends Controller
                 'status'    => 1,
                 'message'   => "success",
                 'data'      => $data,
-                'avg_systolic'   => ceil($data->avg('systolic') + 0.5),
-                'avg_diastolic'  => ceil($data->avg('diastolic') + 0.5),
+                'avg_systolic'   => ceil($data->avg('systolic') ),
+                'avg_diastolic'  => ceil($data->avg('diastolic') ),
             ], 200);
         }
 

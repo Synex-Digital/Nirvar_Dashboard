@@ -112,17 +112,17 @@ class DiabetesController extends Controller
 
         // Define the start date of each week in the current month
         $weekOneStart = $firstDayOfMonth;
-        $weekTwoStart = $firstDayOfMonth->copy()->subDays(7);
-        $weekThreeStart = $firstDayOfMonth->copy()->subDays(14);
-        $weekFourStart = $firstDayOfMonth->copy()->subDays(21);
-        $weekFiveStart = $firstDayOfMonth->copy()->subDays(28);
+        $weekTwoStart = $firstDayOfMonth->copy()->addDays(7);
+        $weekThreeStart = $firstDayOfMonth->copy()->addDays(14);
+        $weekFourStart = $firstDayOfMonth->copy()->addDays(21);
+        $weekFiveStart = $firstDayOfMonth->copy()->addDays(28);
 
         //Query to calculate weekly averages
         $weeklyAverages = [
             'Week One' => DB::table('diabetes')
                 ->where('user_id', $user->id)
                 ->select(DB::raw('MIN(blood_sugar_level) as minimum, MAX(blood_sugar_level) as maximum'))
-                ->whereBetween('created_at', [ $weekTwoStart,$weekOneStart])
+                ->whereBetween('created_at', [ $weekOneStart,$weekTwoStart])
                 ->first(),
 
             'Week Two' => DB::table('diabetes')
