@@ -12,6 +12,27 @@ use Illuminate\Support\Facades\Validator;
 class PatientFolderController extends Controller
 {
 
+    public function selectFolders(){
+        $folders = Auth::guard('api')->user()->folders;
+        if(count($folders) > 0){
+            return response()->json([
+                'status'    => 1,
+                'data'      => $folders->map(function ($folder) {
+                    return [
+                        'id'            => $folder->id,
+                        'name'          => $folder->name,
+
+                    ];
+                }),
+            ], 200);
+        }else{
+            return response()->json([
+                'status'    => 0,
+                'message'   => "No folders found",
+            ], 200);
+        }
+
+    }
     public function getFolders(){
         $folders = Auth::guard('api')->user()->folders;
         if(count($folders) > 0){

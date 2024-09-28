@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PatientFileController;
 use App\Http\Controllers\Api\PatientLoginController;
 use App\Http\Controllers\Api\BloodPressureController;
 use App\Http\Controllers\Api\DiabetesController;
+use App\Http\Controllers\Api\FolderShareController;
 use App\Http\Controllers\Api\PatientFolderController;
 use App\Http\Controllers\Api\PatientLogoutController;
 use App\Http\Controllers\Api\PatientProfileController;
@@ -30,6 +31,10 @@ Route::post('/patient/login',[PatientLoginController::class, 'login']);
 //?
 //push notification token
 Route::post('/patient/fcm-token', [PatientLoginController::class, 'get_fcm_token']);
+//folder share
+Route::get('/patient/folders/{folder}/share',[FolderShareController::class, 'share']);
+Route::get('/folder/{token}', 'FolderController@access')->name('folder.access')->middleware('signed');
+
 
 Route::middleware('auth:api')->group(function () {
     //profile
@@ -44,6 +49,8 @@ Route::middleware('auth:api')->group(function () {
     //get search data
     Route::post('/patient/search', [PatientProfileController::class, 'search']);
     //folder get, create, update, delete
+
+    Route::get('/patient/select/folders', [PatientFolderController::class, 'selectFolders']);
     Route::get('/patient/folders', [PatientFolderController::class, 'getFolders']);
     Route::post('/patient/folder/create', [PatientFolderController::class, 'create']);
     Route::post('/patient/folder/update', [PatientFolderController::class, 'update']);
