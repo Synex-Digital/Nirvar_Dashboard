@@ -32,11 +32,21 @@ Route::post('/patient/login',[PatientLoginController::class, 'login']);
 //push notification token
 Route::post('/patient/fcm-token', [PatientLoginController::class, 'get_fcm_token']);
 //folder share
-Route::get('/patient/folders/{folder}/share',[FolderShareController::class, 'share']);
-Route::get('/folder/{token}', 'FolderController@access')->name('folder.access')->middleware('signed');
 
+Route::get('/folder/{folder}', [FolderShareController::class, 'access'])->name('folder.access')->middleware('signed');
+//file view
+Route::get('/image/{fileId}', [FolderShareController::class, 'show'])
+     ->name('image.show')
+     ->middleware('signed');
+
+Route::get('/patient/file/{filename}',[FolderShareController::class, 'generateImage'])->name('file.share');
+Route::get('/file/{filename}', [FolderShareController::class, 'imageAccess'])
+     ->name('image.access')
+     ->middleware('signed');
 
 Route::middleware('auth:api')->group(function () {
+    //folder share
+    Route::get('/patient/folders/{folder}/share',[FolderShareController::class, 'share']);
     //profile
     Route::get('/patient/profile/{id}', [PatientProfileController::class, 'profile']);
     Route::post('/patient/password/change', [PatientProfileController::class, 'password_change']);
@@ -61,6 +71,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/patient/file/rename', [PatientFileController::class, 'rename']);
     Route::get('/patient/file/delete/{id}', [PatientFileController::class, 'delete']);
     Route::get('/patient/file/download/{id}', [PatientFileController::class, 'download']);
+    Route::get('/patient/files/latest/two',[PatientFileController::class, 'latest']);
 
     //micro service tool
 

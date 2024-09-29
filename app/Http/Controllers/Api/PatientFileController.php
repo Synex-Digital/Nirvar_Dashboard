@@ -227,5 +227,23 @@ class PatientFileController extends Controller
         }
     }
 
+    public function latest(){
+
+        $patient = Auth::guard('api')->user();
+        $folders = $patient->folders;
+        $files = File::whereIn('folder_id', $folders->pluck('id'))->latest()->get()->take(2);
+        if(is_null($files)){
+            return response()->json([
+                'status'    => 0,
+                'message'   => "No files found",
+            ]);
+        }else{
+            return response()->json([
+                'status'    => 1,
+                'message'   => "success",
+                'data'      => $files
+            ]);
+        }
+    }
 
 }
