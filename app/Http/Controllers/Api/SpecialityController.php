@@ -10,7 +10,7 @@ class SpecialityController extends Controller
 {
     public function specialities(){
         $specialities = Specialist::all();
-        if(!$specialities){
+        if($specialities->isEmpty()){
             return response()->json([
                 'status' => 0,
                 'message' => "No data found",
