@@ -235,13 +235,29 @@ class PatientFileController extends Controller
         if($files->isEmpty()){
             return response()->json([
                 'status'    => 0,
-                'message'   => "No files found",
+                'message'   => "No file is uploaded recently",
             ]);
         }else{
             return response()->json([
                 'status'    => 1,
                 'message'   => "success",
-                'data'      => $files
+                'data'      =>
+                   $files->map(function ($file){
+                        $rename = $this->splitFileName($file->name);
+                        $renameName = $rename ? $rename['name'] : null;
+                        return [
+                            'folder_id'     => $file->folder_id,
+                            'folder_name'   => $file->folder->name,
+                            'id'            => $file->id,
+                            'name'          => $file->name,
+                            'rename'        => $renameName,
+                            'type'          => $file->type,
+                            'path'          => url('uploads/patient/files/' . $file->name),
+                            'created_at'    => $file->created_at->diffForHumans(),
+
+                        ];
+                    })
+
             ]);
         }
     }

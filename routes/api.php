@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\PatientProfileController;
 
 use App\Http\Controllers\Api\PatientRegisterController;
 use App\Http\Controllers\Api\PatientPasswordResetController;
+use App\Http\Controllers\Api\SpecialityController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -72,6 +73,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/patient/file/delete/{id}', [PatientFileController::class, 'delete']);
     Route::get('/patient/file/download/{id}', [PatientFileController::class, 'download']);
     Route::get('/patient/files/latest/two',[PatientFileController::class, 'latest']);
+    //speciality
+    Route::get('/patient/doctor/specialities', [SpecialityController::class, 'specialities']);
 
     //micro service tool
 
