@@ -232,7 +232,7 @@ class PatientFileController extends Controller
         $patient = Auth::guard('api')->user();
         $folders = $patient->folders;
         $files = File::whereIn('folder_id', $folders->pluck('id'))->latest()->get()->take(2);
-        if(is_null($files)){
+        if($files->isEmpty()){
             return response()->json([
                 'status'    => 0,
                 'message'   => "No files found",
