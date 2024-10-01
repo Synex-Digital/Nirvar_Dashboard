@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
+use function PHPUnit\Framework\isEmpty;
+
 class BloodPressureController extends Controller
 {
 
@@ -35,12 +37,33 @@ class BloodPressureController extends Controller
 
     }
     public function blood_pressure_seven_days(){
+
         $user = auth('api')->user();
-        $data = BloodPressure::where('user_id', $user->id)
-            ->whereBetween('created_at', [Carbon::now()->subDays(7), Carbon::now()])
-            ->orderBy('created_at', 'desc')
-            ->get();
-        if($data->count() == 0){
+        // $data = BloodPressure::where('user_id', $user->id)
+        //     ->whereBetween('created_at', [Carbon::now()->subDays(7), Carbon::now()])
+        //     ->orderBy('created_at', 'desc')
+        //     ->get();
+        $lastSevenDaysData = BloodPressure::where('user_id', $user->id)
+        ->where('created_at', '>=', Carbon::now()->subDays(7))
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->groupBy(function ($date) {
+            return $date->created_at->format('Y-m-d');
+        });
+        $averages = [];
+
+
+        foreach ($lastSevenDaysData as $day => $data) {
+            // For each day, calculate the average systolic and diastolic values
+            $systolicAvg = $data->avg('systolic');
+            $diastolicAvg = $data->avg('diastolic');
+
+            $averages[$day] = [
+                'systolic_avg' => $systolicAvg,
+                'diastolic_avg' => $diastolicAvg,
+            ];
+        }
+        if(Empty($averages)){
             return response()->json([
                 'status'    => 0,
                 'message'   => "No data found",
@@ -49,7 +72,7 @@ class BloodPressureController extends Controller
             return response()->json([
                 'status'    => 1,
                 'message'   => "success",
-                'data'      => $data,
+                'data'      => $averages,
             ], 200);
         }
 
@@ -179,23 +202,31 @@ class BloodPressureController extends Controller
         $bp->user_id = auth('api')->user()->id;
         $bp->systolic = $request->systolic;
         $bp->diastolic = $request->diastolic;
-
-        if ($bp->systolic <= 90 || $bp->diastolic <= 60) {
-            $bp->category = "Low blood pressure";
-        } elseif (($bp->systolic > 90 && $bp->systolic < 130) || ($bp->diastolic > 60 && $bp->diastolic < 80)) {
-            $bp->category = "Normal blood pressure ";
-        }
-        elseif (($bp->systolic > 130 ) || ($bp->diastolic > 80 )) {
-            $bp->category = "High blood pressure";
-        }
-        else {
-            $bp->category = "Blood pressure classification not found.";
-        }
-
+        $category = $this->category($request->systolic, $request->diastolic);
+        $bp->category = $category;
         $bp->save();
         return response()->json([
             'status' => 1,
             'message' => 'Blood pressure data stored successfully.'
         ], 200);
     }
+
+
+    function category($systolic , $diastolic){
+        $category = "";
+        if ($systolic <= 90 || $diastolic <= 60) {
+            $category = "Low";
+        } elseif (($systolic > 90 && $systolic < 130) || ($diastolic > 60 && $diastolic < 80)) {
+            $category = "Normal";
+        }
+        elseif (($systolic > 130 ) || ($diastolic > 80 )) {
+            $category = "High";
+        }
+        else {
+            $category = "NA";
+        }
+        return $category;
+
+    }
+
 }

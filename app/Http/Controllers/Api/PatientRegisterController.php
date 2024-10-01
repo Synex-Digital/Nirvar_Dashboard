@@ -168,10 +168,29 @@ class PatientRegisterController extends Controller
         }
         $otp = OtpVerify::where('type', 'patient')->where('user_id', $request->user_id)->first();
         if($otp == null ){
-            return response()->json([
-                'status' => 0,
-                'message'   => "User not found!",
-            ],200);
+            //check user
+            $user = User::find($request->user_id);
+            if($user == null){
+                return response()->json([
+                    'status' => 0,
+                    'message'   => "User not found!",
+                ],200);
+            }else{
+                $newOtp =new OtpVerify;
+                $newOtp->type = 'patient';
+                $newOtp->user_id = $user->id;
+                // $newOtp->otp = rand(1000, 9999);
+                $newOtp->otp = 1234;
+                $newOtp->count = 0;
+                $newOtp->duration = now()->addMinutes(3);
+                $newOtp->save();
+                // SmsOtp::Send($user->number, 'Your OTP for registration is '.$newOtp->otp.'. Expire in 3 minutes.');
+                return response()->json([
+                    'status' => 1,
+                    'message'   => "OTP sent successfully, Expire in 3 minutes",
+                ],200);
+            }
+
         }else{
             // $otp->otp = rand(1000, 9999);
             $otp->otp = 1234;

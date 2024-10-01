@@ -111,6 +111,7 @@ class PatientPasswordResetController extends Controller
 //reset password
     public function reset(Request $request){
 
+       
         $request->validate([
             'user_id'     => 'required',
             'password'    => 'required|min:6',

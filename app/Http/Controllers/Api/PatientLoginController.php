@@ -42,7 +42,8 @@ class PatientLoginController extends Controller
             }elseif($user->password == null){
                 return response()->json([
                     'status'    => 0,
-                    'message'   => 'Please set a password and update your profile',
+                    'message'   => 'Please verify and update your profile',
+                    'user_id'   => $user->id
                 ],200);
 
             }elseif(Hash::check($request->password, $user->password)){
