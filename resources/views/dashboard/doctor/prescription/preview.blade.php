@@ -4,7 +4,9 @@
     Preview Prescription
 @endsection
 @section('style')
-    <link rel="stylesheet" href="{{ asset('dashboard_assets/vendor/select2/css/select2.min.css') }}">
+
+
+
     {{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" /> --}}
     <style>
         .form-control-sm {
@@ -54,7 +56,7 @@
     {
         $data = $input;
 
-// Initialize variables
+    // Initialize variables
         $weight = null;
         $height = null;
         if($data){
@@ -117,7 +119,7 @@
                     <div class="modal-body">
 
                         <div class="mb-2">
-                            <input type="text" class="form-control" name="email" value="{{ $patients->user ? $patients->user->email : 'UNKNOWN' }}" placeholder="email">
+                            <input required type="text" class="form-control" name="email" value="{{ $patients->user ? $patients->user->email : 'UNKNOWN' }}" placeholder="email">
                             <input type="hidden"  name="prescription_id" value="{{ $prescriptions->id }}" >
 
                         </div>
@@ -270,30 +272,42 @@
 
 @endsection
 @section('script')
-    <script src="{{ asset('dashboard_assets/vendor/select2/js/select2.full.min.js') }}"></script>
-    <script src="{{ asset('dashboard_assets/js/plugins-init/select2-init.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-    <script>
-        $(document).ready(function() {
-            let printable = document.getElementById('printable').innerHTML;
-            let print = document.getElementById('print');
-            var originalContent = document.body.innerHTML;
+<script src="{{ asset('dashboard_assets/vendor/select2/js/select2.full.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.min.js"></script>
+<script>
+    document.getElementById('print').addEventListener('click', function() {
+        generatePDF();
+    });
 
-            print.addEventListener('click', function() {
+    function generatePDF() {
+        const content = document.getElementById('printable');
 
+        html2canvas(content).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 210;
+            const pageHeight = pdf.internal.pageSize.height;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
 
-                document.body.innerHTML = printable;
-                window.print();
-                document.body.innerHTML = originalContent;
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
 
-                // To re-run any JavaScript that was lost during the content replacement
-                window.location.reload();
-            });
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            pdf.save('prescription.pdf');
         });
-    </script>
-
-
-
+    }
+</script>
 
 
 

@@ -3,23 +3,29 @@
 namespace App\Http\Controllers;
 
 use ArrayIterator;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Knp\Snappy\Pdf;
 use App\Models\User;
 use App\Models\Drugs;
 use MultipleIterator;
+
 use App\Models\Patient;
 use App\Models\Medicine;
 
 use App\Models\Prescription;
-
 use Illuminate\Http\Request;
 use App\Mail\NewPrescription;
-use Barryvdh\DomPDF\Facade\Pdf;
-
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
+use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
 use App\Notifications\TestNotication;
 use Intervention\Image\Facades\Image;
+use Barryvdh\Snappy\Facades\SnappyPdf;
+use Barryvdh\Snappy\Facades\SnappyImage;
 use Illuminate\Support\Facades\Validator;
 
 class PrescriptionController extends Controller
@@ -224,10 +230,7 @@ class PrescriptionController extends Controller
             // $doctors = Auth::user()->doctor;
             // $patients = Patient::find($patient->id);
             $prescriptions = Prescription::find($prescription->id);
-            //pdf
-
-
-            // return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
+            return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
         }
     }
 
@@ -349,6 +352,7 @@ class PrescriptionController extends Controller
         $prescriptions = Prescription::where('reference', $slug)->get()->first();
         $doctors = $prescriptions->doctor;
         $patients = $prescriptions->patient;
+        $this->generatePDF($prescriptions);
          return view('dashboard.doctor.prescription.preview', [
                 'doctors' => $doctors,
                 'patients' => $patients,
@@ -371,16 +375,6 @@ class PrescriptionController extends Controller
             'prescriptions' => $prescription,
             'doctors' => $doctors,
             'patients' => $patients
-        ]);
-    }
-    public function Preview($slug){
-
-        $prescription = Prescription::where('reference', $slug)->get()->first();
-        $doctors = $prescription->doctor;
-        $patients = $prescription->patient;
-        return view('prescriptionPDF',[
-            'prescription' => $prescription,
-
         ]);
     }
 
