@@ -48,19 +48,20 @@ class BloodPressureController extends Controller
         ->orderBy('created_at', 'desc')
         ->get()
         ->groupBy(function ($date) {
-            return $date->created_at->format('Y-m-d');
+            return $date->created_at->format('d-m-Y');
         });
         $averages = [];
 
 
         foreach ($lastSevenDaysData as $day => $data) {
             // For each day, calculate the average systolic and diastolic values
-            $systolicAvg = $data->avg('systolic');
-            $diastolicAvg = $data->avg('diastolic');
-
+            $systolicAvg = ceil( $data->avg('systolic'));
+            $diastolicAvg =ceil( $data->avg('diastolic'));
+            $category = $this->category($systolicAvg, $diastolicAvg);
             $averages[$day] = [
                 'systolic_avg' => $systolicAvg,
                 'diastolic_avg' => $diastolicAvg,
+                'category' => $category
             ];
         }
         if(Empty($averages)){
@@ -77,6 +78,13 @@ class BloodPressureController extends Controller
         }
 
     }
+    function getWeeklyAverage($userId, $startDate, $endDate) {
+        return DB::table('blood_pressures')
+            ->where('user_id', $userId)
+            ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->first();
+    }
     public function blood_pressure_weekly(){
         $user = auth('api')->user();
         // Get the current date and the first day of the current month
@@ -84,38 +92,73 @@ class BloodPressureController extends Controller
         $firstDayOfMonth = $currentDate->copy()->startOfMonth();
 
         // Define the start date of each week in the current month
-        $weekOneStart = $firstDayOfMonth;
-        $weekTwoStart = $firstDayOfMonth->copy()->addDays(7);
-        $weekThreeStart = $firstDayOfMonth->copy()->addDays(14);
-        $weekFourStart = $firstDayOfMonth->copy()->addDays(21);
-        $weekFiveStart = $firstDayOfMonth->copy()->addDays(28);
-
-        // Query to calculate weekly averages
-        $weeklyAverages = [
-            'Week One' => DB::table('blood_pressures')
-                ->where('user_id', $user->id)
-                ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
-                ->whereBetween('created_at', [$weekOneStart, $weekTwoStart])
-                ->first(),
-
-            'Week Two' => DB::table('blood_pressures')
-                ->where('user_id', $user->id)
-                ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
-                ->whereBetween('created_at', [$weekTwoStart, $weekThreeStart])
-                ->first(),
-
-            'Week Three' => DB::table('blood_pressures')
-                ->where('user_id', $user->id)
-                ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
-                ->whereBetween('created_at', [$weekThreeStart, $weekFourStart])
-                ->first(),
-
-            'Week Four' => DB::table('blood_pressures')
-                ->where('user_id', $user->id)
-                ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
-                ->whereBetween('created_at', [$weekFourStart, $weekFiveStart])
-                ->first(),
+        // $weekOneStart = $firstDayOfMonth;
+        // $weekTwoStart = $firstDayOfMonth->copy()->addDays(7);
+        // $weekThreeStart = $firstDayOfMonth->copy()->addDays(14);
+        // $weekFourStart = $firstDayOfMonth->copy()->addDays(21);
+        // $weekFiveStart = $firstDayOfMonth->copy()->addDays(28);
+        $weekStartDates = [
+            $firstDayOfMonth,
+            $firstDayOfMonth->copy()->addDays(7),
+            $firstDayOfMonth->copy()->addDays(14),
+            $firstDayOfMonth->copy()->addDays(21),
+            $firstDayOfMonth->copy()->addDays(28)
         ];
+        $weeklyAverages = [];
+        for ($i = 0; $i < count($weekStartDates) - 1; $i++) {
+            $data = $this->getWeeklyAverage($user->id, $weekStartDates[$i], $weekStartDates[$i + 1]);
+            $weeklyAverages['Week ' . ($i + 1)] = [
+                'avg_systolic' => $data->avg_systolic,
+                'avg_diastolic' => $data->avg_diastolic,
+                'category' => $this->category($data->avg_systolic, $data->avg_diastolic),
+            ];
+        }
+
+        // $dataOne =  DB::table('blood_pressures')
+        //     ->where('user_id', $user->id)
+        //     ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+        //     ->whereBetween('created_at', [$weekOneStart, $weekTwoStart])
+        //     ->first();
+        // $dataTwo =  DB::table('blood_pressures')
+        //     ->where('user_id', $user->id)
+        //     ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+        //     ->whereBetween('created_at', [$weekTwoStart, $weekThreeStart])
+        //     ->first();
+        // $dataThree = DB::table('blood_pressures')
+        //     ->where('user_id', $user->id)
+        //     ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+        //     ->whereBetween('created_at', [$weekThreeStart, $weekFourStart])
+        //     ->first();
+        // $dataFour = DB::table('blood_pressures')
+        //     ->where('user_id', $user->id)
+        //     ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+        //     ->whereBetween('created_at', [$weekFourStart, $weekFiveStart])
+        //     ->first();
+        // // Query to calculate weekly averages
+        // $weeklyAverages = [
+        //     'Week One' =>[
+        //         'avg_systolic' => $dataOne->avg_systolic,
+        //         'avg_diastolic' => $dataOne->avg_diastolic,
+        //         'category' => $this->category($dataOne->avg_systolic, $dataOne->avg_diastolic),
+        //     ],
+        //     'Week Two' =>[
+        //         'avg_systolic' => $dataTwo->avg_systolic,
+        //         'avg_diastolic' => $dataTwo->avg_diastolic,
+        //         'category' => $this->category($dataTwo->avg_systolic, $dataTwo->avg_diastolic),
+        //     ] ,
+
+        //     'Week Three' =>[
+        //         'avg_systolic' => $dataThree->avg_systolic,
+        //         'avg_diastolic' => $dataThree->avg_diastolic,
+        //         'category' => $this->category($dataThree->avg_systolic, $dataThree->avg_diastolic),
+        //     ] ,
+
+        //     'Week Four' => [
+        //         'avg_systolic' => $dataFour->avg_systolic,
+        //         'avg_diastolic' => $dataFour->avg_diastolic,
+        //         'category' => $this->category($dataFour->avg_systolic, $dataFour->avg_diastolic),
+        //     ],
+        // ];
         // Fetch data for the past 4 weeks
         return response()->json([
             'status'    => 1,
@@ -128,41 +171,75 @@ class BloodPressureController extends Controller
         $user = auth('api')->user();
        // Get the current date and define the start of the last four months
        $currentDate = Carbon::now();
-       $monthOneStart = $currentDate->copy()->startOfMonth();
-       $monthOneEnd = $currentDate->copy()->endOfMonth();
+       // Function to get start and end dates for a given month offset
+        function getMonthRange($offset) {
+            $start = Carbon::now()->subMonths($offset)->startOfMonth();
+            $end = Carbon::now()->subMonths($offset)->endOfMonth();
+            return [$start, $end];
+        }
 
-       $monthTwoStart = $currentDate->copy()->subMonth(1)->startOfMonth();
-       $monthTwoEnd = $currentDate->copy()->subMonth(1)->endOfMonth();
-
-       $monthThreeStart =$currentDate->copy()->subMonth(3)->endOfMonth();
-       $monthThreeEnd = $currentDate->copy()->subMonth(1)->startOfMonth();
-
-
-       $monthFourStart = $currentDate->copy()->subMonth(3)->startOfMonth();
-       $monthFourEnd = $currentDate->copy()->subMonth(3)->endOfMonth();
-
-        // Query to calculate monthly averages and round them
-        $monthlyAverages = [
-            'Month One' => DB::table('blood_pressures')
+        // Function to calculate the monthly average
+        function getMonthlyAverage($userId, $startDate, $endDate) {
+            return DB::table('blood_pressures')
+                ->where('user_id', $userId)
                 ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
-                ->whereBetween('created_at', [$monthOneStart, $monthOneEnd])
-                ->first(),
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->first();
+        }
+    //    $monthOneStart = $currentDate->copy()->startOfMonth();
+    //    $monthOneEnd = $currentDate->copy()->endOfMonth();
 
-            'Month Two' => DB::table('blood_pressures')
-                ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
-                ->whereBetween('created_at', [$monthTwoStart, $monthTwoEnd])
-                ->first(),
+    //    $monthTwoStart = $currentDate->copy()->subMonth(1)->startOfMonth();
+    //    $monthTwoEnd = $currentDate->copy()->subMonth(1)->endOfMonth();
 
-            'Month Three' => DB::table('blood_pressures')
-                ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
-                ->whereBetween('created_at', [$monthThreeStart, $monthThreeEnd])
-                ->first(),
+    //    $monthThreeStart =$currentDate->copy()->subMonth(3)->endOfMonth();
+    //    $monthThreeEnd = $currentDate->copy()->subMonth(1)->startOfMonth();
 
-            'Month Four' => DB::table('blood_pressures')
-                ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
-                ->whereBetween('created_at', [$monthFourStart, $monthFourEnd])
-                ->first(),
-        ];
+
+    //    $monthFourStart = $currentDate->copy()->subMonth(3)->startOfMonth();
+    //    $monthFourEnd = $currentDate->copy()->subMonth(3)->endOfMonth();
+        // Loop to calculate the averages for the last four months
+        $monthlyAverages = [];
+        for ($i = 0; $i < 4; $i++) {
+            list($startDate, $endDate) = getMonthRange($i);
+            $data = getMonthlyAverage($user->id, $startDate, $endDate);
+
+            if ($data) {
+                $monthlyAverages['Month ' . ($i + 1)] = [
+                    'avg_systolic' => $data->avg_systolic,
+                    'avg_diastolic' => $data->avg_diastolic,
+                    'category' => $this->category($data->avg_systolic, $data->avg_diastolic),
+                ];
+            } else {
+                $monthlyAverages['Month ' . ($i + 1)] = [
+                    'avg_systolic' => null,
+                    'avg_diastolic' => null,
+                    'category' => 'NA',  // No data for this month
+                ];
+            }
+        }
+        // // Query to calculate monthly averages and round them
+        // $monthlyAverages = [
+        //     'Month One' => DB::table('blood_pressures')
+        //         ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+        //         ->whereBetween('created_at', [$monthOneStart, $monthOneEnd])
+        //         ->first(),
+
+        //     'Month Two' => DB::table('blood_pressures')
+        //         ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+        //         ->whereBetween('created_at', [$monthTwoStart, $monthTwoEnd])
+        //         ->first(),
+
+        //     'Month Three' => DB::table('blood_pressures')
+        //         ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+        //         ->whereBetween('created_at', [$monthThreeStart, $monthThreeEnd])
+        //         ->first(),
+
+        //     'Month Four' => DB::table('blood_pressures')
+        //         ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
+        //         ->whereBetween('created_at', [$monthFourStart, $monthFourEnd])
+        //         ->first(),
+        // ];
         // Fetch data for the past 4 months
         return response()->json([
             'status'    => 1,
@@ -213,6 +290,9 @@ class BloodPressureController extends Controller
 
 
     function category($systolic , $diastolic){
+        if($systolic == 0 || $diastolic == 0){
+            return "NA";
+        }
         $category = "";
         if ($systolic <= 90 || $diastolic <= 60) {
             $category = "Low";
