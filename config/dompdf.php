@@ -4,38 +4,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Debug PNG Images
-    |--------------------------------------------------------------------------
-    |
-    | Enables debugging for PNG images. This setting allows you to see any issues
-    | that may occur with PNG images during the PDF generation process.
-    |
-    */
-    'debugPng' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Debug JPG Images
-    |--------------------------------------------------------------------------
-    |
-    | Enables debugging for JPG images.
-    |
-    */
-    'debugJpg' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Debug SVG Images
-    |--------------------------------------------------------------------------
-    |
-    | Enables debugging for SVG images.
-    |
-    */
-    'debugSvg' => true,
-
-
-    /*
-    |--------------------------------------------------------------------------
     | Settings
     |--------------------------------------------------------------------------
     |
@@ -298,7 +266,7 @@ return [
          *
          * @var bool
          */
-        'enable_remote' => true,
+        'enable_remote' => false,
 
         /**
          * List of allowed remote hosts
