@@ -17,7 +17,7 @@ use App\Http\Controllers\MailController;
 
 Auth::routes();
 
-
+Route::get('/preview/{slug}', [PrescriptionController::class, 'Preview']);
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/', function () {

@@ -14,6 +14,7 @@ class MailController extends Controller
     function mail(Request $request)
     {
         $prescription = Prescription::find($request->prescription_id);
+
         if($prescription){
             $this->sendMail($request->email, $prescription);
             flash()->options(['position' => 'bottom-right'])->success('Sent Successfully');

@@ -14,6 +14,8 @@ class NewPrescription extends Mailable
     use Queueable, SerializesModels;
 
     public $prescription;
+
+
     /**
      * Create a new message instance.
      */
@@ -42,7 +44,8 @@ class NewPrescription extends Mailable
 
             view: 'mail.prescription',
             with: [
-                'prescription' => $this->prescription
+                'prescription' => $this->prescription,
+
             ]
         );
     }
