@@ -229,7 +229,7 @@ class PatientFileController extends Controller
                 'message' => 'success',
                 'data'   => $url
 
-            ]);
+            ], 200);
 
         }
     }

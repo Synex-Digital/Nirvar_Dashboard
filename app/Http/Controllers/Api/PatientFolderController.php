@@ -71,7 +71,7 @@ class PatientFolderController extends Controller
             ],200);
         }
         $user = Auth::guard('api')->user()->id;
-        $folder_database = Folder::where('name', $request->name)->first();
+        $folder_database = Folder::where('user_id', $user)->where('name', $request->name)->first();
 
         if(is_null($folder_database)){
             $folder = new Folder;
@@ -111,7 +111,7 @@ class PatientFolderController extends Controller
                 'message'   => "Folder not found",
             ], 200);
         }else{
-            if(Folder::where('name', $request->name)->first()){
+            if(Folder::where('user_id', $folder->user_id)->where('name', $request->name)->first()){
                 return response()->json([
                     'status'    => 0,
                     'message'   => "Folder name already exists",
