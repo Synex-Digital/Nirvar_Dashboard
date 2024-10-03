@@ -51,8 +51,8 @@ class BloodPressureController extends Controller
             return $date->created_at->format('d-m-Y');
         });
         $averages = [];
-        $avg_sys = '';
-        $avg_dia = '';
+        $avg_sys = 0;
+        $avg_dia = 0;
 
         foreach ($lastSevenDaysData as $day => $data) {
             // For each day, calculate the average systolic and diastolic values
