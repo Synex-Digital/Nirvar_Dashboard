@@ -206,7 +206,7 @@ class DiabetesController extends Controller
         $data = getMonthlyAverage($user->id, $startDate, $endDate);
 
         if ($data) {
-            $average = number_format( $data->avg_level,1);
+            $average = $data->avg_level;
             $monthlyAverages['Month ' . ($i + 1)] = [
                'avg_level' => $average,
                 'category' => $this->category($average),
