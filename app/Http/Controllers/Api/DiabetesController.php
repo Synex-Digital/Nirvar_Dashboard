@@ -112,7 +112,7 @@ class DiabetesController extends Controller
                 'status'    => 1,
                 'message'   => "success",
                 'data'      => $averages,
-                'avg_level' => ($avg_level / count($averages)),
+                'avg_level' => ceil(($avg_level / count($averages))),
             ], 200);
         }
     }
