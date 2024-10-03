@@ -175,7 +175,6 @@ class PatientProfileController extends Controller
             'gender.required'           => 'Gender is required',
             'date_of_birth.required'    => 'Date of birth is required',
             'blood_group.required'      => 'Blood group is required',
-
             'weight.required'           => 'Weight is required',
             'height_ft.required'        => 'Height ft is required',
             'height_in.required'        => 'Height in is required',
