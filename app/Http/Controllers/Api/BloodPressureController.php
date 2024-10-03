@@ -48,7 +48,7 @@ class BloodPressureController extends Controller
         ->orderBy('created_at', 'desc')
         ->get()
         ->groupBy(function ($date) {
-            return $date->created_at->format('d-m-Y');
+            return $date->created_at->format('Y-m-d');
         });
         $averages = [];
         $avg_sys = 0;
