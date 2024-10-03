@@ -89,7 +89,7 @@ class BloodPressureController extends Controller
         $user = auth('api')->user();
         // Get the current date and the first day of the current month
         $currentDate = Carbon::now();
-        $firstDayOfMonth = $currentDate->copy()->startOfMonth();
+        $firstDayOfMonth = $currentDate->copy();
 
         // Define the start date of each week in the current month
         // $weekOneStart = $firstDayOfMonth;
@@ -99,10 +99,10 @@ class BloodPressureController extends Controller
         // $weekFiveStart = $firstDayOfMonth->copy()->addDays(28);
         $weekStartDates = [
             $firstDayOfMonth,
-            $firstDayOfMonth->copy()->addDays(7),
-            $firstDayOfMonth->copy()->addDays(14),
-            $firstDayOfMonth->copy()->addDays(21),
-            $firstDayOfMonth->copy()->addDays(28)
+            $firstDayOfMonth->copy()->subDays(7),
+            $firstDayOfMonth->copy()->subDays(14),
+            $firstDayOfMonth->copy()->subDays(21),
+            $firstDayOfMonth->copy()->subDays(28)
         ];
         $weeklyAverages = [];
         for ($i = 0; $i < count($weekStartDates) - 1; $i++) {
