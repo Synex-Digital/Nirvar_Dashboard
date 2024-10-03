@@ -109,40 +109,38 @@ class DiabetesController extends Controller
         }
     }
     function getWeeklyAverage($userId, $startDate, $endDate) {
-        return  DB::table('diabetes')
-        ->where('user_id', $userId)
-        ->select(DB::raw('ROUND(AVG(blood_sugar_level),1) as avg_level'))
-        ->whereBetween('created_at', [ $startDate,$endDate])
-        ->first();
+        return DB::table('diabetes')
+            ->where('user_id', $userId)
+            ->select(DB::raw('ROUND(AVG(blood_sugar_level), 1) as avg_level'))
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->first();
     }
     public function diabetes_weekly(){
         $user = auth('api')->user();
-        // Get the current date and the first day of the current month
-        $currentDate = Carbon::now();
-        $firstDayOfMonth = $currentDate->copy()->startOfMonth();
+    // Get the current date and start of the current week
+    $currentDate = Carbon::now();
+    $weekStart = $currentDate->startOfWeek();
 
-        // Define the start date of each week in the current month
-        // $weekOneStart = $firstDayOfMonth;
-        // $weekTwoStart = $firstDayOfMonth->copy()->addDays(7);
-        // $weekThreeStart = $firstDayOfMonth->copy()->addDays(14);
-        // $weekFourStart = $firstDayOfMonth->copy()->addDays(21);
-        // $weekFiveStart = $firstDayOfMonth->copy()->addDays(28);
-        $weekStartDates = [
-            $firstDayOfMonth,
-            $firstDayOfMonth->copy()->addDays(7),
-            $firstDayOfMonth->copy()->addDays(14),
-            $firstDayOfMonth->copy()->addDays(21),
-            $firstDayOfMonth->copy()->addDays(28)
+    $weeklyAverages = [];
+    for ($i = 0; $i < 4; $i++) {
+        // Calculate end date and start date for each week
+        $endDate = $weekStart->copy();
+        $startDate = $weekStart->copy()->subWeek();
+
+        // Get weekly average data
+        $data = $this->getWeeklyAverage($user->id, $startDate, $endDate);
+        $average = number_format($data->avg_level, 1);
+
+        // Store data in the array with proper formatting
+        $weeklyAverages['Week ' . ($i + 1)] = [
+            'avg_level' => $average,
+            'category' => $this->category($average),
         ];
-        $weeklyAverages = [];
-        for ($i = 0; $i < count($weekStartDates) - 1; $i++) {
-            $data = $this->getWeeklyAverage($user->id, $weekStartDates[$i], $weekStartDates[$i + 1]);
-            $average = number_format($data->avg_level,1);
-            $weeklyAverages['Week ' . ($i + 1)] = [
-                'avg_level' => $average,
-                'category' => $this->category($average),
-            ];
-        }
+
+        // Move to the previous week
+        $weekStart->subWeek();
+    }
+
         //Query to calculate weekly averages
         // $weeklyAverages = [
         //     'Week One' => DB::table('diabetes')
@@ -261,7 +259,7 @@ class DiabetesController extends Controller
         }
         $category = "";
         if ($value < 3.9) {
-            $category = "Low Sugar(Hypoglycemia)";
+            $category = "Low";
         } elseif ($value>= 4 && $value <= 7) {
             $category = "Normal";
         } elseif ($value > 7) {
