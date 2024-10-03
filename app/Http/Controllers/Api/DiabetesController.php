@@ -91,8 +91,8 @@ class DiabetesController extends Controller
                 $value_two = $values->last()->blood_sugar_level;
             } else {
                 // Handle cases where there might not be exactly two values
-                $value_one = $values->first()->blood_sugar_level;
-                $value_two = $values->count() > 1 ? $values->last()->blood_sugar_level : $value_one; // Duplicate or use only one value
+                $value_one = $values->first()->blood_sugar_level ?? null;
+                $value_two = null; // Duplicate or use only one value
             }
             $average = number_format(($value_one + $value_two) / 2, 1);
             $category = $this->category($average); // Assuming category() determines category based on the average
