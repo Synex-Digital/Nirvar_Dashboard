@@ -84,15 +84,18 @@ class DiabetesController extends Controller
             return $date->created_at->format('d-m-Y');
         });
         $averages = [];
+        $avg_level = 0;
         foreach ($data as $day => $values) {
             if ($values->count() == 2) {
                 // Assume that the collection has exactly two values, get them directly
                 $value_one = $values->first()->blood_sugar_level;
                 $value_two = $values->last()->blood_sugar_level;
+                $avg_level += ($value_one + $value_two) / 2;
             } else {
                 // Handle cases where there might not be exactly two values
                 $value_one = $values->first()->blood_sugar_level ?? null;
                 $value_two = null; // Duplicate or use only one value
+                $avg_level += $value_one;
             }
             $averages[$day] = [
                 'value_one' => $value_one,
@@ -109,6 +112,7 @@ class DiabetesController extends Controller
                 'status'    => 1,
                 'message'   => "success",
                 'data'      => $averages,
+                'avg_level' => ($avg_level / count($averages)),
             ], 200);
         }
     }

@@ -77,8 +77,8 @@ class BloodPressureController extends Controller
                 'status'    => 1,
                 'message'   => "success",
                 'data'      => $averages,
-                'avg_systolic'   => ceil($avg_sys/7),
-                'avg_diastolic'  => ceil($avg_dia/7),
+                'avg_systolic'   => ceil($avg_sys/count($averages)),
+                'avg_diastolic'  => ceil($avg_dia/ count($averages)),
             ], 200);
         }
 
