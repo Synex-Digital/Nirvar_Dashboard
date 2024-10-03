@@ -94,11 +94,11 @@ class DiabetesController extends Controller
                 $value_one = $values->first()->blood_sugar_level ?? null;
                 $value_two = null; // Duplicate or use only one value
             }
-            $average = number_format(($value_one + $value_two) / 2, 1);
+            $average = ($value_one + $value_two);
             $category = $this->category($average); // Assuming category() determines category based on the average
             $averages[$day] = [
-                'value_one' => number_format($value_one, 1),
-                'value_two' => number_format($value_two, 1),
+                'value_one' => $value_one,
+                'value_two' => $value_two,
                 'category' => $category
             ];
         }
