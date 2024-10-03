@@ -223,7 +223,11 @@ class PatientFileController extends Controller
             ], 200);
         }else{
             $path = public_path('uploads/patient/files/' . $file->name);
-            return response()->download($path);
+            return response()->json([
+                'status' => 1,
+                'message' => 'success',
+
+            ])->download($path);
         }
     }
 
