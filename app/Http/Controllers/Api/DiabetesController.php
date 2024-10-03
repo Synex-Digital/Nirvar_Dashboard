@@ -136,7 +136,12 @@ class DiabetesController extends Controller
 
         // Get weekly average data
         $data = $this->getWeeklyAverage($user->id, $startDate, $endDate);
-        $average = $data ? number_format($data->avg_level, 1) : null;
+        if(empty($data)){
+            $average = null;
+        }else{
+            $average = number_format($data->avg_level,1);
+        }
+
 
         // Store data in the array with proper formatting
         $weeklyAverages['Week ' . ($i + 1)] = [
