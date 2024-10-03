@@ -88,8 +88,8 @@ class BloodPressureController extends Controller
     public function blood_pressure_weekly(){
         $user = auth('api')->user();
         // Get the current date and the first day of the current month
-        $currentDate = Carbon::now();
-        $firstDayOfMonth = $currentDate->copy();
+        // $currentDate = Carbon::now();
+        // $firstDayOfMonth = $currentDate->copy();
 
         // Define the start date of each week in the current month
         // $weekOneStart = $firstDayOfMonth;
@@ -97,23 +97,36 @@ class BloodPressureController extends Controller
         // $weekThreeStart = $firstDayOfMonth->copy()->addDays(14);
         // $weekFourStart = $firstDayOfMonth->copy()->addDays(21);
         // $weekFiveStart = $firstDayOfMonth->copy()->addDays(28);
-        $weekStartDates = [
-            $firstDayOfMonth,
-            $firstDayOfMonth->copy()->subDays(7),
-            $firstDayOfMonth->copy()->subDays(14),
-            $firstDayOfMonth->copy()->subDays(21),
-            $firstDayOfMonth->copy()->subDays(28)
-        ];
-        $weeklyAverages = [];
-        for ($i = 0; $i < count($weekStartDates) - 1; $i++) {
-            $data = $this->getWeeklyAverage($user->id, $weekStartDates[$i], $weekStartDates[$i + 1]);
-            $weeklyAverages['Week ' . ($i + 1)] = [
-                'avg_systolic' => $data->avg_systolic,
-                'avg_diastolic' => $data->avg_diastolic,
-                'category' => $this->category($data->avg_systolic, $data->avg_diastolic),
-            ];
-        }
 
+// Initialize Carbon to manage date operations
+$currentDate = Carbon::now();
+$weekStart = $currentDate->startOfWeek();
+
+$weeklyAverages = [];
+for ($i = 0; $i < 4; $i++) {
+    // Calculate start and end dates for each week
+    $endDate = $weekStart->copy();
+    $startDate = $weekStart->copy()->subWeek();
+
+    // Get weekly average data
+    $data = $this->getWeeklyAverage($user->id, $startDate, $endDate);
+
+    // Store data in the array with proper formatting
+    $weeklyAverages['Week ' . ($i + 1)] = [
+        'avg_systolic' => $data->avg_systolic,
+        'avg_diastolic' => $data->avg_diastolic,
+        'category' => $this->category($data->avg_systolic, $data->avg_diastolic),
+    ];
+
+    // Move to the previous week
+    $weekStart->subWeek();
+}
+
+return response()->json([
+    'status' => 1,
+    'message' => "success",
+    'data' => $weeklyAverages,
+], 200);
         // $dataOne =  DB::table('blood_pressures')
         //     ->where('user_id', $user->id)
         //     ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
