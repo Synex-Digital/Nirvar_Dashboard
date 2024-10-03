@@ -160,7 +160,6 @@ class PatientProfileController extends Controller
             'photo'         => 'required|mimes:jpg,jpeg,png,webp,heif',
             'name'          => 'required',
             'email'         => 'required|email|unique:users,email,'.$user->id,
-
             'gender'        => 'required',
             'date_of_birth' => 'required',
             'blood_group'   => 'required',
