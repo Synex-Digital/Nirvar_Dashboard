@@ -89,22 +89,14 @@ class DiabetesController extends Controller
                 // Assume that the collection has exactly two values, get them directly
                 $value_one = $values->first()->blood_sugar_level;
                 $value_two = $values->last()->blood_sugar_level;
-            }elseif ($values->count() == 0) {
-                // Handle cases where there are no values
-                $value_one = null;
-                $value_two = null;
-            }
-            else {
+            } else {
                 // Handle cases where there might not be exactly two values
                 $value_one = $values->first()->blood_sugar_level ?? null;
                 $value_two = null; // Duplicate or use only one value
             }
-            $average = ($value_one + $value_two);
-            $category = $this->category($average); // Assuming category() determines category based on the average
             $averages[$day] = [
                 'value_one' => $value_one,
                 'value_two' => $value_two,
-                'category' => $category
             ];
         }
         if(Empty($averages)){
