@@ -51,13 +51,16 @@ class BloodPressureController extends Controller
             return $date->created_at->format('d-m-Y');
         });
         $averages = [];
-
+        $avg_sys = '';
+        $avg_dia = '';
 
         foreach ($lastSevenDaysData as $day => $data) {
             // For each day, calculate the average systolic and diastolic values
             $systolicAvg = ceil( $data->avg('systolic'));
             $diastolicAvg =ceil( $data->avg('diastolic'));
             $category = $this->category($systolicAvg, $diastolicAvg);
+            $avg_sys += $systolicAvg;
+            $avg_dia += $diastolicAvg;
             $averages[$day] = [
                 'systolic_avg' => $systolicAvg,
                 'diastolic_avg' => $diastolicAvg,
@@ -74,6 +77,8 @@ class BloodPressureController extends Controller
                 'status'    => 1,
                 'message'   => "success",
                 'data'      => $averages,
+                'avg_systolic'   => ceil($avg_sys/7),
+                'avg_diastolic'  => ceil($avg_dia/7),
             ], 200);
         }
 
