@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
 use ArrayIterator;
+use Dompdf\Dompdf;
 use App\Models\User;
 use App\Models\Drugs;
 use MultipleIterator;
-use App\Models\Patient;
-use App\Models\Medicine;
 
+use App\Models\Patient;
+
+use App\Models\Medicine;
 use App\Models\Prescription;
 
 use Illuminate\Http\Request;
 use App\Mail\NewPrescription;
-use Barryvdh\DomPDF\Facade\Pdf;
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
@@ -335,25 +336,85 @@ class PrescriptionController extends Controller
     }
 
     public function prescriptionPreview($slug){
-        // $user = Auth::user();  // Get the user instance by ID or any other identifier
 
-        // // Creating a new notification instance
-        // $notification = new TestNotication();  // Assuming TestNotication extends PushNotification
+    $prescriptions = Prescription::where('reference', $slug)->get()->first();
+    function calculateAge($birthdate, $currentDate)
+    {
+        $birthDate = new DateTime($birthdate);
+        $currentDate = new DateTime($currentDate);
+        $age = $currentDate->diff($birthDate)->y;
+        return $age;
+    }
+    function weight($input) {
+        $weight = null;
+        $parts = explode(',', $input);
+        if (isset($parts[0])) {
+            $weight = trim($parts[0]);
+        }
+        return $weight;
+    }
+    function height($input) {
+        $height = null;
+        $feet = null;
+        $inches = null;
+        $parts = explode(',', $input);
+        if (isset($parts[1])) {
+            $height = trim($parts[1]);
+        }
+        if ($height !== null) {
+            preg_match('/(\d+)\s*FT\s*(\d*)\s*IN*/i', $height, $matches);
+            if (isset($matches[1])) {
+                $feet = $matches[1];
+            }
+            if (isset($matches[2])) {
+                $inches = $matches[2];
+            }
+        }
+        return $height;
+    }
+    function tests($input) {
+        $tests = null;
+        $parts = $input ? explode('" "', trim($input, '"')) : [];
+        if (isset($parts)) {
+            $tests = $parts;
+        }
+        return $tests;
+    }
+    function prescriptionAdvice($input) {
+        $advice = null;
+        $parts = $input ? explode('" "', trim($input, '"')) : [];
+        if (isset($parts)) {
+            $advice = $parts;
+        }
+        return $advice;
+    }
+    $age = calculateAge($prescriptions->patient->date_of_birth, $prescriptions->created_at);
+    $weight = weight($prescriptions->patient->weight_height);
+    $height = height($prescriptions->patient->weight_height);
+    // instantiate and use the dompdf class
+    $dompdf = new Dompdf();
+    $dompdf->loadHtml(view('prescriptionPDF',[
+        'prescription' => $prescriptions,
+        'age' => $age,
+        'weight' => $weight,
+        'height' => $height,
+    ]));
+    // (Optional) Setup the paper size and orientation
+    $dompdf->setPaper('A4');
+    // Render the HTML as PDF
+    $dompdf->render();
+    // Output the generated PDF to Browser
+    $dompdf->stream();
 
-        // // Sending the notification
-        // $user->notify($notification);
 
-
-
-
-        $prescriptions = Prescription::where('reference', $slug)->get()->first();
-        $doctors = $prescriptions->doctor;
-        $patients = $prescriptions->patient;
-         return view('dashboard.doctor.prescription.preview', [
-                'doctors' => $doctors,
-                'patients' => $patients,
-                'prescriptions' => $prescriptions,
-            ]);
+        // $prescriptions = Prescription::where('reference', $slug)->get()->first();
+        // $doctors = $prescriptions->doctor;
+        // $patients = $prescriptions->patient;
+        //  return view('dashboard.doctor.prescription.preview', [
+        //         'doctors' => $doctors,
+        //         'patients' => $patients,
+        //         'prescriptions' => $prescriptions,
+        //     ]);
     }
 
     public function adminPrescriptionShow(){

@@ -84,14 +84,21 @@ class DiabetesController extends Controller
             return $date->created_at->format('d-m-Y');
         });
         $averages = [];
-        foreach($data as $day => $values){
-            $minimun = $values->min('blood_sugar_level');
-            $maximum = $values->max('blood_sugar_level');
-            $average = number_format($values->avg('blood_sugar_level'),1);
-            $category = $this->category($average);
+        foreach ($data as $day => $values) {
+            if ($values->count() == 2) {
+                // Assume that the collection has exactly two values, get them directly
+                $value_one = $values->first()->blood_sugar_level;
+                $value_two = $values->last()->blood_sugar_level;
+            } else {
+                // Handle cases where there might not be exactly two values
+                $value_one = $values->first()->blood_sugar_level;
+                $value_two = $values->count() > 1 ? $values->last()->blood_sugar_level : $value_one; // Duplicate or use only one value
+            }
+            $average = number_format(($value_one + $value_two) / 2, 1);
+            $category = $this->category($average); // Assuming category() determines category based on the average
             $averages[$day] = [
-                'minimum' => number_format($minimun, 1),
-                'maximum' => number_format($maximum, 1),
+                'value_one' => number_format($value_one, 1),
+                'value_two' => number_format($value_two, 1),
                 'category' => $category
             ];
         }
