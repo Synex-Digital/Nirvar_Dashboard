@@ -65,20 +65,35 @@
                         <div class="prescription active">
                             <div class="container">
                                 <div class="masonry">
-                                    @foreach ($folder->prescription_files as $file)
-                                        <div class="item mb-4    ">
-                                            @php
-                                                $tempUrl = URL::temporarySignedRoute('image.show', now()->addMinutes(10), ['fileId' => $file->id]);
-                                            @endphp
-                                            <img src="{{ $tempUrl }}" class="img-fluid rounded shadow-sm " alt="Prescription Image">
-                                            <div class="icon">
+                                    @if(is_null($folder->prescription_files))
+                                    <p class="">No Files Available</p>
+                                    @else
+                                        @foreach ($folder->prescription_files as $file)
+                                            <div class="item mb-4    ">
+                                                @php
+                                                    $tempUrl = URL::temporarySignedRoute('image.show', now()->addMinutes(10), ['fileId' => $file->id]);
+                                                    $extension = pathinfo($file->name, PATHINFO_EXTENSION);
+                                                    $pdf = false;
+                                                    if($extension == 'pdf' || $extension == 'PDF'){
+                                                            $pdf = true;
+                                                    }
+                                                @endphp
+                                                @if($pdf == false)
 
-                                                <a href="{{ $tempUrl }}" class="view-icon " title="View"><i class="fas fa-eye"></i></a>
-                                                <a href="{{ $tempUrl }}" download class="download-icon " title="Download"><i class="fas fa-download"></i></a>
+                                                <img src="{{ $tempUrl }}" class="img-fluid rounded shadow-sm " alt="Prescription Image">
+                                                @else
+                                                <object data="{{ $tempUrl }}" type="application/pdf" width="100%" height="100%" class="img-fluid rounded shadow-sm" alt="Prescription Image">
+                                                </object>
+                                                @endif
+
+                                                <div class="icon">
+
+                                                    <a href="{{ $tempUrl }}" class="view-icon " title="View"><i class="fas fa-eye"></i></a>
+                                                    <a href="{{ $tempUrl }}" download class="download-icon " title="Download"><i class="fas fa-download"></i></a>
+                                                </div>
                                             </div>
-                                        </div>
-
-                                    @endforeach
+                                        @endforeach
+                                    @endif
                                 </div>
                             </div>
 
@@ -87,6 +102,10 @@
                         <div class="test-report">
                             <div class="container">
                                 <div class="masonry">
+
+                                   @if ($folder->test_report_files->isEmpty())
+                                    <p class="">No Files Available</p>
+                                   @else
                                     @foreach ($folder->test_report_files as $file)
                                         <div class="item mb-4">
                                             @php
@@ -99,6 +118,7 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                   @endif
                                 </div>
                             </div>
                         </div>

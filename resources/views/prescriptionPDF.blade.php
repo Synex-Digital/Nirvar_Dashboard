@@ -133,15 +133,12 @@ ul {
         <div class="diagnosis" style="position: absolute;">
             <h4>Diagnosis Tests:</h4>
             <ol>
-                <li>sadfasdf</li>
-                <li>sadfasdf</li>
-                <li>sadfasdf</li>
-                <li>sadfasdf</li>
-                {{-- @forelse ($tests as $data )
+
+                @forelse ($tests as $data )
                     <li>{{$data}}</li>
                 @empty
                     <li>No Tests</li>
-                @endforelse --}}
+                @endforelse
             </ol>
         </div>
         <div class="medicine-advice">
@@ -166,16 +163,11 @@ ul {
             <div class="advice">
                 <h4>Advice:</h4>
                 <ol>
-                    <li>asfdasdfas</li>
-                    <li>asfdasdfas</li>
-                    <li>asfdasdfas</li>
-                    <li>asfdasdfas</li>
-                    <li>asfdasdfas</li>
-                    {{-- @forelse($advice as $data)
+                    @forelse($advice as $data)
                         <li>{{$data}}</li>
                     @empty
                         <li>No Advice</li>
-                    @endforelse --}}
+                    @endforelse
                 </ol>
             </div>
         </div>
