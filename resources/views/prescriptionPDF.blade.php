@@ -60,6 +60,9 @@ ul {
 .diagnosis ol li{
     list-style-type: disc !important;
 }
+.diagnosis{
+    width: 50%;
+}
 .details{
     margin-top: 0;
     margin-bottom: 5px;
@@ -72,6 +75,7 @@ ul {
 }
 .medicine{
     margin-right: 40px;
+
 }
 .medicine-advice{
    position: absolute;

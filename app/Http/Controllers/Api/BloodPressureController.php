@@ -281,9 +281,10 @@ return response()->json([
             ],200);
         }
 
-
+        $startDate = Carbon::today()->setTime(0, 0, 0);
+        $endDate = Carbon::today()->setTime(23, 59, 59);
         $submissionCount = BloodPressure::where('user_id', auth('api')->user()->id)
-            ->where('created_at', '>=', Carbon::now()->subDay())
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->count();
 
         if ($submissionCount >= 2) {

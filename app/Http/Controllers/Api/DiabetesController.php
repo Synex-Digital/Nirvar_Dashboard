@@ -28,16 +28,17 @@ class DiabetesController extends Controller
         $user = auth('api')->user();
 
         // Check the number of submissions in the last 24 hours
+        $startTime = Carbon::now()->setTime(0,0,0);
+        $endTime = Carbon::now()->setTime(23,59,59);
         $submissionCount = Diabetes::where('user_id', $user->id)
-            ->where('created_at', '>=', Carbon::now()->subHours(24))
+            ->whereBetween('created_at', [$startTime, $endTime])
             ->count();
-
-        // if ($submissionCount >= 2) {
-        //     return response()->json([
-        //         'status' => 0,
-        //         'message' => 'You can only make 2 submissions in the last 24 hours.'
-        //     ], 200);
-        // }
+        if ($submissionCount >= 2) {
+            return response()->json([
+                'status' => 0,
+                'message' => 'You can only make 2 submissions in the last 24 hours.'
+            ], 200);
+        }
         $diabetes = new Diabetes();
         $diabetes->user_id = $user->id;
         $diabetes->blood_sugar_level = $request->blood_sugar_level;
