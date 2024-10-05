@@ -81,12 +81,12 @@ ul {
     list-style-type: disc !important;
 }
 .medicine{
-    margin-right: 200px;
+    /* margin-right: 200px; */
 
 }
 .medicine-advice{
    position: absolute;
-   right: -120px;
+   right: 0px;
    margin-top: 0px;
 }
 </style>

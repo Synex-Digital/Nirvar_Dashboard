@@ -2,26 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use DateTime;
+
 use ArrayIterator;
-use Dompdf\Dompdf;
 use App\Models\User;
 use App\Models\Drugs;
 use MultipleIterator;
-
-use App\Models\Folder;
-
 use App\Models\Patient;
 use App\Models\Medicine;
-use App\Models\File as Files;
 use App\Models\Prescription;
 use Illuminate\Http\Request;
 use App\Mail\NewPrescription;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Mail;
-use App\Notifications\TestNotication;
-use Intervention\Image\Facades\Image;
+use App\Jobs\GeneratePrescriptionPdf;
 use Illuminate\Support\Facades\Validator;
 
 class PrescriptionController extends Controller
@@ -147,6 +140,7 @@ class PrescriptionController extends Controller
             // $doctors = Auth::user()->doctor;
             // $patients = $user->patient;
             $prescriptions = Prescription::find($prescription->id);
+            GeneratePrescriptionPdf::dispatch($prescriptions);
             return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
 
 
@@ -228,8 +222,8 @@ class PrescriptionController extends Controller
             $prescriptions = Prescription::find($prescription->id);
             //pdf
 
-
-            // return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
+            GeneratePrescriptionPdf::dispatch($prescriptions);
+            return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
         }
     }
 
@@ -337,99 +331,7 @@ class PrescriptionController extends Controller
     }
 
     public function prescriptionPreview($slug){
-        $prescriptions = Prescription::where('reference', $slug)->get()->first();
-        function calculateAge($birthdate, $currentDate)
-        {
-            $birthDate = new DateTime($birthdate);
-            $currentDate = new DateTime($currentDate);
-            $age = $currentDate->diff($birthDate)->y;
-            return $age;
-        }
-        function weight($input) {
-            $weight = null;
-            $parts = explode(',', $input);
-            if (isset($parts[0])) {
-                $weight = trim($parts[0]);
-            }
-            return $weight;
-        }
-        function height($input) {
-            $height = null;
-            $feet = null;
-            $inches = null;
-            $parts = explode(',', $input);
-            if (isset($parts[1])) {
-                $height = trim($parts[1]);
-            }
-            if ($height !== null) {
-                preg_match('/(\d+)\s*FT\s*(\d*)\s*IN*/i', $height, $matches);
-                if (isset($matches[1])) {
-                    $feet = $matches[1];
-                }
-                if (isset($matches[2])) {
-                    $inches = $matches[2];
-                }
-            }
-            return $height;
-        }
-        function tests($input) {
-            $tests = null;
-            $parts = $input ? explode('" "', trim($input, '"')) : [];
-            if (isset($parts)) {
-                $tests = $parts;
-            }
-            return $tests;
-        }
-        function prescriptionAdvice($input) {
-            $advice = null;
-            $parts = $input ? explode('" "', trim($input, '"')) : [];
-            if (isset($parts)) {
-                $advice = $parts;
-            }
-            return $advice;
-        }
-        $age = calculateAge($prescriptions->patient->date_of_birth, $prescriptions->created_at);
-        $weight = weight($prescriptions->patient->weight_height);
-        $height = height($prescriptions->patient->weight_height);
-        //test
-        $tests = tests($prescriptions->tests);
-        //advice
-        $advice = prescriptionAdvice($prescriptions->prescription_advice);
-        // instantiate and use the dompdf class
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml(view('prescriptionPDF',[
-            'prescription' => $prescriptions,
-            'age' => $age,
-            'weight' => $weight,
-            'height' => $height,
-            'tests' => $tests,
-            'advice' => $advice
-        ]));
-        // (Optional) Setup the paper size and orientation
-        $dompdf->setPaper('A4');
-        // Render the HTML as PDF
-        $dompdf->render();
-        // Output the generated PDF to public folder
-        $output = $dompdf->output();
-        //check folder if not exists
-        $department_name = $prescriptions->doctor->docHasSpec? $prescriptions->doctor->docHasSpec->speciality->name : 'UNKNOWN';
-        $user = $prescriptions->patient->user;
-        $folders = Folder::where('user_id', $user->id)->where('name', $department_name)->first();
-        $new_folder = null;
-        if(!$folders){
-            $new_folder = new Folder;
-            $new_folder->user_id = $user->id;
-            $new_folder->name = $department_name;
-            $new_folder->save();
-        }
-        $file_name = 'Prescription'.'_PR-'. rand(1000, 9999).'.pdf'; ;
-        $new_file = new Files;
-        $new_file->folder_id = $folders ? $folders->id : $new_folder->id;
-        $new_file->name =$file_name;
-        $new_file->type = 'prescription';
-        $new_file->save();
-        $filePath = public_path('uploads/patient/files/' . $file_name);
-        file_put_contents($filePath, $output);
+
         // preview the prescription
         $prescriptions = Prescription::where('reference', $slug)->get()->first();
         $doctors = $prescriptions->doctor;
@@ -460,13 +362,8 @@ class PrescriptionController extends Controller
     }
     public function Preview($slug){
 
-        $prescription = Prescription::where('reference', $slug)->get()->first();
-        $doctors = $prescription->doctor;
-        $patients = $prescription->patient;
-        return view('prescriptionPDF',[
-            'prescription' => $prescription,
-
-        ]);
+        $prescription = Prescription::where('reference', 'NRVR-F17UBD')->get()->first();
+        GeneratePrescriptionPdf::dispatch($prescription);
     }
 
     protected function mail($mail, $data = null)
