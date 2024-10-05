@@ -391,6 +391,10 @@ class PrescriptionController extends Controller
     $age = calculateAge($prescriptions->patient->date_of_birth, $prescriptions->created_at);
     $weight = weight($prescriptions->patient->weight_height);
     $height = height($prescriptions->patient->weight_height);
+    //test
+    $tests = tests($prescriptions->tests);
+    //advice
+    $advice = prescriptionAdvice($prescriptions->prescription_advice);
     // instantiate and use the dompdf class
     $dompdf = new Dompdf();
     $dompdf->loadHtml(view('prescriptionPDF',[
@@ -398,6 +402,8 @@ class PrescriptionController extends Controller
         'age' => $age,
         'weight' => $weight,
         'height' => $height,
+        'tests' => $tests,
+        'advice' => $advice
     ]));
     // (Optional) Setup the paper size and orientation
     $dompdf->setPaper('A4');

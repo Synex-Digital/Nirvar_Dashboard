@@ -67,20 +67,27 @@ ul {
     margin-top: 0;
     margin-bottom: 5px;
 }
-.medicine ol li{
+.medicine ol li:first-child{
     list-style-type: disc !important;
 }
+.medicine ol li:last-child{
+    list-style-type: none !important;
+}
+.medicine ol {
+    border-bottom: 1px solid #b8b8b8;
+}
+
 .advice ol li{
     list-style-type: disc !important;
 }
 .medicine{
-    margin-right: 40px;
+    margin-right: 200px;
 
 }
 .medicine-advice{
    position: absolute;
-   right: 100px;
-    margin-top: -77px;
+   right: -120px;
+   margin-top: 0px;
 }
 </style>
 </head>
@@ -109,7 +116,7 @@ ul {
         </div>
         <p class="details"><b>Doctor: </b>{{ $prescription->doctor->user->name }}</p>
         <p class="details" style="width: 50%" > <b>Degrees: </b>{{ $prescription->doctor->degrees }}</p>
-        <p class="details"><b>Speciality: </b>{{ $prescription->doctor->docHasSpec? $prescription->doctor->docHasSpec->speciality->name : 'UNKNOWN' }}</p>
+        <p class="details"><b>Department: </b>{{ $prescription->doctor->docHasSpec? $prescription->doctor->docHasSpec->speciality->name : 'UNKNOWN' }}</p>
         <p class="details"><b>REG-ID:</b> {{ $prescription->doctor->registration }}</p>
     </div>
     <div class="patient-info" style="border-bottom: 1px solid #b8b8b8;border-top: 1px solid #b8b8b8; margin: 15px 0px 15px 0px;">
@@ -120,35 +127,59 @@ ul {
 
     </div>
     <div class="complaint">
-        <p> <b>Chief Complaint: </b> Mollit Quasi Id Non</p>
+        <p> <b>Chief Complaint: </b> {{ $prescription->chief_complaint }}</p>
     </div>
-    <div class="prescription">
-        <div class="diagnosis">
+
+        <div class="diagnosis" style="position: absolute;">
             <h4>Diagnosis Tests:</h4>
             <ol>
-                <li>Impedit sunt ut no Impedit sunt ut no Impedit sunt ut no</li>
+                <li>sadfasdf</li>
+                <li>sadfasdf</li>
+                <li>sadfasdf</li>
+                <li>sadfasdf</li>
+                {{-- @forelse ($tests as $data )
+                    <li>{{$data}}</li>
+                @empty
+                    <li>No Tests</li>
+                @endforelse --}}
             </ol>
         </div>
         <div class="medicine-advice">
             <div class="medicine">
                 <h4>Medicine:</h4>
+                @forelse ($prescription->medicine as $medicine)
                 <ol>
-                    <li>Alias Id Non Aut Qui</li>
-                    <li>Nihil laboris expedi</li>
-                    <li>Qui officia quia iur</li>
-                    <li>Ut et amet harum re</li>
-                    <li>Inventore praesentiu</li>
+                    <li>
+                        <span>{{ $medicine->type }}</span>
+                        <span><b>{{ $medicine->drug? $medicine->drug->name : 'UNKNOWN' }}</b></span>
+                        <span><b>{{ $medicine->mg_ml }}</b></span>
+                    </li>
+                    <li>
+                        <span style="margin-right:10px;">{{ $medicine->dose }}</span>
+                        <span style="margin-right:10px;">{{ $medicine->advice }}</span>
+                        <span>{{ $medicine->duration }}</span>
+                    </li>
                 </ol>
+                @empty
+                @endforelse
             </div>
             <div class="advice">
                 <h4>Advice:</h4>
                 <ol>
-                    <li>Dignissimos voluptat</li>
+                    <li>asfdasdfas</li>
+                    <li>asfdasdfas</li>
+                    <li>asfdasdfas</li>
+                    <li>asfdasdfas</li>
+                    <li>asfdasdfas</li>
+                    {{-- @forelse($advice as $data)
+                        <li>{{$data}}</li>
+                    @empty
+                        <li>No Advice</li>
+                    @endforelse --}}
                 </ol>
             </div>
         </div>
 
-    </div>
 
 
 </div>
