@@ -23,8 +23,7 @@ class SpecialityController extends Controller
             'data' =>
                 $specialities->map(function ($speciality){
                     return [
-                        'id' => $speciality->id,
-                        'name' => $speciality->name,
+                         $speciality->name,
                     ];
                 }),
         ]);
