@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class SpecialityController extends Controller
 {
     public function specialities(){
-        $specialities = Specialist::all();
+        $specialities = Specialist::orderBy('name')->get();
         if($specialities->isEmpty()){
             return response()->json([
                 'status' => 0,
