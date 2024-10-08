@@ -22,9 +22,7 @@ class SpecialityController extends Controller
             'message' => "success",
             'data' =>
                 $specialities->map(function ($speciality){
-                    return [
-                         $speciality->name,
-                    ];
+                    return $speciality->name;
                 }),
         ]);
 
