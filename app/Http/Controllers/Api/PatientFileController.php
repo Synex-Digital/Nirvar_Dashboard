@@ -214,6 +214,7 @@ class PatientFileController extends Controller
         return null; // Return null if the pattern does not match
     }
 
+
     public function download($id){
         $file = File::find($id);
         if(is_null($file)){

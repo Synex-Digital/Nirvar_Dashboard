@@ -277,15 +277,25 @@ class PatientProfileController extends Controller
                 'data'    => [
                     'folders' => $folders->map(function ($folder) {
                         return [
-                            'id' => $folder->id,
-                            'name' => $folder->name,
+                            'id'            => $folder->id,
+                            'user_id'       => $folder->user_id,
+                            'name'          => $folder->name,
+                            'file_count'    => count($folder->files),
+                            'created_at'    => $folder->created_at->format('d-M-y'),
                         ];
                     }),
                     'files' => $files->map(function ($file) {
+                        $rename = $this->splitFileName($file->name);
+                        $renameName = $rename ? $rename['name'] : null;
                         return [
-                            'id' => $file->id,
-                            'name' => $file->name,
-                            'folder_id' => $file->folder_id, // Include folder ID if needed
+                            'folder_id'     => $file->folder_id,
+                            'folder_name'   => $file->folder->name,
+                            'id'            => $file->id,
+                            'name'          => $file->name,
+                            'rename'        => $renameName,
+                            'type'          => $file->type,
+                            'path'          => url('uploads/patient/files/' . $file->name),
+                            'created_at'    => $file->created_at->format('d-M-y'),
                         ];
                     }),
                 ]
@@ -325,6 +335,20 @@ class PatientProfileController extends Controller
 
 
 
+    }
+    function splitFileName($filename) {
+        $pattern = '/(.+)(_PR-\d{4}|_TR-\d{4})(\.\w+)$/i'; // Regex to extract the base name and the code
+        preg_match($pattern, $filename, $matches);
+
+        if (!empty($matches)) {
+            return [
+                'name' => $matches[1], // Base name
+                'code' => $matches[2], // PR-XXXX or TR-XXXX
+                'extension' => $matches[3] // File extension
+            ];
+        }
+
+        return null; // Return null if the pattern does not match
     }
 
 }
