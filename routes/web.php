@@ -16,7 +16,10 @@ use App\Http\Controllers\admin\AdminRegisterController;
 use App\Http\Controllers\MailController;
 
 Auth::routes();
-
+//for aws health check
+Route::get('/health-check', function () {
+    return response('OK', 200);
+});
 Route::get('/preview/{slug}', [PrescriptionController::class, 'Preview']);
 Route::middleware(['auth'])->group(function () {
 
