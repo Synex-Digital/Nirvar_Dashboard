@@ -50,7 +50,20 @@ class PatientLoginController extends Controller
                 return response()->json([
                     'status'    => 1,
                     'message'   => 'Login successfully',
-                    'data'      => $user,
+                    'data'      => $user->map(function ($user) {
+                       return[
+                            'id'        => $user->id,
+                            'name'      => $user->name,
+                            'email'     => $user->email,
+                            'number'    => $user->number,
+                            'register_at' => $user->register_at,
+                            'photo'     => url('uploads/patient/profile/'.$user->photo),
+                            'role'      => $user->role,
+                            'email_verified_at' => $user->email_verified_at,
+                            'ceated_at' => $user->created_at,
+                            'updated_at' => $user->updated_at,
+                       ];
+                    }),
                     'token'     => $user->createToken('passportToken')->accessToken
                 ],200);
             }else{

@@ -150,6 +150,7 @@ class PatientProfileController extends Controller
             return response()->json([
                 'status'    => 1,
                 'message'   => "Profile updated successfully",
+                'number'   => $user->number,
             ],200);
         }
 
