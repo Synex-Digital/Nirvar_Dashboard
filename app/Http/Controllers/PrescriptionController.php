@@ -9,13 +9,19 @@ use App\Models\Drugs;
 use MultipleIterator;
 use App\Models\Patient;
 use App\Models\Medicine;
+use App\Models\Notification;
 use App\Models\Prescription;
 use Illuminate\Http\Request;
+use Kreait\Firebase\Factory;
 use App\Mail\NewPrescription;
+use App\Models\NotificationToken;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\GeneratePrescriptionPdf;
 use Illuminate\Support\Facades\Validator;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Exception\MessagingException;
 
 class PrescriptionController extends Controller
 {
@@ -141,6 +147,7 @@ class PrescriptionController extends Controller
             // $patients = $user->patient;
             $prescriptions = Prescription::find($prescription->id);
             GeneratePrescriptionPdf::dispatch($prescriptions);
+            $this->sendPrescriptionNotification($user->id);
             return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
 
 
@@ -223,6 +230,7 @@ class PrescriptionController extends Controller
             //pdf
 
             GeneratePrescriptionPdf::dispatch($prescriptions);
+            $this->sendPrescriptionNotification($user->id);
             return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
         }
     }
@@ -370,4 +378,46 @@ class PrescriptionController extends Controller
     {
         Mail::to($mail)->send(new NewPrescription($data));
     }
+
+
+    public function sendPrescriptionNotification($userId)
+{
+    // Get the patient's FCM token
+    $patient = User::find($userId);
+    if (!$patient) {
+        return response()->json(['status' => 'error', 'message' => 'User not found.'], 404);
+    }
+
+    $notificationToken = NotificationToken::where('user_id', $patient->id)->first();
+    if (!$notificationToken || !$notificationToken->device_token) {
+        return response()->json(['status' => 'error', 'message' => 'FCM token not found for user.'], 404);
+    }
+
+    $fcmToken = $notificationToken->device_token;
+
+    // Initialize Firebase with the service account credentials
+    $firebase = (new Factory)
+        ->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')))
+        ->create();
+
+    $messaging = $firebase->getMessaging();
+
+    // Create the Notification object
+    $notification = Notification::create('New Prescription', 'A new prescription has been created for you.');
+
+    // Create the notification message
+    $message = CloudMessage::withTarget('token', $fcmToken)
+        ->withNotification($notification);
+
+    try {
+        // Send the notification
+        $messaging->send($message);
+        return response()->json(['status' => 'success', 'message' => 'Notification sent successfully.']);
+    } catch (MessagingException $e) {
+        // Log error and handle any exceptions
+        Log::error('FCM Messaging Error: ' . $e->getMessage());
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    }
+}
+
 }
