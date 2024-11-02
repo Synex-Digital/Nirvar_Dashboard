@@ -9,7 +9,7 @@ use App\Models\Drugs;
 use MultipleIterator;
 use App\Models\Patient;
 use App\Models\Medicine;
-use App\Models\Notification;
+
 use App\Models\Prescription;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Factory;
@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Jobs\GeneratePrescriptionPdf;
 use Illuminate\Support\Facades\Validator;
 use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
 use Kreait\Firebase\Exception\MessagingException;
 
 class PrescriptionController extends Controller
@@ -399,6 +400,7 @@ class PrescriptionController extends Controller
     $firebase = (new Factory)
         ->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')))
         ->create();
+
 
     $messaging = $firebase->getMessaging();
 
