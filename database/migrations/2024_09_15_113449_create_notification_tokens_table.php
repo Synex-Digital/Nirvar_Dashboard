@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('device_token')->unique();
             $table->string('device_id');
             $table->string('device_type');
-            $table->unique(['device_id', 'device_type']);
+            // $table->unique(['device_id', 'device_type']);
             $table->timestamps();
         });
     }
