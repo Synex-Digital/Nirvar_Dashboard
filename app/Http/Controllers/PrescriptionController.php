@@ -231,7 +231,7 @@ class PrescriptionController extends Controller
             //pdf
 
             GeneratePrescriptionPdf::dispatch($prescriptions);
-            $this->sendPrescriptionNotification($user->id);
+            $this->sendPrescriptionNotification($newUser->id);
             return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
         }
     }
