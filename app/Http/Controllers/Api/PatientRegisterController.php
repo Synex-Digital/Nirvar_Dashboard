@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Helper\SmsOtp;
 use Illuminate\Validation\ValidationException;
 
+use function PHPUnit\Framework\isNull;
+
 class PatientRegisterController extends Controller
 {
 
@@ -44,6 +46,24 @@ class PatientRegisterController extends Controller
                     'message'   => "User already registerd, Please login",
                 ],200);
             }else{
+                $otp =  OtpVerify::where('user_id', $patient->id)->first();
+                if($otp){
+                    $otp->update([
+                        'otp' => 1234,
+                     //    'otp' => rand(1000, 9999),
+                        'count' => 0,
+                        'duration' => now()->addMinutes(3),
+                    ]);
+                }else{
+                    $newotp =  OtpVerify::create([
+                        'type' => 'patient',
+                        'user_id' => $patient->id,
+                        'otp' => 1234,
+                        //    'otp' => rand(1000, 9999),
+                        'count' => 0,
+                        'duration' => now()->addMinutes(3),
+                    ]);
+                }
                 return response()->json([
                     'status'    => 1,
                     'message'   => "Number not verified, Please verify your account via OTP",
@@ -136,12 +156,15 @@ class PatientRegisterController extends Controller
                         'message'   => "OTP expired!",
                     ],200);
                 }else{
-                    $user = User::find($otp->user_id);
+                    $user = User::find(id: $otp->user_id);
                     $user->register_at = now();
                     $user->save();
-                    $patient = new Patient;
-                    $patient->user_id = $user->id;
-                    $patient->save();
+                    $patient = Patient::where('user_id', $user->id)->first();
+                    if(!$patient){
+                        $patient = new Patient;
+                        $patient->user_id = $user->id;
+                        $patient->save();
+                    }
                     $otp->delete();
                     return response()->json([
                         'status' => 1,
