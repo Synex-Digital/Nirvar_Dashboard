@@ -386,6 +386,7 @@ class PrescriptionController extends Controller
 
     public function sendPrescriptionNotification($userId)
     {
+    dd(env('FIREBASE_CREDENTIALS'));
         // Get the patient's FCM token
         $patient = User::find($userId);
         if (!$patient) {
