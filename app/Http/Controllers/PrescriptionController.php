@@ -398,7 +398,7 @@ class PrescriptionController extends Controller
 
     // Initialize Firebase with the service account credentials
     $firebase = (new Factory)
-    ->withServiceAccount(base_path(env('FIREBASE_CREDENTIALS')))
+    ->withServiceAccount(env('FIREBASE_CREDENTIALS'))
     ->create();
 
     $messaging = $firebase->getMessaging();
