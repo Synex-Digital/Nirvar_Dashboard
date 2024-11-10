@@ -387,7 +387,7 @@ class PrescriptionController extends Controller
     public function sendPrescriptionNotification($userId)
     {
     $firebaseCredentials = config('services.firebase.credentials');
-dd($firebaseCredentials);
+
         // Get the patient's FCM token
         $patient = User::find($userId);
         if (!$patient) {
@@ -403,7 +403,7 @@ dd($firebaseCredentials);
 
         // Initialize Firebase Messaging with service account credentials
         $messaging = (new Factory)
-            ->withServiceAccount(env('FIREBASE_CREDENTIALS'))
+            ->withServiceAccount($firebaseCredentials)
             ->createMessaging();
 
         // Create the Notification object
