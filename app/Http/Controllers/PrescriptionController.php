@@ -386,7 +386,7 @@ class PrescriptionController extends Controller
 
     public function sendPrescriptionNotification($userId)
     {
-    dd(env('FIREBASE_CREDENTIALS'));
+    dd('/home/synectsl/admin.nirvar.synexdigital.com/storage/app/firebase/nirvar-baffb-firebase-adminsdk-nwwuy-96f2581837.json');
         // Get the patient's FCM token
         $patient = User::find($userId);
         if (!$patient) {
