@@ -47,6 +47,10 @@ class User extends Authenticatable
 
         return $this->hasOne(Patient::class, 'user_id', 'id');
     }
+    public function all_patients(){
+
+        return $this->hasOne(Patient::class, 'user_id', 'id');
+    }
     public function folders(){
 
         return $this->hasMany(Folder::class, 'user_id', 'id')->latest();

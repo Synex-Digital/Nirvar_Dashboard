@@ -413,7 +413,7 @@ class PrescriptionController extends Controller
         $message = CloudMessage::withTarget('token', $fcmToken)
             ->withNotification($notification)
             ->withData([
-                'unique_identifier' => 'new_prescription', // Unique string for the notification
+                'unique_identifier' => 'new_prescription',
             ]);
 
         try {
