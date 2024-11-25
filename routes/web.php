@@ -14,6 +14,7 @@ use App\Http\Controllers\admin\AdminLoginController;
 use App\Http\Controllers\admin\AdminLogoutController;
 use App\Http\Controllers\admin\AdminRegisterController;
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\NotificationContoller;
 
 Auth::routes();
 //for aws health check
@@ -62,6 +63,8 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/admin/doctor', [DoctorController::class, 'adminDoctor'])->name('adminDoctor');
     Route::get('/admin/prescriptions', [PrescriptionController::class, 'adminPrescriptionShow'])->name('adminPrescriptionShow');
     Route::get('/admin/prescription/preview{slug}', [PrescriptionController::class, 'adminPrescriptionPreview'])->name('adminPrescriptionPreview');
+    Route::get('/admin/notification', [NotificationContoller::class, 'index'])->name('adminNotification');
+    Route::get('/admin/notification/weekly-blood-pressure', [NotificationContoller::class, 'adminNotification_weeklyBloodPressure'])->name('adminNotification.weeklyBloodPressure');
 
 
 

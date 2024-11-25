@@ -26,6 +26,7 @@
                     <li><a href="{{ route('adminPrescriptionShow') }}" class="ai-icon" aria-expanded="false"> <i class="fa fa-prescription"></i></i><span class="nav-text">Prescriptions</span></a> </li>
                     <li><a href="{{route('drug.index')}}" class="ai-icon" aria-expanded="false"> <i class="fa fa-pills"></i><span class="nav-text">Drugs</span></a> </li>
                     <li><a href="{{route('specialist.index')}}" class="ai-icon" aria-expanded="false"> <i class="fa fa-syringe"></i><span class="nav-text">Speciality</span></a> </li>
+                    <li><a href="{{route('adminNotification')}}" class="ai-icon" aria-expanded="false"> <i class="fa fa-bell"></i><span class="nav-text">Notification</span></a> </li>
 
 
 
