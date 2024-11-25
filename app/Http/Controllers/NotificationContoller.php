@@ -65,41 +65,13 @@ class NotificationContoller extends Controller
             }
         }
         $this->sendBatchNotifications($bloodPressue);
-        // foreach ($users as $user) {
-        //     // Get the categories for blood pressure readings within the current week
-        //     $categories = Diabetes::where('user_id', $user->id)
-        //         ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
-        //         ->pluck('category'); // Pluck only the 'category' field
-
-        //     // Count the occurrences of each category
-        //     $categoriesCount = $categories->countBy(); // count occurrences of each category
-
-        //     // If we have data for the week
-        //     if ($categoriesCount->isNotEmpty()) {
-        //         // Find the most frequent category
-        //         $mostFrequentCategory = $categoriesCount->sortDesc()->keys()->first();
-
-        //         // Add to notifications array
-        //         $diabetes[] = [
-        //             'user_id' => $user->id,
-        //             'most_frequent_category' => $mostFrequentCategory,
-        //             'fcm_token' => $deviceTokens[$user->id] ?? null, // Safely access token
-        //         ];
-        //     } else {
-        //         // No data for the week, you could add a notification or leave it out
-        //         $diabetes[] = [
-        //             'user_id' => $user->id,
-        //             'most_frequent_category' => 'No blood pressure data last week',
-        //             'fcm_token' => $deviceTokens[$user->id] ?? null, // Safely access token
-        //         ];
-        //     }
-        // }
+        return back();
     }
 
     public function sendBatchNotifications(array $notifications): void
     {
-        $firebaseCredentials = config('services.firebase.credentials');
 
+        $firebaseCredentials = config('services.firebase.credentials');
         $messaging = (new Factory)
             ->withServiceAccount($firebaseCredentials)
             ->createMessaging();
@@ -109,17 +81,16 @@ class NotificationContoller extends Controller
                 Log::warning("FCM token missing for user: {$notification['user_id']}");
                 continue;
             }
-
+            $new = Notification::create(
+                'Weekly Data Report',
+                "Last week's blood pressure reading was hight"
+            );
             // Prepare the message
             $message = CloudMessage::withTarget('token', $notification['fcm_token'])
-                ->withNotification(Notification::create(
-                    'Weekly Data Report',
-                    "Last week's blood pressure reading was hight"
-                ))
+                ->withNotification($new)
                 ->withData([
                     'unique_identifier' => 'weekly_report',
                 ]);
-
             // Try sending the notification
             try {
                 $messaging->send($message);
