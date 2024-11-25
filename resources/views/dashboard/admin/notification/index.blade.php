@@ -29,13 +29,13 @@
                         <tr>
                             <td>Weekly Notification for Blood Pressure  </td>
                             <td>
-                                <a href="{{ route('adminNotification.weeklyBloodPressure') }}" class="btn btn-primary btn-xs">Send <i class="ms-2 fa fa-bell "></i> </a>
+                                <a href="{{ route('adminNotification.weeklyBloodPressure') }}" class=" {{ $dayName == "Saturday" ? '': 'disabled'  }} btn btn-primary btn-xs">Send <i class="ms-2 fa fa-bell "></i> </a>
                             </td>
                         </tr>
                         <tr>
                             <td>Weekly Notification for Diabetis    </td>
                             <td>
-                                <a href="#" class="btn btn-primary btn-xs">Send <i class="ms-2 fa fa-bell "></i> </a>
+                                <a href="#" class="  {{ $dayName == "Saturday" ? '': 'disabled'  }} btn btn-primary btn-xs">Send <i class="ms-2 fa fa-bell "></i> </a>
                             </td>
                         </tr>
                    </tbody>

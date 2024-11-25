@@ -9,6 +9,7 @@ use Kreait\Firebase\Factory;
 
 use App\Models\BloodPressure;
 use App\Models\NotificationToken;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,9 +20,19 @@ use Kreait\Firebase\Exception\MessagingException;
 class NotificationContoller extends Controller
 {
     public function index(){
-        return view('dashboard.admin.notification.index');
+        $today = Carbon::now();
+        $dayName = $today->format('l');
+        return view('dashboard.admin.notification.index',[
+            'dayName' => $dayName,
+        ]);
     }
     public function adminNotification_weeklyBloodPressure(){
+        $today = Carbon::now();
+        $dayName = $today->format('l');
+        if($dayName !== "Saturday"){
+            flash()->options(['position' => 'bottom-right'])->error('Weekly notification can only be sent on Saturday');
+            return back();
+        }
         $users = User::where('role', 'patient')
         ->whereNotNull('register_at')
         ->get();
