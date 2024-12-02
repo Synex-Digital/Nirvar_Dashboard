@@ -65,6 +65,7 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/admin/prescription/preview{slug}', [PrescriptionController::class, 'adminPrescriptionPreview'])->name('adminPrescriptionPreview');
     Route::get('/admin/notification', [NotificationContoller::class, 'index'])->name('adminNotification');
     Route::get('/admin/notification/weekly-blood-pressure', [NotificationContoller::class, 'adminNotification_weeklyBloodPressure'])->name('adminNotification.weeklyBloodPressure');
+    Route::get('/admin/notification/weekly-diabetes', [NotificationContoller::class, 'adminNotification_weeklyDiabetis'])->name('adminNotification.weeklyDiabetis');
 
 
 

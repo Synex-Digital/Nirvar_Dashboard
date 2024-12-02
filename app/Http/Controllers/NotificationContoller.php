@@ -38,7 +38,6 @@ class NotificationContoller extends Controller
         ->get();
 
         $bloodPressue = []; // To store all notifications to send
-        $diabetes = []; // To store all notifications to send
 
         // Fetch device tokens in bulk before the loop
         $deviceTokens = NotificationToken::whereIn('user_id', $users->pluck('id'))
@@ -70,7 +69,7 @@ class NotificationContoller extends Controller
                 // No data for the week, you could add a notification or leave it out
                 $bloodPressue[] = [
                     'user_id' => $user->id,
-                    'most_frequent_category' => 'No blood pressure data last week',
+                    'most_frequent_category' => 'Null',
                     'fcm_token' => $deviceTokens[$user->id] ?? null, // Safely access token
                 ];
             }
@@ -78,7 +77,6 @@ class NotificationContoller extends Controller
         $this->sendBatchNotifications($bloodPressue);
         return back();
     }
-
     public function sendBatchNotifications(array $notifications): void
     {
 
@@ -94,14 +92,100 @@ class NotificationContoller extends Controller
             }
             $new = Notification::create(
                 'Weekly Data Report',
-                "Last week's blood pressure reading was hight"
+                "Last week's blood pressure reading was". $notification['most_frequent_category']
             );
             // Prepare the message
             $message = CloudMessage::withTarget('token', $notification['fcm_token'])
                 ->withNotification($new)
                 ->withData([
-                    'unique_identifier' => 'weekly_report',
+                    'action' => 'complete',
+                    'unique_identifier' => 'weekly_report_blood_pressure',
                 ]);
+            // Try sending the notification
+            try {
+                $messaging->send($message);
+                Log::info("Notification sent to user {$notification['user_id']}");
+            } catch (MessagingException $e) {
+                Log::error("FCM Messaging Error for user {$notification['user_id']}: " . $e->getMessage());
+            }
+        }
+    }
+
+    public function adminNotification_weeklyDiabetis(){
+        $today = Carbon::now();
+        $dayName = $today->format('l');
+        if($dayName !== "Monday"){
+            flash()->options(['position' => 'bottom-right'])->error('Weekly notification can only be sent on Saturday');
+            return back();
+        }
+        $users = User::where('role', 'patient')
+        ->whereNotNull('register_at')
+        ->get();
+        $diabetes = []; // To store all notifications to send
+
+        // Fetch device tokens in bulk before the loop
+        $deviceTokens = NotificationToken::whereIn('user_id', $users->pluck('id'))
+            ->get()
+            ->keyBy('user_id')
+            ->map(fn($token) => $token->device_token);
+
+        foreach ($users as $user) {
+            // Get the categories for blood pressure readings within the current week
+            $categories = Diabetes::where('user_id', $user->id)
+                ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+                ->pluck('category'); // Pluck only the 'category' field
+
+            // Count the occurrences of each category
+            $categoriesCount = $categories->countBy(); // count occurrences of each category
+
+            // If we have data for the week
+            if ($categoriesCount->isNotEmpty()) {
+                // Find the most frequent category
+                $mostFrequentCategory = $categoriesCount->sortDesc()->keys()->first();
+
+                // Add to notifications array
+                $diabetes[] = [
+                    'user_id' => $user->id,
+                    'most_frequent_category' => $mostFrequentCategory,
+                    'fcm_token' => $deviceTokens[$user->id] ?? null, // Safely access token
+                ];
+            } else {
+                // No data for the week, you could add a notification or leave it out
+                $diabetes[] = [
+                    'user_id' => $user->id,
+                    'most_frequent_category' => 'Null',
+                    'fcm_token' => $deviceTokens[$user->id] ?? null, // Safely access token
+                ];
+            }
+        }
+        $this->sendBatchNotificationsDiabetes($diabetes);
+        return back();
+    }
+    public function sendBatchNotificationsDiabetes(array $notifications): void
+    {
+
+        $firebaseCredentials = config('services.firebase.credentials');
+        $messaging = (new Factory)
+            ->withServiceAccount($firebaseCredentials)
+            ->createMessaging();
+
+        foreach ($notifications as $notification) {
+            if (empty($notification['fcm_token'])) {
+                Log::warning("FCM token missing for user: {$notification['user_id']}");
+                continue;
+            }
+            $new = Notification::create(
+                'Weekly Data Report',
+                "Last week's diabetes reading was". $notification['most_frequent_category']
+            );
+            // Prepare the message
+            $message = CloudMessage::withTarget('token', $notification['fcm_token'])
+                ->withNotification($new)
+                ->withData([
+                    'action' => 'complete',
+                    'unique_identifier' => 'weekly_report_diabetes',
+                ]
+                );
             // Try sending the notification
             try {
                 $messaging->send($message);
