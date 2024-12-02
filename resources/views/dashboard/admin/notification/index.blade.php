@@ -35,7 +35,7 @@
                         <tr>
                             <td>Weekly Notification for Diabetis    </td>
                             <td>
-                                <a href="{{ route('adminNotification.weeklyDiabetis') }}" class="  {{ $dayName == "Monday" ? '': 'disabled'  }} btn btn-primary btn-xs">Send <i class="ms-2 fa fa-bell "></i> </a>
+                                <a href="{{ route('adminNotification.weeklyDiabetis') }}" class="  {{ $dayName == "Saturday" ? '': 'disabled'  }} btn btn-primary btn-xs">Send <i class="ms-2 fa fa-bell "></i> </a>
                             </td>
                         </tr>
                    </tbody>

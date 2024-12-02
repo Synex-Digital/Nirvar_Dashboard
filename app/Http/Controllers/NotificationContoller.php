@@ -114,7 +114,7 @@ class NotificationContoller extends Controller
     public function adminNotification_weeklyDiabetis(){
         $today = Carbon::now();
         $dayName = $today->format('l');
-        if($dayName !== "Monday"){
+        if($dayName !== "Saturday"){
             flash()->options(['position' => 'bottom-right'])->error('Weekly notification can only be sent on Saturday');
             return back();
         }
