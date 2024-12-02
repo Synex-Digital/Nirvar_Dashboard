@@ -92,7 +92,7 @@ class NotificationContoller extends Controller
             }
             $new = Notification::create(
                 'Weekly Data Report',
-                "Last week's blood pressure reading was". $notification['most_frequent_category']
+                "Last week's blood pressure reading was ". $notification['most_frequent_category']
             );
             // Prepare the message
             $message = CloudMessage::withTarget('token', $notification['fcm_token'])
@@ -176,7 +176,7 @@ class NotificationContoller extends Controller
             }
             $new = Notification::create(
                 'Weekly Data Report',
-                "Last week's diabetes reading was". $notification['most_frequent_category']
+                "Last week's diabetes reading was ". $notification['most_frequent_category']
             );
             // Prepare the message
             $message = CloudMessage::withTarget('token', $notification['fcm_token'])
