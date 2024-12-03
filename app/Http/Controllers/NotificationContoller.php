@@ -19,23 +19,25 @@ use Kreait\Firebase\Exception\MessagingException;
 
 class NotificationContoller extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $today = Carbon::now();
         $dayName = $today->format('l');
-        return view('dashboard.admin.notification.index',[
+        return view('dashboard.admin.notification.index', [
             'dayName' => $dayName,
         ]);
     }
-    public function adminNotification_weeklyBloodPressure(){
+    public function adminNotification_weeklyBloodPressure()
+    {
         $today = Carbon::now();
         $dayName = $today->format('l');
-        if($dayName !== "Saturday"){
-            flash()->options(['position' => 'bottom-right'])->error('Weekly notification can only be sent on Saturday');
+        if ($dayName !== "Tuesday") {
+            flash()->options(['position' => 'bottom-right'])->error('Weekly notification can only be sent on Tuesday');
             return back();
         }
         $users = User::where('role', 'patient')
-        ->whereNotNull('register_at')
-        ->get();
+            ->whereNotNull('register_at')
+            ->get();
 
         $bloodPressue = []; // To store all notifications to send
 
@@ -92,7 +94,7 @@ class NotificationContoller extends Controller
             }
             $new = Notification::create(
                 'Weekly Data Report',
-                "Last week's blood pressure reading was ". $notification['most_frequent_category']
+                "Last week's blood pressure reading was " . $notification['most_frequent_category']
             );
             // Prepare the message
             $message = CloudMessage::withTarget('token', $notification['fcm_token'])
@@ -111,16 +113,17 @@ class NotificationContoller extends Controller
         }
     }
 
-    public function adminNotification_weeklyDiabetis(){
+    public function adminNotification_weeklyDiabetis()
+    {
         $today = Carbon::now();
         $dayName = $today->format('l');
-        if($dayName !== "Saturday"){
-            flash()->options(['position' => 'bottom-right'])->error('Weekly notification can only be sent on Saturday');
+        if ($dayName !== "Tuesday") {
+            flash()->options(['position' => 'bottom-right'])->error('Weekly notification can only be sent on Tuesday');
             return back();
         }
         $users = User::where('role', 'patient')
-        ->whereNotNull('register_at')
-        ->get();
+            ->whereNotNull('register_at')
+            ->get();
         $diabetes = []; // To store all notifications to send
 
         // Fetch device tokens in bulk before the loop
@@ -176,15 +179,16 @@ class NotificationContoller extends Controller
             }
             $new = Notification::create(
                 'Weekly Data Report',
-                "Last week's diabetes reading was ". $notification['most_frequent_category']
+                "Last week's diabetes reading was " . $notification['most_frequent_category']
             );
             // Prepare the message
             $message = CloudMessage::withTarget('token', $notification['fcm_token'])
                 ->withNotification($new)
-                ->withData([
-                    'action' => 'complete',
-                    'unique_identifier' => 'weekly_report_diabetes',
-                ]
+                ->withData(
+                    [
+                        'action' => 'complete',
+                        'unique_identifier' => 'weekly_report_diabetes',
+                    ]
                 );
             // Try sending the notification
             try {
@@ -195,5 +199,4 @@ class NotificationContoller extends Controller
             }
         }
     }
-
 }
