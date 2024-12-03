@@ -152,7 +152,9 @@ class PrescriptionController extends Controller
             $prescriptions = Prescription::find($prescription->id);
 
             Log::info("Start the PDF process");
-            exec('/usr/bin/php /var/www/nirvar/artisan generate:prescription ' . $prescriptions->id . ' > /dev/null 2>&1 &');
+            $command = 'export PATH=$PATH:/usr/bin && /usr/bin/php /var/www/nirvar/artisan generate:prescription ' . $prescriptions->id . ' > /dev/null 2>&1 &';
+            exec($command);
+
             Log::info("End the PDF process");
 
             $this->sendPrescriptionNotification($user->id);
@@ -235,7 +237,9 @@ class PrescriptionController extends Controller
             $prescriptions = Prescription::find($prescription->id);
 
             Log::info("Start the PDF process");
-            exec('/usr/bin/php /var/www/nirvar/artisan generate:prescription ' . $prescriptions->id . ' > /dev/null 2>&1 &');
+            $command = 'export PATH=$PATH:/usr/bin && /usr/bin/php /var/www/nirvar/artisan generate:prescription ' . $prescriptions->id . ' > /dev/null 2>&1 &';
+            exec($command);
+
             Log::info("End the PDF process");
 
             $this->sendPrescriptionNotification($newUser->id);
