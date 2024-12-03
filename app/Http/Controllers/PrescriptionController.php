@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\GeneratePrescriptionPdf;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Validator;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
@@ -62,7 +63,6 @@ class PrescriptionController extends Controller
             'drug' => $drug
 
         ]);
-
     }
 
 
@@ -150,11 +150,13 @@ class PrescriptionController extends Controller
             // $doctors = Auth::user()->doctor;
             // $patients = $user->patient;
             $prescriptions = Prescription::find($prescription->id);
-            GeneratePrescriptionPdf::dispatch($prescriptions);
+
+            $phpPath = '/usr/bin/php'; // Default PHP path on most Linux systems, adjust if necessary
+            $command = $phpPath . ' ' . base_path('artisan') . ' generate:prescription ' . $prescriptions->id;
+            exec($command . ' > /dev/null 2>&1 &');
+
             $this->sendPrescriptionNotification($user->id);
             return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
-
-
         } else {
             //user
             $newUser = new User();
@@ -231,9 +233,11 @@ class PrescriptionController extends Controller
             // $doctors = Auth::user()->doctor;
             // $patients = Patient::find($patient->id);
             $prescriptions = Prescription::find($prescription->id);
-            //pdf
 
-            GeneratePrescriptionPdf::dispatch($prescriptions);
+            $phpPath = '/usr/bin/php'; // Default PHP path on most Linux systems, adjust if necessary
+            $command = $phpPath . ' ' . base_path('artisan') . ' generate:prescription ' . $prescriptions->id;
+            exec($command . ' > /dev/null 2>&1 &');
+
             $this->sendPrescriptionNotification($newUser->id);
             return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
         }
@@ -328,11 +332,12 @@ class PrescriptionController extends Controller
             'total_count' => $total_count
         ]);
     }
-    public function getPatient($id){
+    public function getPatient($id)
+    {
         $user = User::where('number', $id)->get()->first();
-        if($user->role == 'patient'){
+        if ($user->role == 'patient') {
             $patient = $user->patient;
-        }else{
+        } else {
             $patient = 'false';
         }
 
@@ -342,37 +347,41 @@ class PrescriptionController extends Controller
         ]);
     }
 
-    public function prescriptionPreview($slug){
+    public function prescriptionPreview($slug)
+    {
 
         // preview the prescription
         $prescriptions = Prescription::where('reference', $slug)->get()->first();
         $doctors = $prescriptions->doctor;
         $patients = $prescriptions->patient;
-         return view('dashboard.doctor.prescription.preview', [
-                'doctors' => $doctors,
-                'patients' => $patients,
-                'prescriptions' => $prescriptions,
-            ]);
+        return view('dashboard.doctor.prescription.preview', [
+            'doctors' => $doctors,
+            'patients' => $patients,
+            'prescriptions' => $prescriptions,
+        ]);
     }
 
-    public function adminPrescriptionShow(){
+    public function adminPrescriptionShow()
+    {
         $prescriptions = Prescription::orderBy('created_at', 'desc')->paginate(15);
-        return view('dashboard.admin.prescription.list',[
+        return view('dashboard.admin.prescription.list', [
             'prescriptions' => $prescriptions
         ]);
     }
-    public function adminPrescriptionPreview($slug){
+    public function adminPrescriptionPreview($slug)
+    {
 
         $prescription = Prescription::where('reference', $slug)->get()->first();
         $doctors = $prescription->doctor;
         $patients = $prescription->patient;
-        return view('dashboard.admin.prescription.preview',[
+        return view('dashboard.admin.prescription.preview', [
             'prescriptions' => $prescription,
             'doctors' => $doctors,
             'patients' => $patients
         ]);
     }
-    public function Preview($slug){
+    public function Preview($slug)
+    {
 
         $prescription = Prescription::where('reference', 'NRVR-F17UBD')->get()->first();
         GeneratePrescriptionPdf::dispatch($prescription);
@@ -386,7 +395,7 @@ class PrescriptionController extends Controller
 
     public function sendPrescriptionNotification($userId)
     {
-    $firebaseCredentials = config('services.firebase.credentials');
+        $firebaseCredentials = config('services.firebase.credentials');
 
         // Get the patient's FCM token
         $patient = User::find($userId);
@@ -431,44 +440,44 @@ class PrescriptionController extends Controller
 
 
 
-//     public function sendPrescriptionNotification($userId)
-// {
-//     // Get the patient's FCM token
-//     $patient = User::find($userId);
-//     if (!$patient) {
-//         return response()->json(['status' => 'error', 'message' => 'User not found.'], 404);
-//     }
+    //     public function sendPrescriptionNotification($userId)
+    // {
+    //     // Get the patient's FCM token
+    //     $patient = User::find($userId);
+    //     if (!$patient) {
+    //         return response()->json(['status' => 'error', 'message' => 'User not found.'], 404);
+    //     }
 
-//     $notificationToken = NotificationToken::where('user_id', $patient->id)->first();
-//     if (!$notificationToken || !$notificationToken->device_token) {
-//         return response()->json(['status' => 'error', 'message' => 'FCM token not found for user.'], 404);
-//     }
+    //     $notificationToken = NotificationToken::where('user_id', $patient->id)->first();
+    //     if (!$notificationToken || !$notificationToken->device_token) {
+    //         return response()->json(['status' => 'error', 'message' => 'FCM token not found for user.'], 404);
+    //     }
 
-//     $fcmToken = $notificationToken->device_token;
+    //     $fcmToken = $notificationToken->device_token;
 
-//     // Initialize Firebase with the service account credentials
-//     $firebase = (new Factory)
-//     ->withServiceAccount(env('FIREBASE_CREDENTIALS'))
-//     ->create();
+    //     // Initialize Firebase with the service account credentials
+    //     $firebase = (new Factory)
+    //     ->withServiceAccount(env('FIREBASE_CREDENTIALS'))
+    //     ->create();
 
-//     $messaging = $firebase->getMessaging();
+    //     $messaging = $firebase->getMessaging();
 
-//     // Create the Notification object
-//     $notification = Notification::create('New Prescription', 'A new prescription has been created for you.');
+    //     // Create the Notification object
+    //     $notification = Notification::create('New Prescription', 'A new prescription has been created for you.');
 
-//     // Create the notification message
-//     $message = CloudMessage::withTarget('token', $fcmToken)
-//         ->withNotification($notification);
+    //     // Create the notification message
+    //     $message = CloudMessage::withTarget('token', $fcmToken)
+    //         ->withNotification($notification);
 
-//     try {
-//         // Send the notification
-//         $messaging->send($message);
-//         return response()->json(['status' => 'success', 'message' => 'Notification sent successfully.']);
-//     } catch (MessagingException $e) {
-//         // Log error and handle any exceptions
-//         Log::error('FCM Messaging Error: ' . $e->getMessage());
-//         return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-//     }
-// }
+    //     try {
+    //         // Send the notification
+    //         $messaging->send($message);
+    //         return response()->json(['status' => 'success', 'message' => 'Notification sent successfully.']);
+    //     } catch (MessagingException $e) {
+    //         // Log error and handle any exceptions
+    //         Log::error('FCM Messaging Error: ' . $e->getMessage());
+    //         return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    //     }
+    // }
 
 }

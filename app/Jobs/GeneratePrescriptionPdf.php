@@ -33,43 +33,42 @@ class GeneratePrescriptionPdf implements ShouldQueue
     {
         $prescriptions = $this->prescriptions;
         // instantiate and use the dompdf class
- 
-            // instantiate and use the dompdf class
-            $dompdf = new Dompdf();
-            $dompdf->loadHtml(view('prescriptionPDF', [
-                'prescription' => $prescriptions,
-                'age' => $this->calculateAge($prescriptions->patient->date_of_birth, $prescriptions->created_at),
-                'weight' => $this->weight($prescriptions->patient->weight_height),
-                'height' => $this->height($prescriptions->patient->weight_height),
-                'tests' => $this->tests($prescriptions->tests),
-                'advice' => $this->prescriptionAdvice($prescriptions->prescription_advice),
-            ]));
 
-            $dompdf->setPaper('A4');
-            $dompdf->render();
-            $output = $dompdf->output();
+        // instantiate and use the dompdf class
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml(view('prescriptionPDF', [
+            'prescription' => $prescriptions,
+            'age' => $this->calculateAge($prescriptions->patient->date_of_birth, $prescriptions->created_at),
+            'weight' => $this->weight($prescriptions->patient->weight_height),
+            'height' => $this->height($prescriptions->patient->weight_height),
+            'tests' => $this->tests($prescriptions->tests),
+            'advice' => $this->prescriptionAdvice($prescriptions->prescription_advice),
+        ]));
 
-            // Rest of your code to save the file
-            $department_name = $prescriptions->doctor->docHasSpec ? $prescriptions->doctor->docHasSpec->speciality->name : 'UNKNOWN';
-            $user = $prescriptions->patient->user;
-            $folders = Folder::where('user_id', $user->id)->where('name', $department_name)->first();
-            $new_folder = null;
-            if (!$folders) {
-                $new_folder = new Folder;
-                $new_folder->user_id = $user->id;
-                $new_folder->name = $department_name;
-                $new_folder->save();
-            }
+        $dompdf->setPaper('A4');
+        $dompdf->render();
+        $output = $dompdf->output();
 
-            $file_name = 'Prescription' . '_PR-' . rand(1000, 9999) . '.pdf';
-            $new_file = new Files;
-            $new_file->folder_id = $folders ? $folders->id : $new_folder->id;
-            $new_file->name = $file_name;
-            $new_file->type = 'prescription';
-            $new_file->save();
-            $filePath = public_path('uploads/patient/files/' . $file_name);
-            file_put_contents($filePath, $output);
+        // Rest of your code to save the file
+        $department_name = $prescriptions->doctor->docHasSpec ? $prescriptions->doctor->docHasSpec->speciality->name : 'UNKNOWN';
+        $user = $prescriptions->patient->user;
+        $folders = Folder::where('user_id', $user->id)->where('name', $department_name)->first();
+        $new_folder = null;
+        if (!$folders) {
+            $new_folder = new Folder;
+            $new_folder->user_id = $user->id;
+            $new_folder->name = $department_name;
+            $new_folder->save();
+        }
 
+        $file_name = 'Prescription' . '_PR-' . rand(1000, 9999) . '.pdf';
+        $new_file = new Files;
+        $new_file->folder_id = $folders ? $folders->id : $new_folder->id;
+        $new_file->name = $file_name;
+        $new_file->type = 'prescription';
+        $new_file->save();
+        $filePath = public_path('uploads/patient/files/' . $file_name);
+        file_put_contents($filePath, $output);
     }
     private function calculateAge($birthdate, $currentDate)
     {
@@ -78,7 +77,8 @@ class GeneratePrescriptionPdf implements ShouldQueue
         $age = $currentDate->diff($birthDate)->y;
         return $age;
     }
-     private function weight($input) {
+    private function weight($input)
+    {
         $weight = null;
         $parts = explode(',', $input);
         if (isset($parts[0])) {
@@ -86,7 +86,8 @@ class GeneratePrescriptionPdf implements ShouldQueue
         }
         return $weight;
     }
-     private function height($input) {
+    private function height($input)
+    {
         $height = null;
         $feet = null;
         $inches = null;
@@ -105,7 +106,8 @@ class GeneratePrescriptionPdf implements ShouldQueue
         }
         return $height;
     }
-     private function tests($input) {
+    private function tests($input)
+    {
         $tests = null;
         $parts = $input ? explode('" "', trim($input, '"')) : [];
         if (isset($parts)) {
@@ -113,7 +115,8 @@ class GeneratePrescriptionPdf implements ShouldQueue
         }
         return $tests;
     }
-     private function prescriptionAdvice($input) {
+    private function prescriptionAdvice($input)
+    {
         $advice = null;
         $parts = $input ? explode('" "', trim($input, '"')) : [];
         if (isset($parts)) {
