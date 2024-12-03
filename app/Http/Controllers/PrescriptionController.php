@@ -151,11 +151,11 @@ class PrescriptionController extends Controller
             // $patients = $user->patient;
             $prescriptions = Prescription::find($prescription->id);
 
-            Log::info("Start the PDF process");
+            // Log::info("Start the PDF process");
             $command = 'export PATH=$PATH:/usr/bin && /usr/bin/php /var/www/nirvar/artisan generate:prescription ' . $prescriptions->id . ' > /dev/null 2>&1 &';
             exec($command);
 
-            Log::info("End the PDF process");
+            // Log::info("End the PDF process");
 
             $this->sendPrescriptionNotification($user->id);
             return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
@@ -236,11 +236,11 @@ class PrescriptionController extends Controller
             // $patients = Patient::find($patient->id);
             $prescriptions = Prescription::find($prescription->id);
 
-            Log::info("Start the PDF process");
+            // Log::info("Start the PDF process");
             $command = 'export PATH=$PATH:/usr/bin && /usr/bin/php /var/www/nirvar/artisan generate:prescription ' . $prescriptions->id . ' > /dev/null 2>&1 &';
             exec($command);
 
-            Log::info("End the PDF process");
+            // Log::info("End the PDF process");
 
             $this->sendPrescriptionNotification($newUser->id);
             return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
