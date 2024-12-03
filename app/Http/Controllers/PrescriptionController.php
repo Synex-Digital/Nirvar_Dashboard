@@ -151,11 +151,7 @@ class PrescriptionController extends Controller
             // $patients = $user->patient;
             $prescriptions = Prescription::find($prescription->id);
 
-            Log::info("Start generating pdf");
-            $phpPath = '/usr/bin/php'; // Default PHP path on most Linux systems, adjust if necessary
-            $command = $phpPath . ' ' . base_path('artisan') . ' generate:prescription ' . $prescriptions->id;
-            exec($command . ' > /dev/null 2>&1 &');
-            Log::info("End generating pdf");
+            exec('/usr/bin/php /var/www/nirvar/artisan generate:prescription ' . $prescriptions->id . ' > /dev/null 2>&1 &');
 
             $this->sendPrescriptionNotification($user->id);
             return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
@@ -235,11 +231,8 @@ class PrescriptionController extends Controller
             // $doctors = Auth::user()->doctor;
             // $patients = Patient::find($patient->id);
             $prescriptions = Prescription::find($prescription->id);
-            Log::info("Start generating pdf");
-            $phpPath = '/usr/bin/php'; // Default PHP path on most Linux systems, adjust if necessary
-            $command = $phpPath . ' ' . base_path('artisan') . ' generate:prescription ' . $prescriptions->id;
-            exec($command . ' > /dev/null 2>&1 &');
-            Log::info("End generating pdf");
+
+            exec('/usr/bin/php /var/www/nirvar/artisan generate:prescription ' . $prescriptions->id . ' > /dev/null 2>&1 &');
 
             $this->sendPrescriptionNotification($newUser->id);
             return redirect()->route('prescriptionpreview', ['slug' => $prescriptions->reference]);
