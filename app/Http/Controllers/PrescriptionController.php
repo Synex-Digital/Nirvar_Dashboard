@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Mail;
 use App\Jobs\GeneratePrescriptionPdf;
+use App\Models\Notification as ModelsNotification;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Validator;
 use Kreait\Firebase\Messaging\CloudMessage;
@@ -421,7 +422,13 @@ class PrescriptionController extends Controller
 
         // Create the Notification object
         $notification = Notification::create('New Prescription', 'A new prescription has been created for you.');
-
+        $saveNotification =  new ModelsNotification;
+        $saveNotification->type = 'new_prescription';
+        $saveNotification->notifiable_type = 'patient';
+        $saveNotification->notifiable_id = $patient->id;
+        $saveNotification->title = 'New Prescription';
+        $saveNotification->data = 'A new prescription has been created for you.';
+        $saveNotification->save();
         // Create the notification message
         $message = CloudMessage::withTarget('token', $fcmToken)
             ->withNotification($notification)

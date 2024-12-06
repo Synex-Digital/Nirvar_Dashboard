@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PatientLoginController;
 use App\Http\Controllers\Api\BloodPressureController;
 use App\Http\Controllers\Api\DiabetesController;
 use App\Http\Controllers\Api\FolderShareController;
+use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\PatientFolderController;
 use App\Http\Controllers\Api\PatientLogoutController;
 use App\Http\Controllers\Api\PatientProfileController;
@@ -90,5 +91,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/patient/diabetes/weekly', [DiabetesController::class, 'diabetes_weekly']);
     Route::get('/patient/diabetes/monthly', [DiabetesController::class, 'diabetes_monthly']);
     Route::post('/patient/diabetes/store', [DiabetesController::class, 'diabetes_store']);
+    // notification
+    Route::get('/patient/notifications', [NotificationsController::class, 'getNotifications']);
 });
 
