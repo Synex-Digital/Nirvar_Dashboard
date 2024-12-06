@@ -93,5 +93,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/patient/diabetes/store', [DiabetesController::class, 'diabetes_store']);
     // notification
     Route::get('/patient/notifications', [NotificationsController::class, 'getNotifications']);
+    Route::post('/patient/read/notification', [NotificationsController::class, 'readNotification']);
 });
 
