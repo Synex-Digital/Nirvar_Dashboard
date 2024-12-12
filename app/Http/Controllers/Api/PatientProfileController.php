@@ -160,7 +160,7 @@ class PatientProfileController extends Controller
     {
         $user = User::find(auth()->user()->id);
         $validate = Validator::make($request->all(), [
-            'photo'         => 'required|mimes:jpg,jpeg,png,webp,heif',
+            // 'photo'         => 'required|mimes:jpg,jpeg,png,webp,heif',
             'name'          => 'required',
             'email'         => 'required|email|unique:users,email,' . $user->id,
             'gender'        => 'required',
