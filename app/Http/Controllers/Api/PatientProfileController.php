@@ -167,7 +167,6 @@ class PatientProfileController extends Controller
             'date_of_birth' => 'required',
             'blood_group'   => 'required',
             'address'       => 'required',
-
         ], [
             'name.required'             => 'Name is required',
             'email.required'            => 'Email is required',
@@ -192,16 +191,31 @@ class PatientProfileController extends Controller
         } else {
             $user->name     = $request->name;
             $user->email    = $request->email;
-            if ($user->photo !== null) {
-                $path = public_path('uploads/patient/profile/' . $user->photo);
-                unlink($path);
+
+            if ($request->file('photo')) {
+                if ($user->photo !== null) {
+                    $path = public_path('uploads/patient/profile/' . $user->photo);
+                    unlink($path);
+                }
+                $uploaded_file  = $request->file('photo');
+                $extn           = $uploaded_file->getClientOriginalExtension();
+                $fileName       = 'PROFILE_' . rand(100000, 999999) . '.' . $extn;
+                $uploaded_file->move(public_path('uploads/patient/profile/'), $fileName);
+                $user->photo    = $fileName;
+                $user->save();
             }
-            $uploaded_file  = $request->file('photo');
-            $extn           = $uploaded_file->getClientOriginalExtension();
-            $fileName       = 'PROFILE_' . rand(100000, 999999) . '.' . $extn;
-            $uploaded_file->move(public_path('uploads/patient/profile/'), $fileName);
-            $user->photo    = $fileName;
-            $user->save();
+
+            // if ($user->photo !== null) {
+            //     $path = public_path('uploads/patient/profile/' . $user->photo);
+            //     unlink($path);
+            // }
+            // $uploaded_file  = $request->file('photo');
+            // $extn           = $uploaded_file->getClientOriginalExtension();
+            // $fileName       = 'PROFILE_' . rand(100000, 999999) . '.' . $extn;
+            // $uploaded_file->move(public_path('uploads/patient/profile/'), $fileName);
+            // $user->photo    = $fileName;
+            // $user->save();
+
             $patient = $user->patient;
             $patient->blood_group   = $request->blood_group;
             $patient->date_of_birth = $request->date_of_birth;
