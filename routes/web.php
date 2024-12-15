@@ -66,6 +66,8 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/admin/notification', [NotificationContoller::class, 'index'])->name('adminNotification');
     Route::get('/admin/notification/weekly-blood-pressure', [NotificationContoller::class, 'adminNotification_weeklyBloodPressure'])->name('adminNotification.weeklyBloodPressure');
     Route::get('/admin/notification/weekly-diabetes', [NotificationContoller::class, 'adminNotification_weeklyDiabetis'])->name('adminNotification.weeklyDiabetis');
+    Route::get('/admin/notification/monthly-blood-pressure', [NotificationContoller::class, 'adminNotification_monthlyBloodPressure'])->name('adminNotification.monthlyBloodPressure');
+    Route::get('/admin/notification/monthly-diabetes', [NotificationContoller::class, 'adminNotification_monthlyDiabetis'])->name('adminNotification.monthlyDiabetis');
 
 
 
