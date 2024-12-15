@@ -285,7 +285,7 @@ class NotificationContoller extends Controller
             );
 
           $saveNotification =  new ModelsNotification;
-                $saveNotification->type = 'monthly_report_blood_pressure';
+                $saveNotification->type = 'monthyl_report_blood_pressure';
                 $saveNotification->notifiable_type = 'patient';
                 $saveNotification->notifiable_id = $notification['user_id'];
                 $saveNotification->title = 'Monthly Data Report';
@@ -296,7 +296,7 @@ class NotificationContoller extends Controller
                 ->withNotification($new)
                 ->withData([
                     'action' => 'complete',
-                    'unique_identifier' => 'monthly_report_blood_pressure',
+                    'unique_identifier' => 'monthyl_report_blood_pressure',
                 ]);
             // Try sending the notification
             try {
