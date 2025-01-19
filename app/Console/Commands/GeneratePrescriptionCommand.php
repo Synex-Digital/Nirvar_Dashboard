@@ -27,6 +27,22 @@ class GeneratePrescriptionCommand extends Command
         }
 
         try {
+            $prescription_name = 'Prescription_' . rand(1000, 9999) . '.pdf';
+            $doctor_spec = $prescription->doctor->docHasSpec->speciality->name;
+            $patient_id = $prescription->patient->user->id;
+            $folder = Folder::where('user_id',$patient_id)->where('name',$doctor_spec)->first();
+
+            if(!$folder){
+                $new_folder = new Folder();
+                $new_folder->user_id = $patient_id;
+                $new_folder->name = $doctor_spec;
+                $new_folder->save();
+            }
+            $file = new File();
+            $file->name = $prescription_name;
+            $file->folder_id = $folder ? $folder->id: $new_folder->id;
+            $file->save();
+
             // Log before generating the PDF
             Log::info("Generating PDF for Prescription ID: {$prescriptionId}");
 
@@ -47,7 +63,7 @@ class GeneratePrescriptionCommand extends Command
             $output = $dompdf->output();
 
             // Define file path
-            $filePath = public_path('uploads/patient/files/Prescription_' . rand(1000, 9999) . '.pdf');
+            $filePath = public_path('uploads/patient/files/'.$prescription_name);
 
             // Log the file path
             Log::info("Saving PDF to: {$filePath}");

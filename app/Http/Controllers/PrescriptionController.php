@@ -55,6 +55,8 @@ class PrescriptionController extends Controller
      */
     public function create()
     {
+
+
         $user = Auth::user();
         $doctor = $user->doctor;
         $drug = Drugs::pluck('name', 'id');
@@ -72,6 +74,7 @@ class PrescriptionController extends Controller
      */
     public function store(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'phone_number' => 'required',
             'name' => 'required',
@@ -99,6 +102,7 @@ class PrescriptionController extends Controller
         $prescription = new Prescription();
         $user = User::where('role', 'patient')->where('number', $request->phone_number)->get()->first();
         if ($user) {
+
             //prescription
             $prescription->patient_id = $user->patient->id;
             $prescription->doctor_id = Auth::user()->doctor->id;
@@ -150,6 +154,7 @@ class PrescriptionController extends Controller
 
             // $doctors = Auth::user()->doctor;
             // $patients = $user->patient;
+            
             $prescriptions = Prescription::find($prescription->id);
 
             // Log::info("Start the PDF process");
