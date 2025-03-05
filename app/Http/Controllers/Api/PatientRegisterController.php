@@ -90,7 +90,7 @@ class PatientRegisterController extends Controller
                     'count' => 0,
                     'duration' => now()->addMinutes(3),
                 ]);
-                SmsOtp::Send($request->number, 'Your Facebook password reset successfully!');
+                SmsOtp::Send($request->number, 'Your OTP for registration is ' . $otp->otp . '. Expire in 3 minutes.');
                 return response()->json([
                     'status' => 1,
                     'message'   => "OTP sent successfully, Expire in 3 minutes",
