@@ -50,8 +50,8 @@ class PatientRegisterController extends Controller
                 $otp =  OtpVerify::where('user_id', $patient->id)->first();
                 if ($otp) {
                     $otp->update([
-                        'otp' => 1234,
-                        //    'otp' => rand(1000, 9999),
+                        //'otp' => 1234,
+                        'otp' => rand(1000, 9999),
                         'count' => 0,
                         'duration' => now()->addMinutes(3),
                     ]);
@@ -59,8 +59,8 @@ class PatientRegisterController extends Controller
                     $newotp =  OtpVerify::create([
                         'type' => 'patient',
                         'user_id' => $patient->id,
-                        'otp' => 1234,
-                        //    'otp' => rand(1000, 9999),
+                        //'otp' => 1234,
+                        'otp' => rand(1000, 9999),
                         'count' => 0,
                         'duration' => now()->addMinutes(3),
                     ]);
@@ -85,12 +85,12 @@ class PatientRegisterController extends Controller
                 $otp =  OtpVerify::create([
                     'type' => 'patient',
                     'user_id' => $user->id,
-                    'otp' => 1234,
-                    //    'otp' => rand(1000, 9999),
+                    //'otp' => 1234,
+                    'otp' => rand(1000, 9999),
                     'count' => 0,
                     'duration' => now()->addMinutes(3),
                 ]);
-                //    SmsOtp::Send($request->number, 'Your Facebook password reset successfully!');
+                SmsOtp::Send($request->number, 'Your Facebook password reset successfully!');
                 return response()->json([
                     'status' => 1,
                     'message'   => "OTP sent successfully, Expire in 3 minutes",
@@ -202,8 +202,8 @@ class PatientRegisterController extends Controller
                 $newOtp = new OtpVerify;
                 $newOtp->type = 'patient';
                 $newOtp->user_id = $user->id;
-                // $newOtp->otp = rand(1000, 9999);
-                $newOtp->otp = 1234;
+                $newOtp->otp = rand(1000, 9999);
+                //$newOtp->otp = 1234;
                 $newOtp->count = 0;
                 $newOtp->duration = now()->addMinutes(3);
                 $newOtp->save();
@@ -214,8 +214,8 @@ class PatientRegisterController extends Controller
                 ], 200);
             }
         } else {
-            // $otp->otp = rand(1000, 9999);
-            $otp->otp = 1234;
+            $otp->otp = rand(1000, 9999);
+            //$otp->otp = 1234;
             $otp->count = 0;
             $otp->duration = now()->addMinutes(3);
             $otp->save();
@@ -223,7 +223,7 @@ class PatientRegisterController extends Controller
             return response()->json([
                 'status' => 1,
                 'message'   => "OTP sent successfully, Expire in 3 minutes",
-                // 'data'   => $otp
+                'data'   => $otp
             ], 200);
         }
     }
