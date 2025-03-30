@@ -153,6 +153,9 @@ class PatientFileController extends Controller
             'file_name'     => 'required',
         ], [
             'name.required' => 'Folder name is required',
+            'file.required' => 'File is required.',
+            'file.max' => 'The file size is too large. Max size is 111MB.',
+            'file.mimes' => 'Invalid file type. Allowed types: pdf, jpeg, png, jpg, gif, heic.',
         ]);
         if ($validate->fails()) {
             return response()->json([
