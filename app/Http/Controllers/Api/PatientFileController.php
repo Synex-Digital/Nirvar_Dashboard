@@ -149,13 +149,10 @@ class PatientFileController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'folder_id'     => 'required',
-            'file'          => 'required|file|max:111124|mimes:pdf,jpeg,png,jpg,gif,heic,PNG,JPG,JPEG,PDF,HEIC',
+            'file'          => 'required|file',
             'file_name'     => 'required',
         ], [
             'name.required' => 'Folder name is required',
-            'file.required' => 'File is required.',
-            'file.max' => 'The file size is too large. Max size is 111MB.',
-            'file.mimes' => 'Invalid file type. Allowed types: pdf, jpeg, png, jpg, gif, heic.',
         ]);
         if ($validate->fails()) {
             return response()->json([
