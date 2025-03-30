@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\File;
-use Aws\S3\S3Client;
 use App\Models\Folder;
 use Illuminate\Http\Request;
-use Aws\Exception\AwsException;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Aws\S3\S3Client;
+use Aws\Exception\AwsException;
 
 class PatientFileController extends Controller
 {
@@ -148,16 +147,15 @@ class PatientFileController extends Controller
     //upload
     public function upload(Request $request)
     {
-        $file = $request->file('file');
-        Log::info("File Info:  $request->file('file') ");
-        Log::info('Uploaded File Size: ' . $file->getSize() . ' bytes');
-        Log::info('Upload Error Code: ' . $file->getError());
         $validate = Validator::make($request->all(), [
             'folder_id'     => 'required',
-            'file'          => 'required|file',
+            'file'          => 'required|file|max:111124|mimes:pdf,jpeg,png,jpg,gif,heic,PNG,JPG,JPEG,PDF,HEIC',
             'file_name'     => 'required',
         ], [
             'name.required' => 'Folder name is required',
+            'file.required' => 'File is required.',
+            'file.max' => 'The file size is too large. Max size is 111MB.',
+            'file.mimes' => 'Invalid file type. Allowed types: pdf, jpeg, png, jpg, gif, heic.',
         ]);
         if ($validate->fails()) {
             return response()->json([
