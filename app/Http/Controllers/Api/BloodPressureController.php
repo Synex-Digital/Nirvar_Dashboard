@@ -14,29 +14,30 @@ use function PHPUnit\Framework\isEmpty;
 class BloodPressureController extends Controller
 {
 
-    public function blood_pressure_today(){
+    public function blood_pressure_today()
+    {
         $user = auth('api')->user();
         $data = BloodPressure::where('user_id', $user->id)
             ->whereDate('created_at', Carbon::today())
             ->orderBy('created_at', 'desc')
             ->get();
-        if($data->count() == 0){
+        if ($data->count() == 0) {
             return response()->json([
                 'status'    => 0,
                 'message'   => "No data found",
             ], 200);
-        }else{
+        } else {
             return response()->json([
                 'status'    => 1,
                 'message'   => "success",
                 'data'      => $data,
-                'avg_systolic'   => ceil($data->avg('systolic') ),
-                'avg_diastolic'  => ceil($data->avg('diastolic') ),
+                'avg_systolic'   => ceil($data->avg('systolic')),
+                'avg_diastolic'  => ceil($data->avg('diastolic')),
             ], 200);
         }
-
     }
-    public function blood_pressure_seven_days(){
+    public function blood_pressure_seven_days()
+    {
 
         $user = auth('api')->user();
         // $data = BloodPressure::where('user_id', $user->id)
@@ -44,20 +45,20 @@ class BloodPressureController extends Controller
         //     ->orderBy('created_at', 'desc')
         //     ->get();
         $lastSevenDaysData = BloodPressure::where('user_id', $user->id)
-        ->where('created_at', '>=', Carbon::now()->subDays(7))
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->groupBy(function ($date) {
-            return $date->created_at->format('Y-m-d');
-        });
+            ->where('created_at', '>=', Carbon::now()->subDays(7))
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy(function ($date) {
+                return $date->created_at->format('Y-m-d');
+            });
         $averages = [];
         $avg_sys = 0;
         $avg_dia = 0;
 
         foreach ($lastSevenDaysData as $day => $data) {
             // For each day, calculate the average systolic and diastolic values
-            $systolicAvg = ceil( $data->avg('systolic'));
-            $diastolicAvg =ceil( $data->avg('diastolic'));
+            $systolicAvg = ceil($data->avg('systolic'));
+            $diastolicAvg = ceil($data->avg('diastolic'));
             $category = $this->category($systolicAvg, $diastolicAvg);
             $avg_sys += $systolicAvg;
             $avg_dia += $diastolicAvg;
@@ -67,30 +68,31 @@ class BloodPressureController extends Controller
                 'category' => $category
             ];
         }
-        if(Empty($averages)){
+        if (empty($averages)) {
             return response()->json([
                 'status'    => 0,
                 'message'   => "No data found",
             ], 200);
-        }else{
+        } else {
             return response()->json([
                 'status'    => 1,
                 'message'   => "success",
                 'data'      => $averages,
-                'avg_systolic'   => ceil($avg_sys/count($averages)),
-                'avg_diastolic'  => ceil($avg_dia/ count($averages)),
+                'avg_systolic'   => ceil($avg_sys / count($averages)),
+                'avg_diastolic'  => ceil($avg_dia / count($averages)),
             ], 200);
         }
-
     }
-    function getWeeklyAverage($userId, $startDate, $endDate) {
+    function getWeeklyAverage($userId, $startDate, $endDate)
+    {
         return DB::table('blood_pressures')
             ->where('user_id', $userId)
             ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
             ->whereBetween('created_at', [$startDate, $endDate])
             ->first();
     }
-    public function blood_pressure_weekly(){
+    public function blood_pressure_weekly()
+    {
         $user = auth('api')->user();
         // Get the current date and the first day of the current month
         // $currentDate = Carbon::now();
@@ -103,35 +105,35 @@ class BloodPressureController extends Controller
         // $weekFourStart = $firstDayOfMonth->copy()->addDays(21);
         // $weekFiveStart = $firstDayOfMonth->copy()->addDays(28);
 
-// Initialize Carbon to manage date operations
-$currentDate = Carbon::now();
-$weekStart = $currentDate->startOfWeek();
+        // Initialize Carbon to manage date operations
+        $currentDate = Carbon::now();
+        $weekStart = $currentDate->startOfWeek();
 
-$weeklyAverages = [];
-for ($i = 0; $i < 4; $i++) {
-    // Calculate start and end dates for each week
-    $endDate = $weekStart->copy();
-    $startDate = $weekStart->copy()->subWeek();
+        $weeklyAverages = [];
+        for ($i = 0; $i < 4; $i++) {
+            // Calculate start and end dates for each week
+            $endDate = $weekStart->copy();
+            $startDate = $weekStart->copy()->subWeek();
 
-    // Get weekly average data
-    $data = $this->getWeeklyAverage($user->id, $startDate, $endDate);
+            // Get weekly average data
+            $data = $this->getWeeklyAverage($user->id, $startDate, $endDate);
 
-    // Store data in the array with proper formatting
-    $weeklyAverages['Week ' . ($i + 1)] = [
-        'avg_systolic' => $data->avg_systolic,
-        'avg_diastolic' => $data->avg_diastolic,
-        'category' => $this->category($data->avg_systolic, $data->avg_diastolic),
-    ];
+            // Store data in the array with proper formatting
+            $weeklyAverages['Week ' . ($i + 1)] = [
+                'avg_systolic' => $data->avg_systolic,
+                'avg_diastolic' => $data->avg_diastolic,
+                'category' => $this->category($data->avg_systolic, $data->avg_diastolic),
+            ];
 
-    // Move to the previous week
-    $weekStart->subWeek();
-}
+            // Move to the previous week
+            $weekStart->subWeek();
+        }
 
-return response()->json([
-    'status' => 1,
-    'message' => "success",
-    'data' => $weeklyAverages,
-], 200);
+        return response()->json([
+            'status' => 1,
+            'message' => "success",
+            'data' => $weeklyAverages,
+        ], 200);
         // $dataOne =  DB::table('blood_pressures')
         //     ->where('user_id', $user->id)
         //     ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
@@ -183,39 +185,41 @@ return response()->json([
             'message'   => "success",
             'data'      => $weeklyAverages,
         ], 200);
-
     }
-    public function blood_pressure_monthly(){
+    public function blood_pressure_monthly()
+    {
         $user = auth('api')->user();
-       // Get the current date and define the start of the last four months
-       $currentDate = Carbon::now();
-       // Function to get start and end dates for a given month offset
-        function getMonthRange($offset) {
+        // Get the current date and define the start of the last four months
+        $currentDate = Carbon::now();
+        // Function to get start and end dates for a given month offset
+        function getMonthRange($offset)
+        {
             $start = Carbon::now()->subMonths($offset)->startOfMonth();
             $end = Carbon::now()->subMonths($offset)->endOfMonth();
             return [$start, $end];
         }
 
         // Function to calculate the monthly average
-        function getMonthlyAverage($userId, $startDate, $endDate) {
+        function getMonthlyAverage($userId, $startDate, $endDate)
+        {
             return DB::table('blood_pressures')
                 ->where('user_id', $userId)
                 ->select(DB::raw('ROUND(AVG(systolic)) as avg_systolic, ROUND(AVG(diastolic)) as avg_diastolic'))
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->first();
         }
-    //    $monthOneStart = $currentDate->copy()->startOfMonth();
-    //    $monthOneEnd = $currentDate->copy()->endOfMonth();
+        //    $monthOneStart = $currentDate->copy()->startOfMonth();
+        //    $monthOneEnd = $currentDate->copy()->endOfMonth();
 
-    //    $monthTwoStart = $currentDate->copy()->subMonth(1)->startOfMonth();
-    //    $monthTwoEnd = $currentDate->copy()->subMonth(1)->endOfMonth();
+        //    $monthTwoStart = $currentDate->copy()->subMonth(1)->startOfMonth();
+        //    $monthTwoEnd = $currentDate->copy()->subMonth(1)->endOfMonth();
 
-    //    $monthThreeStart =$currentDate->copy()->subMonth(3)->endOfMonth();
-    //    $monthThreeEnd = $currentDate->copy()->subMonth(1)->startOfMonth();
+        //    $monthThreeStart =$currentDate->copy()->subMonth(3)->endOfMonth();
+        //    $monthThreeEnd = $currentDate->copy()->subMonth(1)->startOfMonth();
 
 
-    //    $monthFourStart = $currentDate->copy()->subMonth(3)->startOfMonth();
-    //    $monthFourEnd = $currentDate->copy()->subMonth(3)->endOfMonth();
+        //    $monthFourStart = $currentDate->copy()->subMonth(3)->startOfMonth();
+        //    $monthFourEnd = $currentDate->copy()->subMonth(3)->endOfMonth();
         // Loop to calculate the averages for the last four months
         $monthlyAverages = [];
         for ($i = 0; $i < 4; $i++) {
@@ -264,21 +268,21 @@ return response()->json([
             'message'   => "success",
             'data'      => $monthlyAverages,
         ], 200);
-
     }
 
 
-    public function blood_pressure_store(Request $request){
+    public function blood_pressure_store(Request $request)
+    {
         $validate = Validator::make($request->all(), [
             'systolic' => 'required|integer|min:1',
             'diastolic' => 'required|integer|min:1',
         ]);
-         // if validation fails
-         if ($validate->fails()) {
+        // if validation fails
+        if ($validate->fails()) {
             return response()->json([
                 'status'    => 0,
                 'message'   => $validate->errors()->messages(),
-            ],200);
+            ], 200);
         }
 
         $startDate = Carbon::today()->setTime(0, 0, 0);
@@ -308,8 +312,9 @@ return response()->json([
     }
 
 
-    function category($systolic , $diastolic){
-        if($systolic == 0 || $diastolic == 0){
+    function category($systolic, $diastolic)
+    {
+        if ($systolic == 0 || $diastolic == 0) {
             return "NA";
         }
         $category = "";
@@ -317,15 +322,11 @@ return response()->json([
             $category = "Low";
         } elseif (($systolic > 90 && $systolic < 130) || ($diastolic > 60 && $diastolic < 80)) {
             $category = "Normal";
-        }
-        elseif (($systolic > 130 ) || ($diastolic > 80 )) {
+        } elseif (($systolic > 130) || ($diastolic > 80)) {
             $category = "High";
-        }
-        else {
+        } else {
             $category = "NA";
         }
         return $category;
-
     }
-
 }

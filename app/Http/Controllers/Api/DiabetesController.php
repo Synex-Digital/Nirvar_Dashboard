@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Validator;
 
 class DiabetesController extends Controller
 {
-   public function diabetes_store(Request $request){
+    public function diabetes_store(Request $request)
+    {
 
         $validate = Validator::make($request->all(), [
             'blood_sugar_level' => 'required|numeric|min:0',
@@ -21,15 +22,15 @@ class DiabetesController extends Controller
             return response()->json([
                 'status'    => 0,
                 'message'   => $validate->errors()->messages(),
-            ],200);
+            ], 200);
         }
 
         // Get the currently authenticated user
         $user = auth('api')->user();
 
         // Check the number of submissions in the last 24 hours
-        $startTime = Carbon::now()->setTime(0,0,0);
-        $endTime = Carbon::now()->setTime(23,59,59);
+        $startTime = Carbon::now()->setTime(0, 0, 0);
+        $endTime = Carbon::now()->setTime(23, 59, 59);
         $submissionCount = Diabetes::where('user_id', $user->id)
             ->whereBetween('created_at', [$startTime, $endTime])
             ->count();
@@ -48,21 +49,21 @@ class DiabetesController extends Controller
             'status' => 1,
             'message' => 'Blood sugar data stored successfully.'
         ], 200);
+    }
 
-   }
-
-   public function diabetes_today(){
+    public function diabetes_today()
+    {
         $user = auth('api')->user();
         $data = Diabetes::where('user_id', $user->id)
             ->whereDate('created_at', Carbon::today())
             ->orderBy('created_at', 'desc')
             ->get();
-        if($data->count() == 0){
+        if ($data->count() == 0) {
             return response()->json([
                 'status'    => 0,
                 'message'   => "No data found",
             ], 200);
-        }else{
+        } else {
             return response()->json([
                 'status'    => 1,
                 'message'   => "success",
@@ -73,17 +74,17 @@ class DiabetesController extends Controller
 
             ], 200);
         }
-
     }
-   public function diabetes_seven_days(){
+    public function diabetes_seven_days()
+    {
         $user = auth('api')->user();
         $data = Diabetes::where('user_id', $user->id)
-        ->where('created_at', '>=', Carbon::now()->subDays(7))
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->groupBy(function ($date) {
-            return $date->created_at->format('Y-m-d');
-        });
+            ->where('created_at', '>=', Carbon::now()->subDays(7))
+            // ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy(function ($date) {
+                return $date->created_at->format('Y-m-d');
+            });
         $averages = [];
         $avg_level = 0;
         foreach ($data as $day => $values) {
@@ -103,12 +104,12 @@ class DiabetesController extends Controller
                 'value_two' => $value_two,
             ];
         }
-        if(Empty($averages)){
+        if (empty($averages)) {
             return response()->json([
                 'status'    => 0,
                 'message'   => "No data found",
             ], 200);
-        }else{
+        } else {
             return response()->json([
                 'status'    => 1,
                 'message'   => "success",
@@ -117,39 +118,41 @@ class DiabetesController extends Controller
             ], 200);
         }
     }
-    function getWeeklyAverage($userId, $startDate, $endDate) {
+    function getWeeklyAverage($userId, $startDate, $endDate)
+    {
         return DB::table('diabetes')
             ->where('user_id', $userId)
             ->select(DB::raw('ROUND(AVG(blood_sugar_level), 1) as avg_level'))
             ->whereBetween('created_at', [$startDate, $endDate])
             ->first();
     }
-    public function diabetes_weekly(){
+    public function diabetes_weekly()
+    {
         $user = auth('api')->user();
-    // Get the current date and start of the current week
-    $currentDate = Carbon::now();
-    $weekStart = $currentDate->startOfWeek();
+        // Get the current date and start of the current week
+        $currentDate = Carbon::now();
+        $weekStart = $currentDate->startOfWeek();
 
-    $weeklyAverages = [];
-    for ($i = 0; $i < 4; $i++) {
-        // Calculate end date and start date for each week
-        $endDate = $weekStart->copy();
-        $startDate = $weekStart->copy()->subWeek();
+        $weeklyAverages = [];
+        for ($i = 0; $i < 4; $i++) {
+            // Calculate end date and start date for each week
+            $endDate = $weekStart->copy();
+            $startDate = $weekStart->copy()->subWeek();
 
-        // Get weekly average data
-        $data = $this->getWeeklyAverage($user->id, $startDate, $endDate);
+            // Get weekly average data
+            $data = $this->getWeeklyAverage($user->id, $startDate, $endDate);
 
-        $average = $data->avg_level;
+            $average = $data->avg_level;
 
-        // Store data in the array with proper formatting
-        $weeklyAverages['Week ' . ($i + 1)] = [
-            'avg_level' => $average,
-            'category' => $this->category($average),
-        ];
+            // Store data in the array with proper formatting
+            $weeklyAverages['Week ' . ($i + 1)] = [
+                'avg_level' => $average,
+                'category' => $this->category($average),
+            ];
 
-        // Move to the previous week
-        $weekStart->subWeek();
-    }
+            // Move to the previous week
+            $weekStart->subWeek();
+        }
 
         //Query to calculate weekly averages
         // $weeklyAverages = [
@@ -183,55 +186,57 @@ class DiabetesController extends Controller
             'message'   => "success",
             'data'      => $weeklyAverages,
         ], 200);
-
     }
-    public function diabetes_monthly(){
+    public function diabetes_monthly()
+    {
         $user = auth('api')->user();
-       // Get the current date and define the start of the last four months
-       $currentDate = Carbon::now();
-       function getMonthRange($offset) {
-        $start = Carbon::now()->subMonths($offset)->startOfMonth();
-        $end = Carbon::now()->subMonths($offset)->endOfMonth();
-        return [$start, $end];
-    }
-    function getMonthlyAverage($userId, $startDate, $endDate) {
-        return DB::table('diabetes')
-            ->where('user_id', $userId)
-            ->select(DB::raw('ROUND(AVG(blood_sugar_level),1) as
-            avg_level'))
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->first();
-    }
-    $monthlyAverages = [];
-    for ($i = 0; $i < 4; $i++) {
-        list($startDate, $endDate) = getMonthRange($i);
-        $data = getMonthlyAverage($user->id, $startDate, $endDate);
-
-        if ($data) {
-            $average = $data->avg_level;
-            $monthlyAverages['Month ' . ($i + 1)] = [
-               'avg_level' => $average,
-                'category' => $this->category($average),
-            ];
-        } else {
-            $monthlyAverages['Month ' . ($i + 1)] = [
-                'avg_systolic' => null,
-                'avg_diastolic' => null,
-                'category' => 'NA',  // No data for this month
-            ];
+        // Get the current date and define the start of the last four months
+        $currentDate = Carbon::now();
+        function getMonthRange($offset)
+        {
+            $start = Carbon::now()->subMonths($offset)->startOfMonth();
+            $end = Carbon::now()->subMonths($offset)->endOfMonth();
+            return [$start, $end];
         }
-    }
-    //    $monthOneStart = $currentDate->copy()->startOfMonth();
-    //    $monthOneEnd = $currentDate->copy()->endOfMonth();
+        function getMonthlyAverage($userId, $startDate, $endDate)
+        {
+            return DB::table('diabetes')
+                ->where('user_id', $userId)
+                ->select(DB::raw('ROUND(AVG(blood_sugar_level),1) as
+            avg_level'))
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->first();
+        }
+        $monthlyAverages = [];
+        for ($i = 0; $i < 4; $i++) {
+            list($startDate, $endDate) = getMonthRange($i);
+            $data = getMonthlyAverage($user->id, $startDate, $endDate);
 
-    //    $monthTwoStart = $currentDate->copy()->subMonth(1)->startOfMonth();
-    //    $monthTwoEnd = $currentDate->copy()->subMonth(1)->endOfMonth();
-    //    $monthThreeStart =$currentDate->copy()->subMonth(3)->endOfMonth();
-    //    $monthThreeEnd = $currentDate->copy()->subMonth(1)->startOfMonth();
+            if ($data) {
+                $average = $data->avg_level;
+                $monthlyAverages['Month ' . ($i + 1)] = [
+                    'avg_level' => $average,
+                    'category' => $this->category($average),
+                ];
+            } else {
+                $monthlyAverages['Month ' . ($i + 1)] = [
+                    'avg_systolic' => null,
+                    'avg_diastolic' => null,
+                    'category' => 'NA',  // No data for this month
+                ];
+            }
+        }
+        //    $monthOneStart = $currentDate->copy()->startOfMonth();
+        //    $monthOneEnd = $currentDate->copy()->endOfMonth();
+
+        //    $monthTwoStart = $currentDate->copy()->subMonth(1)->startOfMonth();
+        //    $monthTwoEnd = $currentDate->copy()->subMonth(1)->endOfMonth();
+        //    $monthThreeStart =$currentDate->copy()->subMonth(3)->endOfMonth();
+        //    $monthThreeEnd = $currentDate->copy()->subMonth(1)->startOfMonth();
 
 
-    //    $monthFourStart = $currentDate->copy()->subMonth(3)->startOfMonth();
-    //    $monthFourEnd = $currentDate->copy()->subMonth(3)->endOfMonth();
+        //    $monthFourStart = $currentDate->copy()->subMonth(3)->startOfMonth();
+        //    $monthFourEnd = $currentDate->copy()->subMonth(3)->endOfMonth();
 
         // Query to calculate monthly averages and round them
         // $monthlyAverages = [
@@ -261,21 +266,21 @@ class DiabetesController extends Controller
             'message'   => "success",
             'data'      => $monthlyAverages,
         ], 200);
-
     }
-    public function category($value){
-        if($value == 0){
+    public function category($value)
+    {
+        if ($value == 0) {
             return  "NA";
         }
         $category = "";
         if ($value < 3.9) {
             $category = "Low";
-        } elseif ($value>= 4 && $value <= 7) {
+        } elseif ($value >= 4 && $value <= 7) {
             $category = "Normal";
         } elseif ($value > 7) {
             $category = "High";
-        }
-        else {$category = "NA";
+        } else {
+            $category = "NA";
         }
 
         return $category;
