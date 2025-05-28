@@ -198,8 +198,8 @@
                                     {{ weightHeight($patients->weight_height)['height'] }}</span> </h5>
                         @endif
                     @endif
-                    <h5 class="mb-0"> Contact: <span class="fw-light me-4 " style="color: black !important">
-                            {{ $patients->user? $patients->user->number : 'UNKNOWN' }}</span> </h5>
+                    {{-- <h5 class="mb-0"> Contact: <span class="fw-light me-4 " style="color: black !important">
+                            {{ $patients->user? $patients->user->number : 'UNKNOWN' }}</span> </h5> --}}
                 </div>
 
 

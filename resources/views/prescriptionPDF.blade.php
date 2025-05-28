@@ -123,7 +123,7 @@ ul {
 
         <p style="margin: 8px 0px 7px 0px;"> <b>Patient Name:</b> {{ $prescription->patient->user->name }} &nbsp; | &nbsp; <b>Age:</b> {{ $age?? 'UNKNOWN' }} &nbsp; | &nbsp; <b>Gender:</b> {{ $prescription->patient->gender }} &nbsp; | &nbsp; <b>Group:</b> {{ $prescription->patient->blood_group }} &nbsp; | &nbsp;
             <br>
-            <b>Weight:</b> {{ $weight?? 'UNKNOWN' }} &nbsp; | &nbsp; <b>Height:  </b>{{ $height?? 'UNKNOWN' }} &nbsp; | &nbsp; <b>Contact:</b> 01875134030</p>
+            <b>Weight:</b> {{ $weight?? 'UNKNOWN' }} &nbsp; | &nbsp; <b>Height:  </b>{{ $height?? 'UNKNOWN' }} &nbsp; | &nbsp; </p>
 
     </div>
     <div class="complaint">
