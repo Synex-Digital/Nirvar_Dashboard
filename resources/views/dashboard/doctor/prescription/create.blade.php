@@ -195,8 +195,15 @@
                             <div class="col-4 my-1">
                                 <input type="text" name="duration[]" class="form-control form-control-sm bg-white input-default inp" placeholder="Duration" value="{{ old('duration.0') }}">
                             </div>
-                            <div class="col-4 my-1">
+                            {{-- <div class="col-4 my-1">
                                 <input type="text" name="medicineAdvice[]" class="form-control form-control-sm bg-white input-default inp" placeholder="Before Or After Meal" value="{{ old('medicineAdvice.0') }}">
+                            </div> --}}
+                            <div class="col-4 my-1">
+                                <select name="medicineAdvice[]" class="form-control form-control-sm">
+                                    <option value="" disabled>Select Advice</option>
+                                        <option value="Before Meal" {{ old('medicineAdvice.0') == 'Before Meal' ? 'selected' : '' }}>Before Meal</option>
+                                        <option value="After Meal" {{ old('medicineAdvice.0') == 'After Meal' ? 'selected' : '' }}>After Meal</option>
+                                </select>
                             </div>
                         </div>
                     </div>
