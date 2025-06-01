@@ -35,7 +35,7 @@
 
 				<div class="copyright" style="margin-top:80px !important; margin-bottom:0px !important; ">
 					<p><strong>Nirvar Admin Dashboard</strong> © {{ date('Y') }} All Rights Reserved</p>
-					<p>Made with <span class="heart"></span> by Synex Digital</p>
+					{{-- <p>Made with <span class="heart"></span> by Synex Digital</p> --}}
 				</div>
 			</div>
         </div>
